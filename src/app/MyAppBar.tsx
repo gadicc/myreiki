@@ -35,7 +35,7 @@ import pathnames from "./pathnames";
 
 export default function MyAppBar() {
   const pathname = usePathname();
-  const title = (pathname && pathnames[pathname]) || "ShadowLang";
+  const title = (pathname && pathnames[pathname]) || "MyReiki";
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
