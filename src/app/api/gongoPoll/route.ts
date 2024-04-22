@@ -58,6 +58,9 @@ gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
   });
 });
 
+gs.publish("practice", async (db, _opts, { auth }) => {
+  return db.collection("practices").find({ _id: _opts._id });
+});
 
 if (gs.dba) {
   const db = gs.dba;
@@ -67,7 +70,7 @@ if (gs.dba) {
     "update",
     async (
       doc: GongoDocument | ChangeSetUpdate | string,
-      eventProps: CollectionEventProps,
+      eventProps: CollectionEventProps
     ) => {
       const isAdmin = await userIsAdmin(doc, eventProps);
       if (isAdmin === true) return true;
@@ -82,8 +85,13 @@ if (gs.dba) {
       }
 
       return "ACCESS_DENIED";
-    },
+    }
   );
+
+  const practices = db.collection("practices");
+  practices.allow("insert", userIdMatches);
+  practices.allow("update", userIdMatches);
+  practices.allow("remove", userIdMatches);
 }
 
 // module.exports = gs.expressPost();

@@ -97,7 +97,7 @@ function Users() {
       minInterval: 5_000,
       maxInterval: 10_000,
       // persist: false,
-    },
+    }
   );
   const [filter, setFilter] = React.useState("");
   const _users = useGongoLive((db) => db.collection("users").find());
@@ -114,6 +114,9 @@ function Users() {
 
   return (
     <Box>
+      <p>
+        <Link href="/practice/edit/new">Create New Practice</Link>
+      </p>
       <Typography variant="h6">Users</Typography>
       <TextField
         size="small"
@@ -139,7 +142,7 @@ function Users() {
 export default function Admin() {
   const userId = useGongoUserId();
   const user = useGongoOne((db) =>
-    db.collection("users").find({ _id: userId }),
+    db.collection("users").find({ _id: userId })
   );
 
   React.useEffect(() => {
