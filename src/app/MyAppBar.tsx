@@ -3,7 +3,7 @@ import * as React from "react";
 import { useGongoOne, useGongoUserId } from "gongo-client-react";
 import { signIn, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import NextLink from 'next/link';
+import NextLink from "next/link";
 
 import {
   AppBar,
@@ -24,9 +24,9 @@ import {
   Menu,
 } from "@mui/material";
 import {
-  AccountCircle, Info, LocalLibrary ,
+  AccountCircle,
+  Info,
   AdminPanelSettings,
-  Forum,
   Home,
   Menu as MenuIcon,
 } from "@mui/icons-material";

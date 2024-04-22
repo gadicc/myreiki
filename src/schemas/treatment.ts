@@ -1,4 +1,4 @@
-interface Treatment {
+export interface Treatment {
   _id: string;
   patientId: string;
   practitionerId: string;

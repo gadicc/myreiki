@@ -19,6 +19,7 @@
     "@mui/material-nextjs": "^5.15.11",
     "@mui/x-date-pickers": "^7.2.0",
     "aws-sdk": "^2.1602.0",
+    "eslint-config-prettier": "^9.1.0",
     "file-type": "^19.0.0",
     "gongo-client": "^2.8.1",
     "gongo-client-react": "^0.5.2",
@@ -29,6 +30,7 @@
     "music-metadata": "^7.14.0",
     "next": "^14.2.2",
     "next-auth": "^4.24.7",
+    "prettier": "^3.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.3",
@@ -40,9 +42,11 @@
     "@types/node": "^20.12.7",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
-    "eslint": "^9.0.0",
+    "eslint": "^8.41.0",
     "eslint-config-next": "^14.2.2",
-    "typescript": "^5.4.5"
+    "eslint-plugin-unused-imports": "^3.1.0",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.7.0"
   },
   "browser": {
     "crypto": false

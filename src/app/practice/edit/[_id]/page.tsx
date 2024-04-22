@@ -22,7 +22,7 @@ export default function PracticeEdit() {
 
   useGongoSub(_id === "new" ? false : "practice", { _id });
   const existing = useGongoOne((db) =>
-    db.collection("practices").find({ _id })
+    db.collection("practices").find({ _id }),
   );
 
   function onSubmit(practice: OptionalId<Practice>) {
@@ -38,7 +38,7 @@ export default function PracticeEdit() {
     }
   }
 
-  const { register, handleSubmit, formState, fr } = useForm<Practice>({
+  const { handleSubmit, fr } = useForm<Practice>({
     values: existing || undefined,
     schema: practiceSchema,
     defaultValues: {

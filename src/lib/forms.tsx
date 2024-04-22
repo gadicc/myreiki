@@ -3,18 +3,33 @@ import {
   useForm as reactHookUseForm,
   UseFormProps,
   UseFormReturn,
-  Path,
+  UseFormRegisterReturn,
+  FieldPath,
+  RegisterOptions,
+  DeepPartial,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ZodRawShape } from "zod";
 
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined
+  TTransformedValues extends FieldValues | undefined = undefined,
 >(
-  props?: UseFormProps<TFieldValues, TContext> & { schema?: any }
+  props?: UseFormProps<TFieldValues, TContext> & {
+    schema?: Parameters<typeof zodResolver>[0];
+  },
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> & {
-  fr: (name: Path<TFieldValues>) => any;
+  fr<TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
+    name: TFieldName,
+    options?: RegisterOptions<TFieldValues, TFieldName>,
+  ): UseFormRegisterReturn<TFieldName> & {
+    required: boolean;
+    defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
+    error: boolean;
+    helperText?: string;
+  };
 } {
   if (!props?.schema) throw new Error("useForm requires a { schema } prop");
 
@@ -25,22 +40,43 @@ export function useForm<
   };
 
   const outProps = reactHookUseForm<TFieldValues, TContext, TTransformedValues>(
-    { ...defaults, ...props }
+    { ...defaults, ...props },
   );
 
   // function fr(name: keyof Omit<TFieldValues, "__ObjectIDs">) {
-  function fr(name: Path<TFieldValues>) {
-    if (!props) throw new Error("useForm requires a { schema } prop");
+  function fr<
+    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  >(
+    name: TFieldName,
+  ): UseFormRegisterReturn<TFieldName> & {
+    required: boolean;
+    defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
+    error: boolean;
+    helperText?: string;
+  } {
+    if (!(props && props.schema))
+      throw new Error("useForm requires a { schema } prop");
     const { formState, register } = outProps;
-    const shape = props.schema.shape[name];
+    const shape =
+      "shape" in props.schema
+        ? (props.schema.shape as ZodRawShape)[name]
+        : props.schema;
+    const error = formState.errors[name];
 
-    return {
-      ...register(name),
+    const frProps: {
+      required: boolean;
+      defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
+      error: boolean;
+      helperText?: string;
+    } = {
       required: !shape.isOptional(),
       defaultValue: formState.defaultValues?.[name],
-      error: formState.errors[name] ? true : false,
-      helperText: formState.errors[name] ? formState.errors[name]?.message : "",
+      error: !!error,
     };
+
+    if (error?.message) frProps.helperText = (error.message as string) || "";
+
+    return { ...register(name), ...frProps };
   }
 
   return { ...outProps, fr };

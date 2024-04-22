@@ -8,7 +8,7 @@ import {
 } from "gongo-server-db-mongo/lib/collection";
 import { ChangeSetUpdate } from "gongo-server/lib/DatabaseAdapter";
 // import { ipFromReq, ipPass } from "../../src/api-lib/ipCheck";
-import { ObjectId } from "@/api-lib/objectId";
+// import { ObjectId } from "@/api-lib/objectId";
 
 export const runtime = "edge";
 
@@ -58,7 +58,7 @@ gs.publish("usersForAdmin", async (db, _opts, { auth }) => {
   });
 });
 
-gs.publish("practice", async (db, _opts, { auth }) => {
+gs.publish("practice", async (db, _opts) => {
   return db.collection("practices").find({ _id: _opts._id });
 });
 
@@ -70,7 +70,7 @@ if (gs.dba) {
     "update",
     async (
       doc: GongoDocument | ChangeSetUpdate | string,
-      eventProps: CollectionEventProps
+      eventProps: CollectionEventProps,
     ) => {
       const isAdmin = await userIsAdmin(doc, eventProps);
       if (isAdmin === true) return true;
@@ -85,7 +85,7 @@ if (gs.dba) {
       }
 
       return "ACCESS_DENIED";
-    }
+    },
   );
 
   const practices = db.collection("practices");
