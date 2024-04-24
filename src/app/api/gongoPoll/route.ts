@@ -140,6 +140,10 @@ gs.publish("client", async (db, _opts) => {
   return db.collection("client").find({ _id: _opts._id });
 });
 
+gs.publish("treatment", async (db, _opts) => {
+  return db.collection("treatments").find({ _id: _opts._id });
+});
+
 gs.publish("practice", async (db, _opts) => {
   return db.collection("practices").find({ _id: _opts._id });
 });
@@ -151,6 +155,20 @@ gs.publish("practicesForUser", async (db, _opts, { auth }) => {
   const query = { userId };
 
   return db.collection("practices").find(query);
+});
+
+gs.publish("treatmentsForPractice", async (db, { _id }, { auth }) => {
+  const userId = await auth.userId();
+  if (!userId) return [];
+
+  const practiceId = new ObjectId(_id);
+  const practice = await db
+    .collection("practices")
+    .findOne({ _id: practiceId });
+  if (!practice || practice.userId.toHexString() !== userId.toHexString())
+    return [];
+
+  return db.collection("treatments").find({ practiceId });
 });
 
 if (gs.dba) {
@@ -188,6 +206,11 @@ if (gs.dba) {
   clients.allow("insert", userIdIsInPractice);
   clients.allow("update", userIdIsInPractice);
   clients.allow("remove", userIdIsInPractice);
+
+  const treatments = db.collection("treatments");
+  treatments.allow("insert", userIdIsInPractice);
+  treatments.allow("update", userIdIsInPractice);
+  treatments.allow("remove", userIdIsInPractice);
 }
 
 // module.exports = gs.expressPost();

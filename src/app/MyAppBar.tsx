@@ -29,6 +29,8 @@ import {
   AdminPanelSettings,
   Home,
   Menu as MenuIcon,
+  Groups,
+  Dry,
 } from "@mui/icons-material";
 
 import pathnames from "./pathnames";
@@ -45,6 +47,7 @@ export default function MyAppBar() {
     db.collection("users").find({ _id: userId }),
   );
   const isAdmin = user && user.admin;
+  const isPractitioner = true;
 
   const iOS =
     typeof navigator !== "undefined" &&
@@ -97,6 +100,30 @@ export default function MyAppBar() {
           </ListItem>
         </List>
 
+        {isPractitioner ? (
+          <>
+            <Divider />
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton component={NextLink} href="/treatments">
+                  <ListItemIcon>
+                    <Dry />
+                  </ListItemIcon>
+                  <ListItemText>Treatments</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={NextLink} href="/clients">
+                  <ListItemIcon>
+                    <Groups />
+                  </ListItemIcon>
+                  <ListItemText>Clients</ListItemText>
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </>
+        ) : undefined}
+
         <Divider />
         <List>
           <ListItem disablePadding>
@@ -123,7 +150,7 @@ export default function MyAppBar() {
         ) : undefined}
       </Box>
     ),
-    [isAdmin, toggleDrawer],
+    [isAdmin, toggleDrawer, isPractitioner],
   );
 
   return (

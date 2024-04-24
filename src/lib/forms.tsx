@@ -11,6 +11,16 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ZodRawShape } from "zod";
 
+interface FrProps<
+  TFieldValues extends FieldValues = FieldValues,
+  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> {
+  required: boolean;
+  defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
+  error: boolean;
+  helperText?: string;
+}
+
 export function useForm<
   TFieldValues extends FieldValues = FieldValues,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,13 +33,10 @@ export function useForm<
 ): UseFormReturn<TFieldValues, TContext, TTransformedValues> & {
   fr<TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
     name: TFieldName,
-    options?: RegisterOptions<TFieldValues, TFieldName>,
-  ): UseFormRegisterReturn<TFieldName> & {
-    required: boolean;
-    defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
-    error: boolean;
-    helperText?: string;
-  };
+    options?: RegisterOptions<TFieldValues, TFieldName> & {
+      onChangeTransform?: boolean;
+    },
+  ): UseFormRegisterReturn<TFieldName> & FrProps<TFieldValues, TFieldName>;
 } {
   if (!props?.schema) throw new Error("useForm requires a { schema } prop");
 
@@ -48,6 +55,9 @@ export function useForm<
     TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
   >(
     name: TFieldName,
+    options = {} as RegisterOptions<TFieldValues, TFieldName> & {
+      onChangeTransform?: boolean;
+    },
   ): UseFormRegisterReturn<TFieldName> & {
     required: boolean;
     defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
@@ -64,12 +74,7 @@ export function useForm<
     if (!shape) throw new Error(`Form has no such field "${name}"`);
     const error = formState.errors[name];
 
-    const frProps: {
-      required: boolean;
-      defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
-      error: boolean;
-      helperText?: string;
-    } = {
+    const frProps: FrProps<TFieldValues, TFieldName> = {
       required: !shape.isOptional(),
       defaultValue: formState.defaultValues?.[name],
       error: !!error,
@@ -77,7 +82,13 @@ export function useForm<
 
     if (error?.message) frProps.helperText = (error.message as string) || "";
 
-    return { ...register(name), ...frProps };
+    const regProps = register(name);
+    if (options.onChangeTransform) {
+      const orig = regProps.onChange;
+      regProps.onChange = (newValue) => orig({ target: { value: newValue } });
+    }
+
+    return { ...regProps, ...frProps };
   }
 
   return { ...outProps, fr };

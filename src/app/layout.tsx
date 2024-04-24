@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import theme from '@/theme';
-import MyAppBar from './MyAppBar';
+import * as React from "react";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "@/theme";
+import MyAppBar from "./MyAppBar";
 import ClientProviders from "./clientProviders";
 import "@/lib/db";
 
@@ -16,8 +16,8 @@ export default function RootLayout(props: { children: React.ReactNode }) {
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
             <ClientProviders>
-            <MyAppBar />
-            {props.children}
+              <MyAppBar />
+              {props.children}
             </ClientProviders>
           </ThemeProvider>
         </AppRouterCacheProvider>
