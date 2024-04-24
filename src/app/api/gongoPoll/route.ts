@@ -20,7 +20,7 @@ gs.publish("accounts", (db) =>
 */
 
 // based on userIdMatches
-export async function userIdIsInPractice<DocType extends GongoDocument>(
+async function userIdIsInPractice<DocType extends GongoDocument>(
   doc: DocType | ChangeSetUpdate | string,
   { auth, collection, eventName }: CollectionEventProps<DocType>,
 ) {
