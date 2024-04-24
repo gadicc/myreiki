@@ -6,6 +6,7 @@ import { Collection } from "gongo-client";
 // import GongoAuth from "gongo-client/lib/auth";
 
 import type { Practice, User } from "../schemas";
+import { Client } from "@/schemas/client";
 
 // const out = { db };
 
@@ -40,11 +41,13 @@ if (typeof window !== "undefined")
 db.collection("users").persist();
 db.collection("practices").persist();
 db.collection("treatments").persist();
+db.collection("clients").persist();
 
 declare module "gongo-client" {
   class Database {
     collection(name: "users"): Collection<User>;
     collection(name: "practices"): Collection<Practice>;
+    collection(name: "clients"): Collection<Client>;
   }
 }
 

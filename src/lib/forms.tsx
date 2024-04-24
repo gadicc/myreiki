@@ -61,6 +61,7 @@ export function useForm<
       "shape" in props.schema
         ? (props.schema.shape as ZodRawShape)[name]
         : props.schema;
+    if (!shape) throw new Error(`Form has no such field "${name}"`);
     const error = formState.errors[name];
 
     const frProps: {
