@@ -48,13 +48,20 @@ async function userIdIsInPractice<DocType extends GongoDocument>(
     );
   }
 
+  // TODO FIX THIS IN GONGO TOO!  DELETES DON'T WORK (or maybe only here due to objectid type)
   // DELETES (doc is an ObjectId)
-  if (doc instanceof ObjectId || typeof doc === "string") {
+  if (
+    doc instanceof ObjectId ||
+    typeof doc === "string" ||
+    (typeof doc === "object" && "toHexString" in doc) // ADD THIS CASE (multiple ObjectID types)
+  ) {
     const query: Partial<GongoDocument> = {
       _id: typeof doc === "string" ? new ObjectId(doc) : doc,
     };
     const existingDoc = await collection.findOne(query);
     if (!existingDoc) return "NO_EXISTING_DOC";
+    console.log({ existingDoc });
+    if (!existingDoc.practiceId) return "NO_PRACTICE_ID_IN_EXISTING_DOC";
     return (
       // userId.equals(existingDoc.userId) || "doc.userId !== userId (for delete)"
       practiceIdStrs.includes(existingDoc.practiceId.toHexString()) ||

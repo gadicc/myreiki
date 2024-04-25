@@ -50,11 +50,11 @@ function fixedHeaderContent() {
   };
   return (
     <TableRow>
-      <TableCell sx={sx} variant="head">
-        Client
+      <TableCell sx={{ ...sx, width: 90 }} variant="head">
+        Date
       </TableCell>
       <TableCell sx={sx} variant="head">
-        Date
+        Client
       </TableCell>
       <TableCell sx={sx} variant="head">
         Duration
@@ -119,7 +119,7 @@ export default function Clients() {
       const client = treatment.client;
       if (client) {
         if (re.test(client.givenName)) return true;
-        if (re.test(client.familyName)) return true;
+        if (client.familyName && re.test(client.familyName)) return true;
         if (client.phone && re.test(client.phone)) return true;
         if (client.email && re.test(client.email)) return true;
         if (client.notes && re.test(client.notes)) return true;
