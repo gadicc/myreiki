@@ -138,7 +138,7 @@ gs.publish(
     if (!practice || practiceId.toHexString() !== userId.toHexString())
       return [];
 
-    const query = { practiceIds: practiceId };
+    const query = { practiceId };
     return db.collection("clients").find(query);
   },
 );
