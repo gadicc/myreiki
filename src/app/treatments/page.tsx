@@ -91,8 +91,8 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
 export default function Clients() {
   const { practiceId, PracticeSelect } = usePracticeId();
 
-  useGongoSub("clientsForPractice", { _id: practiceId });
-  useGongoSub("treatmentsForPractice", { _id: practiceId });
+  useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
+  useGongoSub(practiceId && "treatmentsForPractice", { _id: practiceId });
 
   const [filter, setFilter] = React.useState("");
   const _clients = useGongoLive((db) =>
