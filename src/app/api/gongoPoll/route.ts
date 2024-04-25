@@ -135,7 +135,7 @@ gs.publish(
     const practice = await db
       .collection("practices")
       .findOne({ _id: practiceId });
-    if (!practice || practiceId.toHexString() !== userId.toHexString())
+    if (!practice || practice.userId.toHexString() !== userId.toHexString())
       return [];
 
     const query = { practiceId };
