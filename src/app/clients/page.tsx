@@ -105,7 +105,7 @@ export default function Clients() {
     return _clients.filter((client) => {
       if (!filter) return true;
       if (re.test(client.givenName)) return true;
-      if (re.test(client.familyName)) return true;
+      if (client.familyName && re.test(client.familyName)) return true;
       if (client.phone && re.test(client.phone)) return true;
       if (client.email && re.test(client.email)) return true;
       if (client.notes && re.test(client.notes)) return true;
