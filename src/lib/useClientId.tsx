@@ -1,18 +1,19 @@
 import React from "react";
-import { useGongoLive, useGongoSub } from "gongo-client-react";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { db, useGongoLive, useGongoSub } from "gongo-client-react";
+import { Autocomplete, TextField } from "@mui/material";
 
 export default function useClientId() {
   const [clientId, setClientId] = React.useState("");
 
   const ClientSelectMemo = React.useMemo(
     () =>
-      ({ practiceId }: { practiceId: string }) =>
+      ({ practiceId, required }: { practiceId: string; required?: boolean }) =>
         React.cloneElement(
           <ClientSelect
             clientId={clientId}
             setClientId={setClientId}
             practiceId={practiceId}
+            required={required}
           />,
         ),
     [clientId, setClientId],
@@ -25,10 +26,12 @@ export function ClientSelect({
   clientId,
   setClientId,
   practiceId,
+  required,
 }: {
   clientId: string;
   setClientId: React.Dispatch<React.SetStateAction<string>>;
   practiceId: string;
+  required?: boolean;
 }) {
   const clients = useGongoLive((db) =>
     db.collection("clients").find({ practiceId }),
@@ -36,7 +39,19 @@ export function ClientSelect({
   useGongoSub("clientsForPractice", { _id: practiceId });
 
   return (
-    <FormControl fullWidth sx={{ my: 1 }}>
+    <Autocomplete
+      options={clients}
+      getOptionKey={(c) => c._id}
+      getOptionLabel={(c) => `${c.givenName} ${c.familyName}`}
+      value={db.collection("clients").findOne(clientId)}
+      onChange={(event, newInput) => setClientId(newInput?._id || "")}
+      disablePortal
+      renderInput={(params) => (
+        <TextField {...params} label="Client" required={required} />
+      )}
+    />
+    /*
+    <FormControl fullWidth sx={{ my: 1 }} required={required}>
       <InputLabel id="clientId-label">Client</InputLabel>
       <Select
         labelId="clientId-label"
@@ -52,5 +67,6 @@ export function ClientSelect({
         ))}
       </Select>
     </FormControl>
+    */
   );
 }
