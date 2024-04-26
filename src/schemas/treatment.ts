@@ -8,7 +8,7 @@ export const treatmentSchema = z.object({
   practiceId: z.string(),
   date: z.date().or(z.instanceof(dayjs as unknown as typeof Dayjs)),
   duration: z.coerce.number().int().positive(),
-  type: z.enum(["regular", "self", "distance", "animal"]),
+  type: z.enum(["regular", "self", "distance", "non-human"]),
   notes: z.string().optional(),
 });
 
