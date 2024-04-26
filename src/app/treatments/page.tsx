@@ -3,10 +3,12 @@
 import React from "react";
 // import { t, Trans } from "@lingui/macro";
 import { useGongoSub, useGongoLive, db } from "gongo-client-react";
+import { TableVirtuoso, TableComponents } from "react-virtuoso";
 
 import {
   Box,
   Container,
+  Fab,
   Paper,
   Table,
   TableBody,
@@ -17,10 +19,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { TableVirtuoso, TableComponents } from "react-virtuoso";
+import { Add } from "@mui/icons-material";
 
 import { Treatment, Client } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
+import NextLink from "next/link";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
 
@@ -153,6 +156,14 @@ export default function Clients() {
             itemContent={rowContent}
           />
         </Paper>
+        <Fab
+          sx={{ position: "fixed", bottom: 16, right: 16 }}
+          color="primary"
+          component={NextLink}
+          href="/treatment/edit/new"
+        >
+          <Add sx={{ fontSize: "200%" }} />
+        </Fab>
       </Box>
     </Container>
   );
