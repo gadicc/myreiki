@@ -9,7 +9,18 @@ import {
 } from "gongo-client-react";
 import { useParams, useRouter } from "next/navigation";
 import dayjs, { type Dayjs } from "dayjs";
-import { Button, Container, Stack, TextField } from "@mui/material";
+import {
+  Button,
+  Container,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  FormLabel,
+  Radio,
+  RadioGroup,
+  Stack,
+  TextField,
+} from "@mui/material";
 import { DateTimePicker } from "@mui/x-date-pickers";
 
 import { treatmentSchema, Treatment } from "@/schemas";
@@ -87,11 +98,11 @@ export default function TreatmentEdit() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2} direction="column">
             <PracticeSelect />
-            <ClientSelect practiceId={practiceId} />
+            <ClientSelect practiceId={practiceId} required />
             {/* @ts-expect-error: TODO, overload in forms.tsx */}
             <DateTimePicker
               {...fr("date", { onChangeTransform: true })}
-              label="Date"
+              label="Date *"
             />
             <Stack direction="row" spacing={2} useFlexGap>
               <TextField
@@ -121,6 +132,49 @@ export default function TreatmentEdit() {
                 90
               </Button>
             </Stack>
+            {(function () {
+              const { defaultValue, helperText, ...frProps } = fr("type");
+              return (
+                <FormControl {...frProps}>
+                  <FormLabel id="type-buttons-group">Type</FormLabel>
+                  <RadioGroup
+                    aria-labelledby="type-buttons-group"
+                    row
+                    defaultValue={defaultValue}
+                  >
+                    <FormControlLabel
+                      value="regular"
+                      control={<Radio />}
+                      label="Regular"
+                    />
+                    <FormControlLabel
+                      value="distance"
+                      control={<Radio />}
+                      label="Distance"
+                    />
+                    <FormControlLabel
+                      value="self"
+                      control={<Radio />}
+                      label="Self"
+                    />
+                    <FormControlLabel
+                      value="non-human"
+                      control={<Radio />}
+                      label="Non-Human"
+                    />
+                    <FormHelperText>{helperText}</FormHelperText>
+                  </RadioGroup>
+                </FormControl>
+              );
+            })()}
+            {/*
+            <ToggleButtonGroup {...fr("type")} exclusive>
+              <ToggleButton value="regular">Regular</ToggleButton>
+              <ToggleButton value="distance">Distance</ToggleButton>
+              <ToggleButton value="self">Self</ToggleButton>
+              <ToggleButton value="non-human">Non-Human</ToggleButton>
+            </ToggleButtonGroup>
+            */}
             <TextField {...fr("notes")} label="Notes" fullWidth multiline />
 
             <Button variant="contained" type="submit">
