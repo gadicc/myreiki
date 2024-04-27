@@ -29,7 +29,11 @@ export default function TreatmentsImport() {
   const userId = useGongoUserId();
   const [input, setInput] = React.useState("");
   const [data, setData] = React.useState<
-    Array<Omit<Treatment, "clientId"> & { clientName: string }>
+    Array<
+      Omit<Extract<Treatment, { type: "reiki" }>, "clientId"> & {
+        clientName: string;
+      }
+    >
   >([]);
   const { practiceId, PracticeSelect } = usePracticeId();
 
@@ -45,7 +49,14 @@ export default function TreatmentsImport() {
         practitionerId: userId || "NO_USER_ID_SET_YET",
         practiceId: practiceId || "NO_PRACTICE_ID_SET_YET",
         duration: parseInt(duration),
-        type: (type?.trim() as Treatment["type"]) || "regular",
+        type: "reiki" as const,
+        reiki: {
+          type:
+            (type?.trim() as Extract<
+              Treatment,
+              { type: "reiki" }
+            >["reiki"]["type"]) || "regular",
+        },
         notes: notes?.trim(),
         __ObjectIDs: ["practitionerId", "practiceId"],
       };
@@ -61,7 +72,10 @@ export default function TreatmentsImport() {
     const treatments = data.map((_treatment) => {
       const { clientName, ...rest } = _treatment;
       const clientId = clientIdFromName(clientName || "Unknown", practiceId);
-      const treatment: Treatment = { ...rest, clientId };
+      const treatment: Extract<Treatment, { type: "reiki" }> = {
+        ...rest,
+        clientId,
+      };
       treatmentSchema.parse(treatment);
       return treatment;
     });
@@ -75,14 +89,16 @@ export default function TreatmentsImport() {
   return (
     <Container sx={{ my: 2 }}>
       <PracticeSelect />
-      <Typography variant="h4">Import Treatments</Typography>
+      <Typography variant="h4">Import Reiki Treatments</Typography>
       <Typography>
         Copy and paste and relevant cells from a spreadsheet into the box below.
       </Typography>
       <Typography>
         Skip the header row. The columns should be in the following order: Date,
-        Receiver, Minutes, Type, Comments / Byosen. Fields should be tab
-        separated (automatic when copying from Google Sheets).
+        Client Name, Minutes, Type
+        {' ("regular", "self", "distance", "non-human")'}, Comments / Byosen.
+        Fields should be tab separated (automatic when copying from Google
+        Sheets).
       </Typography>
       <form onSubmit={onSubmit}>
         <textarea

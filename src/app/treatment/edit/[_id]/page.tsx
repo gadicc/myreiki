@@ -82,7 +82,8 @@ export default function TreatmentEdit() {
       practiceId: practiceId || "",
       date: dayjs(new Date()),
       duration: 60,
-      type: "regular",
+      type: "reiki" as const,
+      reiki: { type: "regular" },
       notes: "",
     },
   });
