@@ -3,11 +3,13 @@
 import React from "react";
 // import { t, Trans } from "@lingui/macro";
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
+import NextLink from "next/link";
 
 import {
   Box,
   Container,
   Fab,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -18,11 +20,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Add } from "@mui/icons-material";
+import { Add, Edit } from "@mui/icons-material";
 
+import Link from "@/lib/link";
 import { Treatment, Client } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
-import NextLink from "next/link";
 import useClientTreatments from "./useClientTreatments";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
@@ -86,7 +88,14 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
       <TableCell component="th" scope="row">
         {client.givenName} {client.familyName}
       </TableCell>
-      <TableCell>{treatment.duration}</TableCell>
+      <TableCell>
+        {treatment.duration}{" "}
+        <Link href={`/treatment/edit/${treatment._id}`}>
+          <IconButton size="small">
+            <Edit />
+          </IconButton>
+        </Link>
+      </TableCell>
     </React.Fragment>
   );
 }
