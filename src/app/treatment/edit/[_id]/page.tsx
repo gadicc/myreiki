@@ -65,6 +65,9 @@ export default function TreatmentEdit() {
     if (treatment.date instanceof dayjs)
       treatment.date = (treatment.date as unknown as Dayjs).toDate();
 
+    // console.log(treatment);
+    // return;
+
     if (_id === "new") {
       const insertedDoc = db.collection("treatments").insert(treatment);
       router.push(`/treatment/edit/${insertedDoc._id}`);
@@ -73,20 +76,23 @@ export default function TreatmentEdit() {
     }
   }
 
-  const { handleSubmit, setValue, fr } = useForm<Treatment>({
-    values: existing ? { ...existing, date: dayjs(existing.date) } : undefined,
-    schema: treatmentSchema,
-    defaultValues: {
-      clientId: "",
-      practitionerId: userId || "",
-      practiceId: practiceId || "",
-      date: dayjs(new Date()),
-      duration: 60,
-      type: "reiki" as const,
-      reiki: { type: "regular" },
-      notes: "",
-    },
-  });
+  const { handleSubmit, setValue, control, Controller, fr } =
+    useForm<Treatment>({
+      values: existing
+        ? { ...existing, date: dayjs(existing.date) }
+        : undefined,
+      schema: treatmentSchema,
+      defaultValues: {
+        clientId: "",
+        practitionerId: userId || "",
+        practiceId: practiceId || "",
+        date: dayjs(new Date()),
+        duration: 60,
+        type: "reiki" as const,
+        reiki: { type: "regular" },
+        notes: "",
+      },
+    });
 
   if (!existing && _id !== "new") return "Loading or not found...";
   if (!userId) return "Not logged in";
@@ -133,15 +139,17 @@ export default function TreatmentEdit() {
                 90
               </Button>
             </Stack>
-            {(function () {
-              const { defaultValue, helperText, ...frProps } = fr("type");
-              return (
-                <FormControl {...frProps}>
-                  <FormLabel id="type-buttons-group">Type</FormLabel>
+            <FormControl required>
+              <FormLabel id="type-buttons-group">Type</FormLabel>
+              <Controller
+                rules={{ required: true }}
+                control={control}
+                name="reiki.type"
+                render={({ field, fieldState }) => (
                   <RadioGroup
                     aria-labelledby="type-buttons-group"
                     row
-                    defaultValue={defaultValue}
+                    {...field}
                   >
                     <FormControlLabel
                       value="regular"
@@ -163,11 +171,11 @@ export default function TreatmentEdit() {
                       control={<Radio />}
                       label="Non-Human"
                     />
-                    <FormHelperText>{helperText}</FormHelperText>
+                    <FormHelperText>{fieldState.error?.message}</FormHelperText>
                   </RadioGroup>
-                </FormControl>
-              );
-            })()}
+                )}
+              />
+            </FormControl>
             {/*
             <ToggleButtonGroup {...fr("type")} exclusive>
               <ToggleButton value="regular">Regular</ToggleButton>

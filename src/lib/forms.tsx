@@ -7,9 +7,12 @@ import {
   FieldPath,
   RegisterOptions,
   DeepPartial,
+  FieldErrors,
+  Controller,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ZodRawShape } from "zod";
+import { ZodDiscriminatedUnion, type ZodRawShape } from "zod";
+import { get } from "radash";
 
 interface FrProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -37,7 +40,7 @@ export function useForm<
       onChangeTransform?: boolean;
     },
   ): UseFormRegisterReturn<TFieldName> & FrProps<TFieldValues, TFieldName>;
-} {
+} & { Controller: typeof Controller } {
   if (!props?.schema) throw new Error("useForm requires a { schema } prop");
 
   const defaults = {
@@ -46,9 +49,11 @@ export function useForm<
     reValidateMode: "onChange" as const,
   };
 
-  const outProps = reactHookUseForm<TFieldValues, TContext, TTransformedValues>(
-    { ...defaults, ...props },
-  );
+  const useFormProps = reactHookUseForm<
+    TFieldValues,
+    TContext,
+    TTransformedValues
+  >({ ...defaults, ...props });
 
   // function fr(name: keyof Omit<TFieldValues, "__ObjectIDs">) {
   function fr<
@@ -66,19 +71,36 @@ export function useForm<
   } {
     if (!(props && props.schema))
       throw new Error("useForm requires a { schema } prop");
-    const { formState, register } = outProps;
-    const shape =
-      "shape" in props.schema
-        ? (props.schema.shape as ZodRawShape)[name]
-        : props.schema;
+    const { formState, register } = useFormProps;
+
+    const shape = (function () {
+      let shape = props.schema;
+
+      if (shape instanceof ZodDiscriminatedUnion) {
+        const discriminator = shape.discriminator;
+        const discriminatorValue = useFormProps.getValues(discriminator);
+        shape = shape.optionsMap.get(discriminatorValue)!;
+      }
+
+      for (const key of name.split(".")) {
+        if ("shape" in shape) shape = (shape.shape as ZodRawShape)[key];
+      }
+      return shape;
+    })();
+
     if (!shape) throw new Error(`Form has no such field "${name}"`);
-    const error = formState.errors[name];
+
+    const error = get(
+      formState.errors,
+      name,
+    ) as FieldErrors<TFieldValues>[TFieldName];
 
     const frProps: FrProps<TFieldValues, TFieldName> = {
       required: !shape.isOptional(),
-      defaultValue: formState.defaultValues?.[name],
+      defaultValue: get(formState.defaultValues, name),
       error: !!error,
     };
+    // console.log(name, frProps, shape, shape.isOptional());
 
     if (error?.message) frProps.helperText = (error.message as string) || "";
 
@@ -91,5 +113,5 @@ export function useForm<
     return { ...regProps, ...frProps };
   }
 
-  return { ...outProps, fr };
+  return { ...useFormProps, fr, Controller };
 }
