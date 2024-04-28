@@ -3,9 +3,11 @@
 import React from "react";
 // import { t, Trans } from "@lingui/macro";
 import { useGongoSub, useGongoLive } from "gongo-client-react";
+import { TableVirtuoso, TableComponents } from "react-virtuoso";
 
 import {
   Box,
+  Fab,
   Container,
   IconButton,
   Paper,
@@ -18,12 +20,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { TableVirtuoso, TableComponents } from "react-virtuoso";
+import { Add, Edit } from "@mui/icons-material";
 
 import { Client } from "@/schemas/client";
 import usePracticeId from "../../lib/usePracticeId";
 import Link from "@/lib/link";
-import { Edit } from "@mui/icons-material";
+import NextLink from "next/link";
 
 const VirtuosoTableComponents: TableComponents<Client> = {
   // eslint-disable-next-line react/display-name
@@ -140,6 +142,14 @@ export default function Clients() {
             itemContent={rowContent}
           />
         </Paper>
+        <Fab
+          sx={{ position: "fixed", bottom: 16, right: 16 }}
+          color="primary"
+          component={NextLink}
+          href="/client/edit/new"
+        >
+          <Add sx={{ fontSize: "200%" }} />
+        </Fab>
       </Box>
     </Container>
   );
