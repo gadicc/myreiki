@@ -11,21 +11,41 @@ import { Dry, Groups, Home } from "@mui/icons-material";
 import TreatmentsPage from "@/app/treatments/page";
 import ClientsPage from "@/app/clients/page";
 import HomePage from "./home";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Index() {
-  const [value, setValue] = React.useState(0);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tab =
+    (searchParams &&
+      searchParams.has("tab") &&
+      parseInt(searchParams.get("tab")!)) ||
+    0;
+
+  const createQueryString = React.useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams?.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams],
+  );
+
+  const setTab = (tabIdx: number) =>
+    router.push(pathname + "?" + createQueryString("tab", tabIdx.toString()));
 
   return (
     <Container sx={{ my: 2 }}>
-      {value === 0 && <HomePage />}
-      {value === 1 && <TreatmentsPage />}
-      {value === 2 && <ClientsPage />}
+      {tab === 0 && <HomePage />}
+      {tab === 1 && <TreatmentsPage />}
+      {tab === 2 && <ClientsPage />}
       <div style={{ height: 56 }} />
       <BottomNavigation
         showLabels
-        value={value}
+        value={tab}
         onChange={(event, newValue) => {
-          setValue(newValue);
+          setTab(newValue);
         }}
         sx={{
           position: "fixed",
