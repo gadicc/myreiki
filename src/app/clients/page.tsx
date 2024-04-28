@@ -26,11 +26,17 @@ import { Client } from "@/schemas/client";
 import usePracticeId from "../../lib/usePracticeId";
 import Link from "@/lib/link";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 
 const VirtuosoTableComponents: TableComponents<Client> = {
   // eslint-disable-next-line react/display-name
   Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref} />
+    <TableContainer
+      component={Paper}
+      {...props}
+      ref={ref}
+      sx={{ overflowX: "initial" }}
+    />
   )),
   Table: (props) => (
     <Table
@@ -97,6 +103,9 @@ function rowContent(_index: number, client: Client) {
 export default function Clients() {
   const { practiceId, PracticeSelect } = usePracticeId();
 
+  const pathname = usePathname();
+  const fabBottom = pathname === "/client" ? 16 : 72;
+
   useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
   const [filter, setFilter] = React.useState("");
   const _clients = useGongoLive((db) =>
@@ -134,16 +143,16 @@ export default function Clients() {
         <p>Total clients: {clients.length}</p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
-        <Paper style={{ height: "80vh", width: "100%" }}>
-          <TableVirtuoso
-            data={clients}
-            components={VirtuosoTableComponents}
-            fixedHeaderContent={fixedHeaderContent}
-            itemContent={rowContent}
-          />
-        </Paper>
+        <TableVirtuoso
+          data={clients}
+          components={VirtuosoTableComponents}
+          fixedHeaderContent={fixedHeaderContent}
+          itemContent={rowContent}
+          useWindowScroll
+        />
+
         <Fab
-          sx={{ position: "fixed", bottom: 16, right: 16 }}
+          sx={{ position: "fixed", bottom: fabBottom, right: 16 }}
           color="primary"
           component={NextLink}
           href="/client/edit/new"

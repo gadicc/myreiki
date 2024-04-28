@@ -26,13 +26,19 @@ import Link from "@/lib/link";
 import { Treatment, Client } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
 import useClientTreatments from "./useClientTreatments";
+import { usePathname } from "next/navigation";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
 
 const VirtuosoTableComponents: TableComponents<TreatmentWithClient> = {
   // eslint-disable-next-line react/display-name
   Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer component={Paper} {...props} ref={ref} />
+    <TableContainer
+      component={Paper}
+      {...props}
+      ref={ref}
+      sx={{ overflowX: "initial" }}
+    />
   )),
   Table: (props) => (
     <Table
@@ -104,6 +110,9 @@ export default function Clients() {
   const { practiceId, PracticeSelect } = usePracticeId();
   const combined = useClientTreatments(practiceId, { sort: ["date", "desc"] });
 
+  const pathname = usePathname();
+  const fabBottom = pathname === "/client" ? 16 : 72;
+
   const [filter, setFilter] = React.useState("");
   const { treatments, hours } = React.useMemo(() => {
     const re = new RegExp(filter, "i");
@@ -146,16 +155,16 @@ export default function Clients() {
         </p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
-        <Paper style={{ height: "80vh", width: "100%" }}>
-          <TableVirtuoso
-            data={treatments}
-            components={VirtuosoTableComponents}
-            fixedHeaderContent={fixedHeaderContent}
-            itemContent={rowContent}
-          />
-        </Paper>
+        <TableVirtuoso
+          data={treatments}
+          components={VirtuosoTableComponents}
+          fixedHeaderContent={fixedHeaderContent}
+          itemContent={rowContent}
+          useWindowScroll
+        />
+
         <Fab
-          sx={{ position: "fixed", bottom: 16, right: 16 }}
+          sx={{ position: "fixed", bottom: fabBottom, right: 16 }}
           color="primary"
           component={NextLink}
           href="/treatment/edit/new"
