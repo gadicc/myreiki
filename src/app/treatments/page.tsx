@@ -96,9 +96,9 @@ export default function Clients() {
   const combined = useClientTreatments(practiceId, { sort: ["date", "desc"] });
 
   const [filter, setFilter] = React.useState("");
-  const treatments = React.useMemo(() => {
+  const { treatments, hours } = React.useMemo(() => {
     const re = new RegExp(filter, "i");
-    return combined.filter((treatment) => {
+    const treatments = combined.filter((treatment) => {
       if (!filter) return true;
       const client = treatment.client;
       if (client) {
@@ -110,6 +110,12 @@ export default function Clients() {
       }
       return false;
     });
+    return {
+      treatments,
+      hours: Math.round(
+        treatments.reduce((acc, t) => acc + t.duration, 0) / 60,
+      ),
+    };
   }, [combined, filter]);
 
   return (
@@ -126,7 +132,9 @@ export default function Clients() {
           onChange={(event) => setFilter(event.target.value)}
         />
 
-        <p>Total treatments: {treatments.length}</p>
+        <p>
+          Total treatments: {treatments.length} ({hours} hours)
+        </p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
         <Paper style={{ height: "80vh", width: "100%" }}>
