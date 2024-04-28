@@ -28,6 +28,7 @@ import ClientOnly from "@/lib/ClientOnly";
 import { useForm } from "@/lib/forms";
 import usePracticeId from "@/lib/usePracticeId";
 import useClientId from "@/lib/useClientId";
+import { useWatch } from "react-hook-form";
 
 const sxDurationButton = {
   borderColor: "light-dark(rgb(205, 205, 205), rgb(133, 133, 133))",
@@ -76,7 +77,7 @@ export default function TreatmentEdit() {
     }
   }
 
-  const { handleSubmit, setValue, control, Controller, fr } =
+  const { handleSubmit, setValue, getValues, control, Controller, fr } =
     useForm<Treatment>({
       values: existing
         ? { ...existing, date: dayjs(existing.date) }
@@ -93,6 +94,9 @@ export default function TreatmentEdit() {
         notes: "",
       },
     });
+
+  useWatch({ control, name: "type" });
+  const type = getValues("type");
 
   if (!existing && _id !== "new") return "Loading or not found...";
   if (!userId) return "Not logged in";
@@ -140,11 +144,11 @@ export default function TreatmentEdit() {
               </Button>
             </Stack>
             <FormControl required>
-              <FormLabel id="type-buttons-group">Type</FormLabel>
+              <FormLabel id="type-buttons-group">Treatment Type</FormLabel>
               <Controller
                 rules={{ required: true }}
                 control={control}
-                name="reiki.type"
+                name="type"
                 render={({ field, fieldState }) => (
                   <RadioGroup
                     aria-labelledby="type-buttons-group"
@@ -152,30 +156,62 @@ export default function TreatmentEdit() {
                     {...field}
                   >
                     <FormControlLabel
-                      value="regular"
+                      value="generic"
                       control={<Radio />}
-                      label="Regular"
+                      label="Generic"
                     />
                     <FormControlLabel
-                      value="distance"
+                      value="reiki"
                       control={<Radio />}
-                      label="Distance"
-                    />
-                    <FormControlLabel
-                      value="self"
-                      control={<Radio />}
-                      label="Self"
-                    />
-                    <FormControlLabel
-                      value="non-human"
-                      control={<Radio />}
-                      label="Non-Human"
+                      label="Reiki"
                     />
                     <FormHelperText>{fieldState.error?.message}</FormHelperText>
                   </RadioGroup>
                 )}
               />
             </FormControl>
+
+            {type === "reiki" && (
+              <FormControl required>
+                <FormLabel id="type-buttons-group">Reiki Type</FormLabel>
+                <Controller
+                  rules={{ required: true }}
+                  control={control}
+                  name="reiki.type"
+                  render={({ field, fieldState }) => (
+                    <RadioGroup
+                      aria-labelledby="type-buttons-group"
+                      row
+                      {...field}
+                    >
+                      <FormControlLabel
+                        value="regular"
+                        control={<Radio />}
+                        label="Regular"
+                      />
+                      <FormControlLabel
+                        value="distance"
+                        control={<Radio />}
+                        label="Distance"
+                      />
+                      <FormControlLabel
+                        value="self"
+                        control={<Radio />}
+                        label="Self"
+                      />
+                      <FormControlLabel
+                        value="non-human"
+                        control={<Radio />}
+                        label="Non-Human"
+                      />
+                      <FormHelperText>
+                        {fieldState.error?.message}
+                      </FormHelperText>
+                    </RadioGroup>
+                  )}
+                />
+              </FormControl>
+            )}
             {/*
             <ToggleButtonGroup {...fr("type")} exclusive>
               <ToggleButton value="regular">Regular</ToggleButton>
@@ -184,6 +220,7 @@ export default function TreatmentEdit() {
               <ToggleButton value="non-human">Non-Human</ToggleButton>
             </ToggleButtonGroup>
             */}
+
             <TextField {...fr("notes")} label="Notes" fullWidth multiline />
 
             <Button variant="contained" type="submit">
