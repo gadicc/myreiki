@@ -25,20 +25,11 @@ export default function ClientEdit() {
   useGongoSub(_id === "new" ? false : "client", { _id });
   const existing = useGongoOne((db) => db.collection("clients").find({ _id }));
 
-  function onSubmit(client: OptionalId<Client>) {
-    if (!practiceId) return;
-    client.practiceId = practiceId;
-    if (!client.__ObjectIDs) client.__ObjectIDs = ["practiceId"];
-
-    if (_id === "new") {
-      const insertedDoc = db.collection("clients").insert(client);
-      router.push(`/client/edit/${insertedDoc._id}`);
-    } else {
-      db.collection("clients").update({ _id }, { $set: client });
-    }
-  }
-
-  const { handleSubmit, fr } = useForm<Client>({
+  const {
+    handleSubmit,
+    formState: { isDirty },
+    fr,
+  } = useForm<Client>({
     values: existing || undefined,
     schema: clientSchema,
     defaultValues: {
@@ -50,6 +41,34 @@ export default function ClientEdit() {
       notes: "",
     },
   });
+
+  function onSubmit(
+    client: OptionalId<Client>,
+    _event?: React.BaseSyntheticEvent,
+  ) {
+    if (!practiceId) return;
+    client.practiceId = practiceId;
+    if (!client.__ObjectIDs) client.__ObjectIDs = ["practiceId"];
+
+    // console.log(client);
+    // return;
+
+    if (_id === "new") {
+      const insertedDoc = db.collection("clients").insert(client);
+      router.push(`/client/edit/${insertedDoc._id}`);
+    } else {
+      db.collection("clients").update({ _id }, { $set: client });
+    }
+
+    const event = _event as
+      | React.SyntheticEvent<HTMLFormElement, SubmitEvent>
+      | undefined;
+    const submitter = (
+      event as React.SyntheticEvent<HTMLFormElement, SubmitEvent>
+    )?.nativeEvent?.submitter;
+    const dest = submitter?.getAttribute("data-dest");
+    if (dest === "back") router.back();
+  }
 
   if (!existing && _id !== "new") return "Loading or not found...";
   if (!userId) return "Not logged in";
@@ -67,9 +86,26 @@ export default function ClientEdit() {
             <TextField {...fr("phone")} label="Phone (Intl +XX)" fullWidth />
             <TextField {...fr("email")} label="Email" fullWidth />
             <TextField {...fr("notes")} label="Notes" fullWidth multiline />
-            <Button variant="contained" type="submit">
-              Submit
-            </Button>
+
+            <Stack spacing={1} direction="row">
+              <Button
+                variant="outlined"
+                type="submit"
+                fullWidth
+                disabled={!isDirty}
+              >
+                Save
+              </Button>
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                data-dest="back"
+                disabled={!isDirty}
+              >
+                Save & Back
+              </Button>
+            </Stack>
           </Stack>
         </form>
       </ClientOnly>

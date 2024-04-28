@@ -48,7 +48,10 @@ export default function TreatmentEdit() {
     db.collection("treatments").find({ _id }),
   );
 
-  function onSubmit(treatment: OptionalId<Treatment>) {
+  function onSubmit(
+    treatment: OptionalId<Treatment>,
+    _event?: React.BaseSyntheticEvent,
+  ) {
     if (!practiceId) return;
     treatment.practiceId = practiceId;
 
@@ -75,25 +78,37 @@ export default function TreatmentEdit() {
     } else {
       db.collection("treatments").update({ _id }, { $set: treatment });
     }
+
+    const event = _event as
+      | React.SyntheticEvent<HTMLFormElement, SubmitEvent>
+      | undefined;
+    const submitter = event?.nativeEvent.submitter;
+    const dest = submitter?.getAttribute("data-dest");
+    if (dest === "back") router.back();
   }
 
-  const { handleSubmit, setValue, getValues, control, Controller, fr } =
-    useForm<Treatment>({
-      values: existing
-        ? { ...existing, date: dayjs(existing.date) }
-        : undefined,
-      schema: treatmentSchema,
-      defaultValues: {
-        clientId: "",
-        practitionerId: userId || "",
-        practiceId: practiceId || "",
-        date: dayjs(new Date()),
-        duration: 60,
-        type: "reiki" as const,
-        reiki: { type: "regular" },
-        notes: "",
-      },
-    });
+  const {
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    Controller,
+    fr,
+    formState: { isDirty },
+  } = useForm<Treatment>({
+    values: existing ? { ...existing, date: dayjs(existing.date) } : undefined,
+    schema: treatmentSchema,
+    defaultValues: {
+      clientId: "",
+      practitionerId: userId || "",
+      practiceId: practiceId || "",
+      date: dayjs(new Date()),
+      duration: 60,
+      type: "reiki" as const,
+      reiki: { type: "regular" },
+      notes: "",
+    },
+  });
 
   useWatch({ control, name: "type" });
   const type = getValues("type");
@@ -223,9 +238,25 @@ export default function TreatmentEdit() {
 
             <TextField {...fr("notes")} label="Notes" fullWidth multiline />
 
-            <Button variant="contained" type="submit">
-              Submit
-            </Button>
+            <Stack spacing={1} direction="row">
+              <Button
+                variant="outlined"
+                type="submit"
+                fullWidth
+                disabled={!isDirty}
+              >
+                Save
+              </Button>
+              <Button
+                variant="contained"
+                type="submit"
+                fullWidth
+                data-dest="back"
+                disabled={!isDirty}
+              >
+                Save & Back
+              </Button>
+            </Stack>
           </Stack>
         </form>
       </ClientOnly>
