@@ -91,13 +91,10 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
   );
 }
 
-export default function Clients() {
-  const { practiceId, PracticeSelect } = usePracticeId();
-
+export function useClientTreatments(practiceId: string) {
   useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
   useGongoSub(practiceId && "treatmentsForPractice", { _id: practiceId });
 
-  const [filter, setFilter] = React.useState("");
   const _clients = useGongoLive((db) =>
     db.collection("clients").find({ practiceId }),
   );
@@ -115,6 +112,14 @@ export default function Clients() {
     [_treatments, _clients],
   );
 
+  return combined;
+}
+
+export default function Clients() {
+  const { practiceId, PracticeSelect } = usePracticeId();
+  const combined = useClientTreatments(practiceId);
+
+  const [filter, setFilter] = React.useState("");
   const treatments = React.useMemo(() => {
     const re = new RegExp(filter, "i");
     return combined.filter((treatment) => {

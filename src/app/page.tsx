@@ -10,10 +10,7 @@ import { Dry, Groups, Home } from "@mui/icons-material";
 
 import TreatmentsPage from "@/app/treatments/page";
 import ClientsPage from "@/app/clients/page";
-
-function HomePage() {
-  return <Container>Home</Container>;
-}
+import HomePage from "./home";
 
 export default function Index() {
   const [value, setValue] = React.useState(0);
