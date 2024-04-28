@@ -91,7 +91,7 @@ export default function HomePage() {
       <Box sx={{ textAlign: "center", marginTop: 1 }}>
         <Typography variant="h6">Reiki</Typography>
 
-        <div style={{ marginTop: 15, marginBottom: 20 }}>
+        <div style={{ marginTop: 15, marginBottom: 25 }}>
           <b>Total Progress</b>
           <table
             border={1}
@@ -150,7 +150,7 @@ export default function HomePage() {
         <Button
           variant="contained"
           component={NextLink}
-          href="/treatments/edit/new"
+          href="/treatment/edit/new"
         >
           New Treatment
         </Button>
