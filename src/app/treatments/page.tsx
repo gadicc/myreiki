@@ -2,7 +2,6 @@
 
 import React from "react";
 // import { t, Trans } from "@lingui/macro";
-import { useGongoSub, useGongoLive, db } from "gongo-client-react";
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
 
 import {
@@ -24,6 +23,7 @@ import { Add } from "@mui/icons-material";
 import { Treatment, Client } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
 import NextLink from "next/link";
+import useClientTreatments from "./useClientTreatments";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
 
@@ -89,30 +89,6 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
       <TableCell>{treatment.duration}</TableCell>
     </React.Fragment>
   );
-}
-
-export function useClientTreatments(practiceId: string) {
-  useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
-  useGongoSub(practiceId && "treatmentsForPractice", { _id: practiceId });
-
-  const _clients = useGongoLive((db) =>
-    db.collection("clients").find({ practiceId }),
-  );
-  const _treatments = useGongoLive((db) =>
-    db.collection("treatments").find({ practiceId }),
-  );
-  const combined = React.useMemo(
-    () =>
-      _treatments.map((treatment) => {
-        const client =
-          _clients &&
-          db.collection("clients").findOne({ _id: treatment.clientId });
-        return { ...treatment, client };
-      }),
-    [_treatments, _clients],
-  );
-
-  return combined;
 }
 
 export default function Clients() {

@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
-import { useClientTreatments } from "@/app/treatments/page";
+import useClientTreatments from "@/app/treatments/useClientTreatments";
 import usePracticeId from "@/lib/usePracticeId";
 import NextLink from "next/link";
 
@@ -84,8 +84,6 @@ export default function HomePage() {
     return { tallies };
   }, [treatments]);
 
-  console.log(tallies);
-
   return (
     <Container sx={{ my: 2 }}>
       <PracticeSelect />
@@ -93,7 +91,7 @@ export default function HomePage() {
       <Box sx={{ textAlign: "center", marginTop: 1 }}>
         <Typography variant="h6">Reiki</Typography>
 
-        <p>
+        <div style={{ marginTop: 15, marginBottom: 20 }}>
           <b>Total Progress</b>
           <table
             border={1}
@@ -123,7 +121,7 @@ export default function HomePage() {
               </tr>
             </tbody>
           </table>
-        </p>
+        </div>
 
         <b>Shihankaku Progress</b>
 
