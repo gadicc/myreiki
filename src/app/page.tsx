@@ -13,7 +13,7 @@ import ClientsPage from "@/app/clients/page";
 import HomePage from "./home";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-export default function Index() {
+function Index() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -60,5 +60,14 @@ export default function Index() {
         <BottomNavigationAction label="Clients" icon={<Groups />} />
       </BottomNavigation>
     </Container>
+  );
+}
+
+export default function WrappedIndex() {
+  // https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+  return (
+    <React.Suspense>
+      <Index />
+    </React.Suspense>
   );
 }
