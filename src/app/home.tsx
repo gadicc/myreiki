@@ -96,7 +96,8 @@ export default function HomePage() {
           <table
             border={1}
             cellSpacing={0}
-            style={{ minWidth: 400, margin: "auto", marginTop: 8 }}
+            width="82%"
+            style={{ minWidth: 250, margin: "auto", marginTop: 8 }}
           >
             <tbody>
               <tr>
