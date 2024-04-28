@@ -93,7 +93,7 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
 
 export default function Clients() {
   const { practiceId, PracticeSelect } = usePracticeId();
-  const combined = useClientTreatments(practiceId);
+  const combined = useClientTreatments(practiceId, { sort: ["date", "desc"] });
 
   const [filter, setFilter] = React.useState("");
   const treatments = React.useMemo(() => {
