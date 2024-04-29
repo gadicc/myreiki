@@ -40,13 +40,15 @@ export default function TreatmentEdit() {
   const userId = useGongoUserId();
   const params = useParams();
   const { practiceId, PracticeSelect } = usePracticeId();
-  const { clientId, ClientSelect } = useClientId();
   const _id = params?._id;
 
   useGongoSub(_id === "new" ? false : "treatment", { _id });
   const existing = useGongoOne((db) =>
     db.collection("treatments").find({ _id }),
   );
+  const { clientId, ClientSelect } = useClientId({
+    initialClientId: existing?.clientId,
+  });
 
   function onSubmit(
     treatment: OptionalId<Treatment>,

@@ -3,11 +3,19 @@ import { db, useGongoLive, useGongoSub } from "gongo-client-react";
 import { Autocomplete, TextField } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 
-export default function useClientId() {
+export default function useClientId({
+  initialClientId,
+}: {
+  initialClientId?: string;
+}) {
   const searchParams = useSearchParams();
   const [clientId, setClientId] = React.useState(
-    searchParams?.get("clientId") || "",
+    initialClientId || searchParams?.get("clientId") || "",
   );
+
+  React.useEffect(() => {
+    if (initialClientId && clientId === "") setClientId(initialClientId);
+  }, [initialClientId, clientId]);
 
   const ClientSelectMemo = React.useMemo(
     () =>
