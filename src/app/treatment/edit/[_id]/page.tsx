@@ -125,10 +125,13 @@ export default function TreatmentEdit() {
           <Stack spacing={2} direction="column">
             <PracticeSelect />
             <ClientSelect practiceId={practiceId} required />
-            {/* @ts-expect-error: TODO, overload in forms.tsx */}
-            <DateTimePicker
-              {...fr("date", { onChangeTransform: true })}
-              label="Date *"
+            <Controller
+              rules={{ required: true }}
+              control={control}
+              name="date"
+              render={({ field }) => (
+                <DateTimePicker label="Date *" {...field} />
+              )}
             />
             <Stack direction="row" spacing={2} useFlexGap>
               <TextField
