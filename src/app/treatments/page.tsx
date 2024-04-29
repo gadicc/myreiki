@@ -111,7 +111,7 @@ export default function Clients() {
   const combined = useClientTreatments(practiceId, { sort: ["date", "desc"] });
 
   const pathname = usePathname();
-  const fabBottom = pathname === "/client" ? 16 : 72;
+  const fabBottom = pathname === "/treatments" ? 16 : 72;
 
   const [filter, setFilter] = React.useState("");
   const { treatments, hours } = React.useMemo(() => {

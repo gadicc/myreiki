@@ -104,7 +104,7 @@ export default function Clients() {
   const { practiceId, PracticeSelect } = usePracticeId();
 
   const pathname = usePathname();
-  const fabBottom = pathname === "/client" ? 16 : 72;
+  const fabBottom = pathname === "/clients" ? 16 : 72;
 
   useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
   const [filter, setFilter] = React.useState("");
