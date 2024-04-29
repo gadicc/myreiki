@@ -20,7 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Add, Edit } from "@mui/icons-material";
+import { Add, Edit, EventRepeat } from "@mui/icons-material";
 
 import Link from "@/lib/link";
 import { Treatment, Client } from "@/schemas";
@@ -101,6 +101,13 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
             <Edit />
           </IconButton>
         </Link>
+        {"_id" in client && (
+          <Link href={`/treatment/edit/new?clientId=${client._id}`}>
+            <IconButton size="small">
+              <EventRepeat />
+            </IconButton>
+          </Link>
+        )}
       </TableCell>
     </React.Fragment>
   );

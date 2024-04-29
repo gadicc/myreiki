@@ -1,11 +1,7 @@
 "use client";
 import * as React from "react";
 
-import {
-  BottomNavigation,
-  BottomNavigationAction,
-  Container,
-} from "@mui/material";
+import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
 import { Dry, Groups, Home } from "@mui/icons-material";
 
 import TreatmentsPage from "@/app/treatments/page";
@@ -36,7 +32,7 @@ function Index() {
     router.push(pathname + "?" + createQueryString("tab", tabIdx.toString()));
 
   return (
-    <Container sx={{ my: 2 }}>
+    <Box>
       {tab === 0 && <HomePage />}
       {tab === 1 && <TreatmentsPage />}
       {tab === 2 && <ClientsPage />}
@@ -59,7 +55,7 @@ function Index() {
         <BottomNavigationAction label="Treatments" icon={<Dry />} />
         <BottomNavigationAction label="Clients" icon={<Groups />} />
       </BottomNavigation>
-    </Container>
+    </Box>
   );
 }
 
