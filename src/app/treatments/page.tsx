@@ -139,9 +139,7 @@ export default function Clients() {
   return (
     <Container maxWidth="lg" sx={{ my: 2 }}>
       <Box>
-        <PracticeSelect />
-        <br />
-        <br />
+        <PracticeSelect sx={{ mb: 2 }} />
 
         <Typography variant="h6">Treatments</Typography>
         <TextField
