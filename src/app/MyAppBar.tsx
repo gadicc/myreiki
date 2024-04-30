@@ -85,7 +85,19 @@ export default function MyAppBar() {
         onKeyDown={toggleDrawer(false)}
       >
         <Typography variant="h6" sx={{ my: 2, ml: 4 }}>
-          MyReiki
+          <div style={{ position: "relative", paddingLeft: 28 }}>
+            <img
+              src="/favicons/android-chrome-192x192.png"
+              style={{
+                height: "1.8em",
+                marginRight: "5px",
+                position: "absolute",
+                left: -20,
+                top: -2,
+              }}
+            />
+            MyReiki
+          </div>
         </Typography>
 
         <Divider />
