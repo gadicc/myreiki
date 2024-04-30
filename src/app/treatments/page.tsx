@@ -7,10 +7,14 @@ import NextLink from "next/link";
 
 import {
   Box,
+  Checkbox,
   Container,
   Fab,
+  FormControlLabel,
+  FormGroup,
   IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -42,6 +46,7 @@ const VirtuosoTableComponents: TableComponents<TreatmentWithClient> = {
   )),
   Table: (props) => (
     <Table
+      size="small"
       {...props}
       sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
     />
@@ -115,7 +120,16 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
 
 export default function Clients() {
   const { practiceId, PracticeSelect } = usePracticeId();
-  const combined = useClientTreatments(practiceId, { sort: ["date", "desc"] });
+  const _combined = useClientTreatments(practiceId, { sort: ["date", "desc"] });
+
+  const [shihanKakuFilter, setShihanKakuFilter] = React.useState(false);
+  const combined = React.useMemo(() => {
+    return shihanKakuFilter
+      ? _combined.filter(
+          (t) => t.type === "reiki" && t.reiki.type === "regular",
+        )
+      : _combined;
+  }, [_combined, shihanKakuFilter]);
 
   const pathname = usePathname();
   const fabBottom = pathname === "/treatments" ? 16 : 72;
@@ -149,11 +163,24 @@ export default function Clients() {
         <PracticeSelect sx={{ mb: 2 }} />
 
         <Typography variant="h6">Treatments</Typography>
-        <TextField
-          size="small"
-          value={filter}
-          onChange={(event) => setFilter(event.target.value)}
-        />
+        <Stack direction="row" spacing={2}>
+          <TextField
+            size="small"
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+          />
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={shihanKakuFilter}
+                  onChange={(e) => setShihanKakuFilter(e.target.checked)}
+                />
+              }
+              label="Shihankaku"
+            />
+          </FormGroup>
+        </Stack>
 
         <p>
           Total treatments: {treatments.length} ({hours} hours)
