@@ -210,6 +210,11 @@ export default function TreatmentEdit() {
                         label="Regular"
                       />
                       <FormControlLabel
+                        value="psychological"
+                        control={<Radio />}
+                        label="Psychological"
+                      />
+                      <FormControlLabel
                         value="distance"
                         control={<Radio />}
                         label="Distance"

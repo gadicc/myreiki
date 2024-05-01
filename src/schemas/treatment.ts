@@ -18,7 +18,7 @@ const treatmentGenericSchema = treatmentBaseSchema.extend({
 export const treatmentReikiSchema = treatmentBaseSchema.extend({
   type: z.literal("reiki"),
   reiki: z.object({
-    type: z.enum(["regular", "self", "distance", "non-human"]),
+    type: z.enum(["regular", "psychological", "self", "distance", "non-human"]),
   }),
 });
 
