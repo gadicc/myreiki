@@ -33,6 +33,8 @@ import { useWatch } from "react-hook-form";
 const sxDurationButton = {
   borderColor: "light-dark(rgb(205, 205, 205), rgb(133, 133, 133))",
   color: "rgba(0, 0, 0, 0.87)",
+  display: "block",
+  lineHeight: 1.5,
 };
 
 export default function TreatmentEdit() {
@@ -141,27 +143,22 @@ export default function TreatmentEdit() {
                 label="Duration (m)"
                 type="number"
               />
-              <Button
-                variant="outlined"
-                sx={sxDurationButton}
-                onClick={() => setValue("duration", 30)}
-              >
-                30
-              </Button>
-              <Button
-                variant="outlined"
-                sx={sxDurationButton}
-                onClick={() => setValue("duration", 60)}
-              >
-                60
-              </Button>
-              <Button
-                variant="outlined"
-                sx={sxDurationButton}
-                onClick={() => setValue("duration", 90)}
-              >
-                90
-              </Button>
+              {[30, 60, 90].map((duration) => (
+                <Button
+                  key={duration}
+                  variant="outlined"
+                  sx={sxDurationButton}
+                  onClick={() => {
+                    setValue("duration", duration);
+                    setValue("date", dayjs().subtract(duration + 2, "minute"));
+                  }}
+                >
+                  <div>{duration}</div>
+                  <div style={{ fontSize: "80%", color: "#999" }}>
+                    T-{duration + 2}
+                  </div>
+                </Button>
+              ))}
             </Stack>
             <FormControl required>
               <FormLabel id="type-buttons-group">Treatment Type</FormLabel>
