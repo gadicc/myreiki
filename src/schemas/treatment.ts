@@ -30,5 +30,3 @@ export const treatmentSchema = z.discriminatedUnion("type", [
 export type Treatment = z.infer<typeof treatmentSchema> & {
   __ObjectIDs: string[];
 };
-
-console.log({ treatmentSchema });
