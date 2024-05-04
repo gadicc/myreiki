@@ -107,7 +107,7 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
           </IconButton>
         </Link>
         {"_id" in client && (
-          <Link href={`/treatment/edit/new?clientId=${client._id}`}>
+          <Link href={`/treatment/edit/new?cloneId=${treatment._id}`}>
             <IconButton size="small">
               <EventRepeat />
             </IconButton>

@@ -7,7 +7,7 @@ import {
   useGongoUserId,
   OptionalId,
 } from "gongo-client-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import dayjs, { type Dayjs } from "dayjs";
 import {
   Button,
@@ -41,12 +41,14 @@ export default function TreatmentEdit() {
   const router = useRouter();
   const userId = useGongoUserId();
   const params = useParams();
+  const searchParams = useSearchParams();
   const { practiceId, PracticeSelect } = usePracticeId();
   const _id = params?._id;
+  const cloneId = searchParams?.get("cloneId");
 
   useGongoSub(_id === "new" ? false : "treatment", { _id });
   const existing = useGongoOne((db) =>
-    db.collection("treatments").find({ _id }),
+    db.collection("treatments").find({ _id: cloneId || _id }),
   );
   const { clientId, ClientSelect } = useClientId({
     initialClientId: existing?.clientId,
@@ -76,7 +78,7 @@ export default function TreatmentEdit() {
     // console.log(treatment);
     // return;
 
-    if (_id === "new") {
+    if (_id === "new" || cloneId) {
       const insertedDoc = db.collection("treatments").insert(treatment);
       router.push(`/treatment/edit/${insertedDoc._id}`);
     } else {
@@ -116,6 +118,11 @@ export default function TreatmentEdit() {
 
   useWatch({ control, name: "type" });
   const type = getValues("type");
+
+  // If we are cloning a treatment, set the date to now and dirty the form.
+  React.useEffect(() => {
+    if (existing && cloneId) setValue("date", dayjs(), { shouldDirty: true });
+  }, [existing, cloneId, setValue]);
 
   if (!existing && _id !== "new") return "Loading or not found...";
   if (!userId) return "Not logged in";
