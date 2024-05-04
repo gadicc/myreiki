@@ -149,8 +149,12 @@ export default function TreatmentEdit() {
                   variant="outlined"
                   sx={sxDurationButton}
                   onClick={() => {
-                    setValue("duration", duration);
-                    setValue("date", dayjs().subtract(duration + 2, "minute"));
+                    setValue("duration", duration, {
+                      shouldDirty: duration !== getValues("duration"),
+                    });
+                    setValue("date", dayjs().subtract(duration + 2, "minute"), {
+                      shouldDirty: true,
+                    });
                   }}
                 >
                   <div>{duration}</div>
