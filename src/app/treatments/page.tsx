@@ -4,6 +4,11 @@ import React from "react";
 // import { t, Trans } from "@lingui/macro";
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+
+import dayjs from "dayjs";
+import dayJsIsToday from "dayjs/plugin/isToday";
+import dayJsAdvancedFormat from "dayjs/plugin/advancedFormat";
 
 import {
   Box,
@@ -30,9 +35,11 @@ import Link from "@/lib/link";
 import { Treatment, Client } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
 import useClientTreatments from "./useClientTreatments";
-import { usePathname } from "next/navigation";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
+
+dayjs.extend(dayJsIsToday);
+dayjs.extend(dayJsAdvancedFormat);
 
 const VirtuosoTableComponents: TableComponents<TreatmentWithClient> = {
   // eslint-disable-next-line react/display-name
@@ -66,7 +73,7 @@ function fixedHeaderContent() {
   };
   return (
     <TableRow>
-      <TableCell sx={{ ...sx, width: 90 }} variant="head">
+      <TableCell sx={{ ...sx, width: 80 }} variant="head">
         Date
       </TableCell>
       <TableCell sx={sx} variant="head">
@@ -81,6 +88,14 @@ function fixedHeaderContent() {
 
 function rowContent(_index: number, treatment: TreatmentWithClient) {
   const client = treatment.client || { givenName: "Unknown", familyName: "" };
+  const now = dayjs();
+  const date = dayjs(treatment.date);
+  let dateStr;
+  if (date.isToday()) dateStr = date.format("HH:mm");
+  else if (now.diff(date, "days") < 7) dateStr = date.format("ddd Do");
+  else if (date.year() === now.year()) dateStr = date.format("D MMM");
+  else dateStr = (treatment.date as Date).toLocaleDateString();
+
   /*
   function onClick(userId: string, field: string, oldValue: number) {
     return function () {
@@ -95,7 +110,7 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
 
   return (
     <React.Fragment>
-      <TableCell>{(treatment.date as Date).toLocaleDateString()}</TableCell>
+      <TableCell>{dateStr}</TableCell>
       <TableCell component="th" scope="row">
         {client.givenName} {client.familyName}
       </TableCell>
