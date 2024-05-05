@@ -80,6 +80,7 @@ export default function TreatmentEdit() {
     // return;
 
     if (_id === "new" || cloneId) {
+      if (cloneId) delete treatment._id;
       const insertedDoc = db.collection("treatments").insert(treatment);
       router.push(`/treatment/edit/${insertedDoc._id}`);
     } else {
