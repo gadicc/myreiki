@@ -29,6 +29,7 @@ import { useForm } from "@/lib/forms";
 import usePracticeId from "@/lib/usePracticeId";
 import useClientId from "@/lib/useClientId";
 import { useWatch } from "react-hook-form";
+import Byosen from "./byosen";
 
 const sxDurationButton = {
   borderColor: "light-dark(rgb(205, 205, 205), rgb(133, 133, 133))",
@@ -200,50 +201,53 @@ export default function TreatmentEdit() {
             </FormControl>
 
             {type === "reiki" && (
-              <FormControl required>
-                <FormLabel id="type-buttons-group">Reiki Type</FormLabel>
-                <Controller
-                  rules={{ required: true }}
-                  control={control}
-                  name="reiki.type"
-                  render={({ field, fieldState }) => (
-                    <RadioGroup
-                      aria-labelledby="type-buttons-group"
-                      row
-                      {...field}
-                    >
-                      <FormControlLabel
-                        value="regular"
-                        control={<Radio />}
-                        label="Regular"
-                      />
-                      <FormControlLabel
-                        value="psychological"
-                        control={<Radio />}
-                        label="Psychological"
-                      />
-                      <FormControlLabel
-                        value="distance"
-                        control={<Radio />}
-                        label="Distance"
-                      />
-                      <FormControlLabel
-                        value="self"
-                        control={<Radio />}
-                        label="Self"
-                      />
-                      <FormControlLabel
-                        value="non-human"
-                        control={<Radio />}
-                        label="Non-Human"
-                      />
-                      <FormHelperText>
-                        {fieldState.error?.message}
-                      </FormHelperText>
-                    </RadioGroup>
-                  )}
-                />
-              </FormControl>
+              <>
+                <FormControl required>
+                  <FormLabel id="type-buttons-group">Reiki Type</FormLabel>
+                  <Controller
+                    rules={{ required: true }}
+                    control={control}
+                    name="reiki.type"
+                    render={({ field, fieldState }) => (
+                      <RadioGroup
+                        aria-labelledby="type-buttons-group"
+                        row
+                        {...field}
+                      >
+                        <FormControlLabel
+                          value="regular"
+                          control={<Radio />}
+                          label="Regular"
+                        />
+                        <FormControlLabel
+                          value="psychological"
+                          control={<Radio />}
+                          label="Psychological"
+                        />
+                        <FormControlLabel
+                          value="distance"
+                          control={<Radio />}
+                          label="Distance"
+                        />
+                        <FormControlLabel
+                          value="self"
+                          control={<Radio />}
+                          label="Self"
+                        />
+                        <FormControlLabel
+                          value="non-human"
+                          control={<Radio />}
+                          label="Non-Human"
+                        />
+                        <FormHelperText>
+                          {fieldState.error?.message}
+                        </FormHelperText>
+                      </RadioGroup>
+                    )}
+                  />
+                </FormControl>
+                <Byosen />
+              </>
             )}
             {/*
             <ToggleButtonGroup {...fr("type")} exclusive>
