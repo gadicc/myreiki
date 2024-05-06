@@ -180,7 +180,7 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
               background: "#777",
               color: "#eee",
               padding: "2px 4px 2px 4px",
-              fontSize: "80%",
+              fontSize: "70%",
             }}
           >
             {treatment.duration}m
