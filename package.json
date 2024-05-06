@@ -27,6 +27,7 @@
     "gongo-client-react": "^0.5.2",
     "gongo-server": "^3.5.0",
     "gongo-server-db-mongo": "^3.2.5",
+    "js-sha256": "^0.11.0",
     "mongodb": "^6.5.0",
     "mongodb-rest-relay": "^1.11.0",
     "music-metadata": "^7.14.0",

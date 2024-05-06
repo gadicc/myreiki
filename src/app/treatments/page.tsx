@@ -5,6 +5,7 @@ import React from "react";
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
+import { sha256 } from "js-sha256";
 
 import dayjs from "dayjs";
 import dayJsIsToday from "dayjs/plugin/isToday";
@@ -144,6 +145,11 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
   const avatarProps: Parameters<typeof Avatar>[0]["sx"] =
     clientAvatarProps(client);
   avatarProps.sx = { ...(avatarProps.sx as object), top: -5 };
+  const avatarSrc =
+    ("email" in client &&
+      client.email &&
+      `https://www.gravatar.com/avatar/${sha256(client.email.trim().toLowerCase())}?d=wavatar`) ||
+    undefined;
 
   return (
     <React.Fragment>
@@ -158,7 +164,7 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
           position: "relative",
         }}
       >
-        <Avatar {...avatarProps} />
+        <Avatar {...avatarProps} src={avatarSrc} />
         <div
           style={{
             width: "100%",
