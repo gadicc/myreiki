@@ -11,6 +11,7 @@ import dayJsIsToday from "dayjs/plugin/isToday";
 import dayJsAdvancedFormat from "dayjs/plugin/advancedFormat";
 
 import {
+  Avatar,
   Box,
   Checkbox,
   Container,
@@ -41,6 +42,40 @@ type TreatmentWithClient = Treatment & { client?: Client | null };
 dayjs.extend(dayJsIsToday);
 dayjs.extend(dayJsAdvancedFormat);
 
+// From https://mui.com/material-ui/react-avatar/
+function stringToColor(string: string) {
+  let hash = 0;
+  let i;
+
+  /* eslint-disable no-bitwise */
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  /* eslint-enable no-bitwise */
+
+  return color;
+}
+
+function clientAvatarProps(
+  client: Client | { givenName: string; familyName: string },
+) {
+  const givenName = client.givenName || " ";
+  const familyName = client.familyName || " ";
+  const initials = givenName[0] + familyName[0];
+  const color = stringToColor(initials);
+  return {
+    sx: { backgroundColor: color },
+    children: initials,
+  };
+}
+
 const VirtuosoTableComponents: TableComponents<TreatmentWithClient> = {
   // eslint-disable-next-line react/display-name
   Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
@@ -70,18 +105,17 @@ const VirtuosoTableComponents: TableComponents<TreatmentWithClient> = {
 function fixedHeaderContent() {
   const sx = {
     backgroundColor: "background.paper",
+    paddingTop: 0,
+    paddingBottom: 0,
   };
   return (
     <TableRow>
-      <TableCell sx={{ ...sx, width: 80 }} variant="head">
-        Date
-      </TableCell>
-      <TableCell sx={sx} variant="head">
-        Client
-      </TableCell>
-      <TableCell sx={sx} variant="head">
-        Duration
-      </TableCell>
+      <TableCell
+        sx={{ ...sx, width: 40, boxSizing: "content-box" }}
+        variant="head"
+      ></TableCell>
+      <TableCell sx={sx} variant="head"></TableCell>
+      <TableCell sx={{ ...sx, width: 95 }} variant="head"></TableCell>
     </TableRow>
   );
 }
@@ -107,27 +141,82 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
     };
   }
   */
+  const avatarProps: Parameters<typeof Avatar>[0]["sx"] =
+    clientAvatarProps(client);
+  avatarProps.sx = { ...(avatarProps.sx as object), top: -5 };
 
   return (
     <React.Fragment>
-      <TableCell>{dateStr}</TableCell>
-      <TableCell component="th" scope="row">
-        {client.givenName} {client.familyName}
+      <TableCell
+        component="th"
+        scope="row"
+        sx={{
+          // specified in header:
+          // boxSizing: "content-box",
+          // width: 40,
+          textAlign: "center",
+          position: "relative",
+        }}
+      >
+        <Avatar {...avatarProps} />
+        <div
+          style={{
+            width: "100%",
+            position: "absolute",
+            textAlign: "center",
+            left: 0,
+            bottom: 4,
+          }}
+        >
+          <span
+            style={{
+              borderRadius: 5,
+              background: "#777",
+              color: "#eee",
+              padding: "2px 4px 2px 4px",
+              fontSize: "80%",
+            }}
+          >
+            {treatment.duration}m
+          </span>
+        </div>
       </TableCell>
-      <TableCell>
-        {treatment.duration}{" "}
-        <Link href={`/treatment/edit/${treatment._id}`}>
-          <IconButton size="small">
-            <Edit />
-          </IconButton>
-        </Link>
-        {"_id" in client && (
-          <Link href={`/treatment/edit/new?cloneId=${treatment._id}`}>
+      <TableCell sx={{ paddingLeft: 0 /*, width: "calc(100% - 135px)" */ }}>
+        <b>
+          {client.givenName} {client.familyName}
+        </b>
+        <br />
+        <div
+          style={{
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {treatment.notes}
+        </div>
+      </TableCell>
+      <TableCell style={{ textAlign: "center" /*, width: 95 */ }}>
+        <div style={{ fontWeight: 500 }}>{dateStr}</div>
+        <Stack
+          direction="row"
+          spacing={0.2}
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Link href={`/treatment/edit/${treatment._id}`}>
             <IconButton size="small">
-              <EventRepeat />
+              <Edit sx={{ fontSize: "100%" }} />
             </IconButton>
-          </Link>
-        )}
+          </Link>{" "}
+          {"_id" in client && (
+            <Link href={`/treatment/edit/new?cloneId=${treatment._id}`}>
+              <IconButton size="small">
+                <EventRepeat sx={{ fontSize: "100%" }} />
+              </IconButton>
+            </Link>
+          )}
+        </Stack>
       </TableCell>
     </React.Fragment>
   );
