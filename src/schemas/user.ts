@@ -14,6 +14,8 @@ interface User {
   createdAt: Date;
   stripeCustomerId?: string;
   username?: string;
+  admin?: boolean;
+  practitioner?: boolean;
 }
 
 export type { User };

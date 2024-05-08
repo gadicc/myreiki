@@ -47,7 +47,7 @@ export default function MyAppBar() {
     db.collection("users").find({ _id: userId }),
   );
   const isAdmin = user && user.admin;
-  const isPractitioner = true;
+  const isPractitioner = user && user.practitioner;
 
   const iOS =
     typeof navigator !== "undefined" &&

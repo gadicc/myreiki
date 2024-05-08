@@ -192,11 +192,10 @@ if (gs.dba) {
       if (isAdmin === true) return true;
 
       if (typeof doc === "object" && "patch" in doc) {
-        if (doc.patch.length === 1) {
-          if (doc.patch[0].path === "/dob") {
-            // Ok for now
-            return true;
-          }
+        const ops = (doc as ChangeSetUpdate).patch;
+        const allowed = ["/practitioner"];
+        if (ops.every((p) => allowed.includes(p.path))) {
+          return true;
         }
       }
 
