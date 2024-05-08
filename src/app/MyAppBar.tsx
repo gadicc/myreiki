@@ -31,6 +31,7 @@ import {
   Menu as MenuIcon,
   Groups,
   Dry,
+  NightShelter,
 } from "@mui/icons-material";
 
 import pathnames from "./pathnames";
@@ -130,6 +131,14 @@ export default function MyAppBar() {
                     <Groups />
                   </ListItemIcon>
                   <ListItemText>Clients</ListItemText>
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton component={NextLink} href="/practices">
+                  <ListItemIcon>
+                    <NightShelter />
+                  </ListItemIcon>
+                  <ListItemText>Practices</ListItemText>
                 </ListItemButton>
               </ListItem>
             </List>
