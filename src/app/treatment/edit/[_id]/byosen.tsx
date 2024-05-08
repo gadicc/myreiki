@@ -247,6 +247,7 @@ function Diagram({
     const xPct = precisionRound(x / rect.width, 4);
     const yPct = precisionRound(y / rect.height, 4);
     setPoints([...points, { x: xPct, y: yPct, size: 2, level: 1 }]);
+    /*
     console.log({
       x,
       y,
@@ -255,6 +256,7 @@ function Diagram({
       rectWidth: rect.width,
       rectHeight: rect.height,
     });
+    */
   }
 
   const onClickPoint = React.useCallback(
@@ -294,6 +296,7 @@ function Diagram({
       style={{
         position: "relative",
         cursor: "pointer",
+        WebkitTapHighlightColor: "transparent",
       }}
       onClick={onClick}
     >
