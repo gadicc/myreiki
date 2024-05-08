@@ -2,7 +2,7 @@
 
 import React from "react";
 // import { t, Trans } from "@lingui/macro";
-import { TableVirtuoso, TableComponents } from "react-virtuoso";
+import { Virtuoso } from "react-virtuoso";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { sha256 } from "js-sha256";
@@ -20,14 +20,7 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Paper,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -77,51 +70,7 @@ function clientAvatarProps(
   };
 }
 
-const VirtuosoTableComponents: TableComponents<TreatmentWithClient> = {
-  // eslint-disable-next-line react/display-name
-  Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer
-      component={Paper}
-      {...props}
-      ref={ref}
-      sx={{ overflowX: "initial" }}
-    />
-  )),
-  Table: (props) => (
-    <Table
-      size="small"
-      {...props}
-      sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-    />
-  ),
-  // @ts-expect-error: todo
-  TableHead,
-  TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
-  // eslint-disable-next-line react/display-name
-  TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-    <TableBody {...props} ref={ref} />
-  )),
-};
-
-function fixedHeaderContent() {
-  const sx = {
-    backgroundColor: "background.paper",
-    paddingTop: 0,
-    paddingBottom: 0,
-  };
-  return (
-    <TableRow>
-      <TableCell
-        sx={{ ...sx, width: 40, boxSizing: "content-box" }}
-        variant="head"
-      ></TableCell>
-      <TableCell sx={sx} variant="head"></TableCell>
-      <TableCell sx={{ ...sx, width: 95 }} variant="head"></TableCell>
-    </TableRow>
-  );
-}
-
-function rowContent(_index: number, treatment: TreatmentWithClient) {
+function treatmentRow(_index: number, treatment: TreatmentWithClient) {
   const client = treatment.client || { givenName: "Unknown", familyName: "" };
   const now = dayjs();
   const date = dayjs(treatment.date);
@@ -144,7 +93,7 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
   */
   const avatarProps: Parameters<typeof Avatar>[0]["sx"] =
     clientAvatarProps(client);
-  avatarProps.sx = { ...(avatarProps.sx as object), top: -5 };
+  // avatarProps.sx = { ...(avatarProps.sx as object), top: -5 };
   const avatarSrc =
     ("email" in client &&
       client.email &&
@@ -152,18 +101,39 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
     undefined;
 
   return (
-    <React.Fragment>
-      <TableCell
-        component="th"
-        scope="row"
-        sx={{
-          // specified in header:
-          // boxSizing: "content-box",
-          // width: 40,
-          textAlign: "center",
-          position: "relative",
-        }}
-      >
+    <div className="treatmentRow" role="listitem">
+      <style jsx>{`
+        .treatmentRow {
+          height: 63px;
+          padding-top: 6px;
+          padding-bottom: 5px;
+          border-top: 1px solid #ddd;
+          box-sizing: border-box;
+        }
+        /* Common to allow the below */
+        .treatmentRow > div {
+          display: inline-block;
+          vertical-align: top;
+          height: 100%;
+          font-size: 14.875px;
+        }
+        .avatarAndDuration {
+          width: 40px;
+          box-sizing: content-box;
+          text-align: center;
+          position: relative;
+        }
+        .clientAndNotes {
+          width: calc(100% - 40px - 20px - 95px);
+          box-sizing: content-box;
+          padding-left: 20px;
+        }
+        .dateAndActions {
+          width: 95px;
+          text-align: right;
+        }
+      `}</style>
+      <div className="avatarAndDuration">
         <Avatar {...avatarProps} src={avatarSrc} />
         <div
           style={{
@@ -171,7 +141,7 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
             position: "absolute",
             textAlign: "center",
             left: 0,
-            bottom: 4,
+            bottom: 0,
           }}
         >
           <span
@@ -186,8 +156,8 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
             {treatment.duration}m
           </span>
         </div>
-      </TableCell>
-      <TableCell sx={{ paddingLeft: 0 /*, width: "calc(100% - 135px)" */ }}>
+      </div>
+      <div className="clientAndNotes">
         <b>
           {client.givenName} {client.familyName}
         </b>
@@ -201,14 +171,14 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
         >
           {treatment.notes}
         </div>
-      </TableCell>
-      <TableCell style={{ textAlign: "center" /*, width: 95 */ }}>
+      </div>
+      <div className="dateAndActions">
         <div style={{ fontWeight: 500 }}>{dateStr}</div>
         <Stack
           direction="row"
-          spacing={0.2}
+          spacing={0}
           alignItems="center"
-          justifyContent="center"
+          justifyContent="right"
         >
           <Link href={`/treatment/edit/${treatment._id}`}>
             <IconButton size="small">
@@ -223,8 +193,8 @@ function rowContent(_index: number, treatment: TreatmentWithClient) {
             </Link>
           )}
         </Stack>
-      </TableCell>
-    </React.Fragment>
+      </div>
+    </div>
   );
 }
 
@@ -297,13 +267,13 @@ export default function Clients() {
         </p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
-        <TableVirtuoso
-          data={treatments}
-          components={VirtuosoTableComponents}
-          fixedHeaderContent={fixedHeaderContent}
-          itemContent={rowContent}
-          useWindowScroll
-        />
+        <div role="list">
+          <Virtuoso
+            data={treatments}
+            itemContent={treatmentRow}
+            useWindowScroll
+          />
+        </div>
 
         <Fab
           sx={{ position: "fixed", bottom: fabBottom, right: 16 }}
