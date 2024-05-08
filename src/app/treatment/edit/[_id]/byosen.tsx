@@ -2,6 +2,7 @@
 import React from "react";
 import {
   Button,
+  IconButton,
   Paper,
   Stack,
   ToggleButton,
@@ -12,6 +13,12 @@ import Popper, { Arrow } from "@/components/Popper";
 
 import BodyFront from "@/components/body-front.svg";
 import BodyBack from "@/components/body-back.svg";
+import {
+  ArrowBack,
+  ArrowDownward,
+  ArrowForward,
+  ArrowUpward,
+} from "@mui/icons-material";
 
 // https://stackoverflow.com/a/49729715/1839099
 function precisionRound(number: number, precision: number) {
@@ -40,7 +47,7 @@ const levelDesc = [
   "On-Netsu (Warmth)",
   "Atsui-On-Netsu (Intense Heat)",
   "Piri-Piri-Kan (Tingling)",
-  "Hibiki (Throbbing",
+  "Hibiki (Throbbing)",
   "Itami (Pain)",
 ];
 
@@ -85,6 +92,19 @@ function PointPopper({
     if (point) {
       const newPoints = [...points];
       newPoints[pointIdx] = { ...point, level };
+      setPoints(newPoints);
+    }
+  }
+  function handleMove(
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    x: number,
+    y: number,
+  ) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (point) {
+      const newPoints = [...points];
+      newPoints[pointIdx] = { ...point, x: point.x + x, y: point.y + y };
       setPoints(newPoints);
     }
   }
@@ -175,6 +195,20 @@ function PointPopper({
           </Typography>
           <br />
           <div>
+            <IconButton onClick={(e) => handleMove(e, -0.01, 0)}>
+              <ArrowBack />
+            </IconButton>
+            <IconButton onClick={(e) => handleMove(e, 0, -0.01)}>
+              <ArrowUpward />
+            </IconButton>
+            <IconButton onClick={(e) => handleMove(e, 0, 0.01)}>
+              <ArrowDownward />
+            </IconButton>
+            <IconButton onClick={(e) => handleMove(e, 0.01, 0)}>
+              <ArrowForward />
+            </IconButton>
+          </div>
+          <div>
             <Button color="warning" onClick={handleDelete}>
               Delete
             </Button>
@@ -212,7 +246,7 @@ function Diagram({
     const y = event.clientY - rect.top + 2;
     const xPct = precisionRound(x / rect.width, 4);
     const yPct = precisionRound(y / rect.height, 4);
-    setPoints([...points, { x: xPct, y: yPct, size: 1, level: 1 }]);
+    setPoints([...points, { x: xPct, y: yPct, size: 2, level: 1 }]);
     console.log({
       x,
       y,
@@ -235,7 +269,7 @@ function Diagram({
       setPoints(newPoints);
     }
     */
-      console.log(index, p, event);
+      // console.log(index, p, event);
       setAnchorEl(anchorEl ? null : event.currentTarget);
       setPointIdx(index);
     },
