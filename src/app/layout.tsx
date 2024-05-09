@@ -68,7 +68,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
             {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
             <CssBaseline />
             <ClientProviders>
-              <MyAppBar />
+              <React.Suspense fallback={null}>
+                <MyAppBar />
+              </React.Suspense>
               {props.children}
             </ClientProviders>
           </ThemeProvider>
