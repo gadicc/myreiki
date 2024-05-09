@@ -29,6 +29,22 @@ export default function Account() {
       >
         {isPractitioner ? "TURN OFF" : "TURN ON"}
       </Button>
+
+      <br />
+      <br />
+      <br />
+
+      <Typography variant="h6">Danger Zone</Typography>
+      <Button
+        variant="outlined"
+        sx={{ marginTop: 1 }}
+        onClick={() => {
+          db.idb.deleteDB();
+          location.reload();
+        }}
+      >
+        Reset Local Data
+      </Button>
     </Container>
   );
 }
