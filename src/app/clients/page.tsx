@@ -66,7 +66,7 @@ function clientRow(
     <div className="treatmentRow" role="listitem">
       <style jsx>{`
         .treatmentRow {
-          height: 58px;
+          /* height: 64px; */
           padding-top: 6px;
           padding-bottom: 5px;
           border-top: 1px solid #ddd;
@@ -132,7 +132,6 @@ function clientRow(
             }
           />
         </b>
-        <br />
         <div
           style={{
             overflow: "hidden",
@@ -140,11 +139,28 @@ function clientRow(
             textOverflow: "ellipsis",
           }}
         >
-          {client.email}
+          <Highlighter
+            searchWords={[context.filterRegExp]}
+            textToHighlight={client.email || ""}
+          />
+        </div>
+        <div
+          style={{
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <Highlighter
+            searchWords={[context.filterRegExp]}
+            textToHighlight={client.phone || ""}
+          />
         </div>
       </div>
       <div className="dateAndActions">
-        <div style={{ fontWeight: 500 }}>{dateStr || "\u00A0" /*nbsp*/}</div>
+        <div style={{ fontWeight: dateStr ? 500 : undefined }}>
+          {dateStr || "Never"}
+        </div>
         <Stack
           direction="row"
           spacing={0}
@@ -256,7 +272,7 @@ export default function Clients() {
         <TextField
           size="small"
           value={filter}
-          placeholder="Filter clients"
+          placeholder="Filter by name, email, phone"
           onChange={(event) => setFilter(event.target.value)}
         />
 

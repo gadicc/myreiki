@@ -133,7 +133,10 @@ function treatmentRow(
             textOverflow: "ellipsis",
           }}
         >
-          {treatment.notes}
+          <Highlighter
+            searchWords={[context.filterRegExp]}
+            textToHighlight={treatment.notes || ""}
+          />
         </div>
       </div>
       <div className="dateAndActions">
@@ -189,7 +192,7 @@ export default function Clients() {
         if (client.familyName && re.test(client.familyName)) return true;
         if (client.phone && re.test(client.phone)) return true;
         if (client.email && re.test(client.email)) return true;
-        if (client.notes && re.test(client.notes)) return true;
+        if (treatment.notes && re.test(treatment.notes)) return true;
       }
       return false;
     });
@@ -211,7 +214,7 @@ export default function Clients() {
           <TextField
             size="small"
             value={filter}
-            placeholder="Filter treatments"
+            placeholder="Filter by contact, notes"
             onChange={(event) => setFilter(event.target.value)}
           />
           <FormGroup>
