@@ -5,7 +5,6 @@ import React from "react";
 import { Virtuoso } from "react-virtuoso";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { sha256 } from "js-sha256";
 import Highlighter from "react-highlight-words";
 
 import dayjs from "dayjs";
@@ -13,7 +12,6 @@ import dayJsIsToday from "dayjs/plugin/isToday";
 import dayJsAdvancedFormat from "dayjs/plugin/advancedFormat";
 
 import {
-  Avatar,
   Box,
   Checkbox,
   Container,
@@ -30,45 +28,12 @@ import Link from "@/lib/link";
 import { Treatment, Client } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
 import useClientTreatments from "./useClientTreatments";
+import { ClientAvatar } from "../clients/clientUtils";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
 
 dayjs.extend(dayJsIsToday);
 dayjs.extend(dayJsAdvancedFormat);
-
-// From https://mui.com/material-ui/react-avatar/
-function stringToColor(string: string) {
-  let hash = 0;
-  let i;
-
-  /* eslint-disable no-bitwise */
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-
-  let color = "#";
-
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  /* eslint-enable no-bitwise */
-
-  return color;
-}
-
-function clientAvatarProps(
-  client: Client | { givenName: string; familyName: string },
-) {
-  const givenName = client.givenName || " ";
-  const familyName = client.familyName || " ";
-  const initials = givenName[0] + familyName[0];
-  const color = stringToColor(initials);
-  return {
-    sx: { backgroundColor: color },
-    children: initials,
-  };
-}
 
 function treatmentRow(
   _index: number,
@@ -95,14 +60,6 @@ function treatmentRow(
     };
   }
   */
-  const avatarProps: Parameters<typeof Avatar>[0]["sx"] =
-    clientAvatarProps(client);
-  // avatarProps.sx = { ...(avatarProps.sx as object), top: -5 };
-  const avatarSrc =
-    ("email" in client &&
-      client.email &&
-      `https://www.gravatar.com/avatar/${sha256(client.email.trim().toLowerCase())}?d=wavatar`) ||
-    undefined;
 
   return (
     <div className="treatmentRow" role="listitem">
@@ -138,7 +95,7 @@ function treatmentRow(
         }
       `}</style>
       <div className="avatarAndDuration">
-        <Avatar {...avatarProps} src={avatarSrc} />
+        <ClientAvatar client={client} />
         <div
           style={{
             width: "100%",

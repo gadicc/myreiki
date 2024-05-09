@@ -3,73 +3,55 @@
 import React from "react";
 // import { t, Trans } from "@lingui/macro";
 import { useGongoSub, useGongoLive } from "gongo-client-react";
-import { TableVirtuoso, TableComponents } from "react-virtuoso";
+import { Virtuoso } from "react-virtuoso";
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import Highlighter from "react-highlight-words";
+import dayjs from "dayjs";
+import { db } from "gongo-client-react";
 
 import {
   Box,
   Fab,
   Container,
   IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
-  Typography,
+  Stack,
 } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 
+import Link from "@/lib/link";
+import { ClientAvatar } from "./clientUtils";
 import { Client } from "@/schemas/client";
 import usePracticeId from "../../lib/usePracticeId";
-import Link from "@/lib/link";
-import NextLink from "next/link";
-import { usePathname } from "next/navigation";
 
-const VirtuosoTableComponents: TableComponents<Client> = {
-  // eslint-disable-next-line react/display-name
-  Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-    <TableContainer
-      component={Paper}
-      {...props}
-      ref={ref}
-      sx={{ overflowX: "initial" }}
-    />
-  )),
-  Table: (props) => (
-    <Table
-      {...props}
-      sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-    />
-  ),
-  // @ts-expect-error: todo
-  TableHead,
-  TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
-  // eslint-disable-next-line react/display-name
-  TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-    <TableBody {...props} ref={ref} />
-  )),
-};
+function clientRow(
+  _index: number,
+  client: Client,
+  context: { filterRegExp: RegExp },
+) {
+  const now = dayjs();
 
-function fixedHeaderContent() {
-  const sx = {
-    backgroundColor: "background.paper",
-  };
-  return (
-    <TableRow>
-      <TableCell sx={sx} variant="head">
-        Client
-      </TableCell>
-      <TableCell sx={sx} variant="head">
-        Actions
-      </TableCell>
-    </TableRow>
-  );
-}
+  const lastTreatment = db
+    .collection("treatments")
+    .find({
+      clientId: client._id,
+    })
+    .sort("date", -1)
+    .limit(1)
+    .toArraySync()[0];
 
-function rowContent(_index: number, client: Client) {
+  const date = lastTreatment && dayjs(lastTreatment.date);
+  let dateStr;
+  if (date) {
+    if (date.isToday()) dateStr = date.format("HH:mm");
+    else if (now.diff(date, "days") < 7) dateStr = date.format("ddd Do");
+    else if (date.year() === now.year()) dateStr = date.format("D MMM");
+    else dateStr = (lastTreatment.date as Date).toLocaleDateString();
+  } else {
+    dateStr = "";
+  }
+
   /*
   function onClick(userId: string, field: string, oldValue: number) {
     return function () {
@@ -83,20 +65,98 @@ function rowContent(_index: number, client: Client) {
   */
 
   return (
-    <React.Fragment>
-      <TableCell component="th" scope="row">
-        {client.givenName} {client.familyName}
+    <div className="treatmentRow" role="listitem">
+      <style jsx>{`
+        .treatmentRow {
+          height: 58px;
+          padding-top: 6px;
+          padding-bottom: 5px;
+          border-top: 1px solid #ddd;
+          box-sizing: border-box;
+        }
+        /* Common to allow the below */
+        .treatmentRow > div {
+          display: inline-block;
+          vertical-align: top;
+          height: 100%;
+          font-size: 14.875px;
+        }
+        .avatarAndDuration {
+          width: 40px;
+          box-sizing: content-box;
+          text-align: center;
+          position: relative;
+        }
+        .clientAndNotes {
+          width: calc(100% - 40px - 20px - 95px);
+          box-sizing: content-box;
+          padding-left: 20px;
+        }
+        .dateAndActions {
+          width: 95px;
+          text-align: right;
+        }
+      `}</style>
+      <div className="avatarAndDuration">
+        <ClientAvatar client={client} />
+        {/*
+        <div
+          style={{
+            width: "100%",
+            position: "absolute",
+            textAlign: "center",
+            left: 0,
+            bottom: 0,
+          }}
+        >
+          <span
+            style={{
+              borderRadius: 5,
+              background: "#777",
+              color: "#eee",
+              padding: "2px 4px 2px 4px",
+              fontSize: "70%",
+            }}
+          >
+            {treatment.duration}m
+          </span>
+        </div>
+        */}
+      </div>
+      <div className="clientAndNotes">
+        <b>
+          <Highlighter
+            searchWords={[context.filterRegExp]}
+            textToHighlight={client.givenName + " " + client.familyName}
+          />
+        </b>
         <br />
-        {client.email}
-      </TableCell>
-      <TableCell>
-        <Link href={`/client/edit/${client._id}`}>
-          <IconButton size="small">
-            <Edit />
-          </IconButton>
-        </Link>
-      </TableCell>
-    </React.Fragment>
+        <div
+          style={{
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {client.email}
+        </div>
+      </div>
+      <div className="dateAndActions">
+        <div style={{ fontWeight: 500 }}>{dateStr || "\u00A0" /*nbsp*/}</div>
+        <Stack
+          direction="row"
+          spacing={0}
+          alignItems="center"
+          justifyContent="right"
+        >
+          <Link href={`/client/edit/${client._id}`}>
+            <IconButton size="small">
+              <Edit sx={{ fontSize: "100%" }} />
+            </IconButton>
+          </Link>
+        </Stack>
+      </div>
+    </div>
   );
 }
 
@@ -111,9 +171,9 @@ export default function Clients() {
   const _clients = useGongoLive((db) =>
     db.collection("clients").find({ practiceId }),
   );
-  const clients = React.useMemo(() => {
+  const { clients, filterRegExp } = React.useMemo(() => {
     const re = new RegExp(filter, "i");
-    return _clients.filter((client) => {
+    const clients = _clients.filter((client) => {
       if (!filter) return true;
       if (re.test(client.givenName)) return true;
       if (client.familyName && re.test(client.familyName)) return true;
@@ -124,6 +184,7 @@ export default function Clients() {
       // if (user.username && re.test(user.username)) return true;
       return false;
     });
+    return { clients, filterRegExp: re };
   }, [_clients, filter]);
 
   return (
@@ -131,23 +192,24 @@ export default function Clients() {
       <Box>
         <PracticeSelect sx={{ mb: 2 }} />
 
-        <Typography variant="h6">Clients</Typography>
         <TextField
           size="small"
           value={filter}
+          placeholder="Filter clients"
           onChange={(event) => setFilter(event.target.value)}
         />
 
         <p>Total clients: {clients.length}</p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
-        <TableVirtuoso
-          data={clients}
-          components={VirtuosoTableComponents}
-          fixedHeaderContent={fixedHeaderContent}
-          itemContent={rowContent}
-          useWindowScroll
-        />
+        <div role="list">
+          <Virtuoso
+            context={{ filterRegExp }}
+            data={clients}
+            itemContent={clientRow}
+            useWindowScroll
+          />
+        </div>
 
         <Fab
           sx={{ position: "fixed", bottom: fabBottom, right: 16 }}
