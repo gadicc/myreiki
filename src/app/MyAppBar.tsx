@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useGongoOne, useGongoUserId } from "gongo-client-react";
 import { signIn, signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import NextLink from "next/link";
 
 import {
@@ -38,7 +38,12 @@ import pathnames from "./pathnames";
 
 export default function MyAppBar() {
   const pathname = usePathname();
-  const title = (pathname && pathnames[pathname]) || "MyReiki";
+  const searchParams = useSearchParams();
+
+  let title = "MyReiki";
+  const pnt = pathname && pathnames[pathname];
+  if (pnt)
+    title = typeof pnt === "function" ? pnt({ pathname, searchParams }) : pnt;
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
