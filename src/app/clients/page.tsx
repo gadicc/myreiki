@@ -17,29 +17,27 @@ import {
   IconButton,
   TextField,
   Stack,
+  FormControl,
+  FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import { Add, Edit } from "@mui/icons-material";
 
 import Link from "@/lib/link";
 import { ClientAvatar } from "./clientUtils";
-import { Client } from "@/schemas/client";
+import { Client, Treatment } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
 
 function clientRow(
   _index: number,
-  client: Client,
-  context: { filterRegExp: RegExp },
+  client: Client & { lastTreatment?: Treatment },
+  context: { filterRegExp: RegExp; sortBy: string },
 ) {
   const now = dayjs();
 
-  const lastTreatment = db
-    .collection("treatments")
-    .find({
-      clientId: client._id,
-    })
-    .sort("date", -1)
-    .limit(1)
-    .toArraySync()[0];
+  const lastTreatment = client.lastTreatment;
 
   const date = lastTreatment && dayjs(lastTreatment.date);
   let dateStr;
@@ -127,7 +125,11 @@ function clientRow(
         <b>
           <Highlighter
             searchWords={[context.filterRegExp]}
-            textToHighlight={client.givenName + " " + client.familyName}
+            textToHighlight={
+              context.sortBy === "familyName"
+                ? client.familyName + ", " + client.givenName
+                : client.givenName + " " + client.familyName
+            }
           />
         </b>
         <br />
@@ -162,35 +164,94 @@ function clientRow(
 
 export default function Clients() {
   const { practiceId, PracticeSelect } = usePracticeId();
+  const [sortBy, setSortBy] = React.useState("givenName");
 
   const pathname = usePathname();
   const fabBottom = pathname === "/clients" ? 16 : 72;
 
   useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
+  useGongoSub(practiceId && "treatmentsForPractice", { _id: practiceId });
+
   const [filter, setFilter] = React.useState("");
   const _clients = useGongoLive((db) =>
     db.collection("clients").find({ practiceId }),
   );
+  const _treatments = useGongoLive((db) =>
+    db.collection("treatments").find({ practiceId }),
+  );
+
   const { clients, filterRegExp } = React.useMemo(() => {
     const re = new RegExp(filter, "i");
-    const clients = _clients.filter((client) => {
-      if (!filter) return true;
-      if (re.test(client.givenName)) return true;
-      if (client.familyName && re.test(client.familyName)) return true;
-      if (client.phone && re.test(client.phone)) return true;
-      if (client.email && re.test(client.email)) return true;
-      if (client.notes && re.test(client.notes)) return true;
-      // for (const email of user.emails) if (re.test(email.value)) return true;
-      // if (user.username && re.test(user.username)) return true;
-      return false;
-    });
+    const clients = _clients
+      .filter((client) => {
+        if (!filter) return true;
+        if (re.test(client.givenName)) return true;
+        if (client.familyName && re.test(client.familyName)) return true;
+        if (client.phone && re.test(client.phone)) return true;
+        if (client.email && re.test(client.email)) return true;
+        if (client.notes && re.test(client.notes)) return true;
+        // for (const email of user.emails) if (re.test(email.value)) return true;
+        // if (user.username && re.test(user.username)) return true;
+        return false;
+      })
+      .map((client) => {
+        _treatments; // to trigger reactivity
+        const lastTreatment = db
+          .collection("treatments")
+          .find({
+            clientId: client._id,
+          })
+          .sort("date", -1)
+          .limit(1)
+          .toArraySync()[0];
+        return { ...client, lastTreatment };
+      })
+      .sort((a, b) => {
+        if (sortBy === "lastTreatment") {
+          // @ts-expect-error: it's fine
+          return (b.lastTreatment?.date || 0) - (a.lastTreatment?.date || 0);
+        } else {
+          // @ts-expect-error: it's fine
+          return a[sortBy] < b[sortBy] ? -1 : 1;
+        }
+      });
     return { clients, filterRegExp: re };
-  }, [_clients, filter]);
+  }, [_clients, _treatments, filter, sortBy]);
 
   return (
     <Container maxWidth="lg" sx={{ my: 2 }}>
       <Box>
         <PracticeSelect sx={{ mb: 2 }} />
+
+        <div className="sortByRadio" style={{ marginBottom: 10 }}>
+          <FormControl
+            sx={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+          >
+            <FormLabel id="sortby-label">Sort by</FormLabel>
+            <RadioGroup
+              aria-labelledby="sortby-label"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              row
+            >
+              <FormControlLabel
+                value="givenName"
+                control={<Radio size="small" />}
+                label="first"
+              />
+              <FormControlLabel
+                value="familyName"
+                control={<Radio size="small" />}
+                label="last"
+              />
+              <FormControlLabel
+                value="lastTreatment"
+                control={<Radio size="small" />}
+                label="treatment"
+              />
+            </RadioGroup>
+          </FormControl>
+        </div>
 
         <TextField
           size="small"
@@ -204,7 +265,7 @@ export default function Clients() {
 
         <div role="list">
           <Virtuoso
-            context={{ filterRegExp }}
+            context={{ filterRegExp, sortBy }}
             data={clients}
             itemContent={clientRow}
             useWindowScroll
