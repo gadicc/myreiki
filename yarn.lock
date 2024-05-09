@@ -3563,10 +3563,10 @@ gongo-client-react@^0.5.2:
   resolved "https://registry.yarnpkg.com/gongo-client-react/-/gongo-client-react-0.5.2.tgz#c6e2a460c173b46728153dba69d500bc69a5fc77"
   integrity sha512-P/pjeu73ENVPjjlTg5aNV9bed5J+qnoBO0yF0QKdCH+6osKSmibMRa8GZyJ0Xc+banhB1zA0WIccuukxYn6inA==
 
-gongo-client@^2.8.1:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/gongo-client/-/gongo-client-2.8.1.tgz#b2f8131e79b59aefc0370a2c47c5830531dfe4cc"
-  integrity sha512-I6xXAt5qSro2F6D5S9gB1K/c31hF2VjtbhWAnj0PTPqngC62hLtfmXevi0onkPRwlKQvwqBUCtCQkwW5muPpmQ==
+gongo-client@^2.8.2:
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/gongo-client/-/gongo-client-2.8.2.tgz#ea57b964d8165af1c0de8766a1a7fd4444809613"
+  integrity sha512-pEsqPE13BJWFHekMeI4vJNhueK0KT0U3uXw7anpFoFpITEUlEI+NzLB2mPOoJcuY+Sqp+3bGfjEpTjGRXEkemg==
   dependencies:
     arson "^0.2.6"
     bson-objectid "^2.0.3"

@@ -23,7 +23,7 @@
     "dayjs": "^1.11.10",
     "eslint-config-prettier": "^9.1.0",
     "file-type": "^19.0.0",
-    "gongo-client": "^2.8.1",
+    "gongo-client": "^2.8.2",
     "gongo-client-react": "^0.5.2",
     "gongo-server": "^3.5.0",
     "gongo-server-db-mongo": "^3.2.5",
