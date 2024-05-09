@@ -6,6 +6,7 @@ import { Virtuoso } from "react-virtuoso";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { sha256 } from "js-sha256";
+import Highlighter from "react-highlight-words";
 
 import dayjs from "dayjs";
 import dayJsIsToday from "dayjs/plugin/isToday";
@@ -70,7 +71,11 @@ function clientAvatarProps(
   };
 }
 
-function treatmentRow(_index: number, treatment: TreatmentWithClient) {
+function treatmentRow(
+  _index: number,
+  treatment: TreatmentWithClient,
+  context: { filterRegExp: RegExp },
+) {
   const client = treatment.client || { givenName: "Unknown", familyName: "" };
   const now = dayjs();
   const date = dayjs(treatment.date);
@@ -159,7 +164,10 @@ function treatmentRow(_index: number, treatment: TreatmentWithClient) {
       </div>
       <div className="clientAndNotes">
         <b>
-          {client.givenName} {client.familyName}
+          <Highlighter
+            searchWords={[context.filterRegExp]}
+            textToHighlight={client.givenName + " " + client.familyName}
+          />
         </b>
         <br />
         <div
@@ -215,7 +223,7 @@ export default function Clients() {
   const fabBottom = pathname === "/treatments" ? 16 : 72;
 
   const [filter, setFilter] = React.useState("");
-  const { treatments, hours } = React.useMemo(() => {
+  const { treatments, hours, filterRegExp } = React.useMemo(() => {
     const re = new RegExp(filter, "i");
     const treatments = combined.filter((treatment) => {
       if (!filter) return true;
@@ -234,6 +242,7 @@ export default function Clients() {
       hours: Math.round(
         treatments.reduce((acc, t) => acc + t.duration, 0) / 60,
       ),
+      filterRegExp: re,
     };
   }, [combined, filter]);
 
@@ -269,6 +278,7 @@ export default function Clients() {
 
         <div role="list">
           <Virtuoso
+            context={{ filterRegExp }}
             data={treatments}
             itemContent={treatmentRow}
             useWindowScroll
