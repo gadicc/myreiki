@@ -23,7 +23,6 @@ import {
   IconButton,
   Stack,
   TextField,
-  Typography,
 } from "@mui/material";
 import { Add, Edit, EventRepeat } from "@mui/icons-material";
 
@@ -251,11 +250,11 @@ export default function Clients() {
       <Box>
         <PracticeSelect sx={{ mb: 2 }} />
 
-        <Typography variant="h6">Treatments</Typography>
         <Stack direction="row" spacing={2}>
           <TextField
             size="small"
             value={filter}
+            placeholder="Filter treatments"
             onChange={(event) => setFilter(event.target.value)}
           />
           <FormGroup>
