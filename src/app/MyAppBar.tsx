@@ -35,12 +35,13 @@ import {
 } from "@mui/icons-material";
 
 import pathnames from "./pathnames";
+import { SITE_TITLE } from "@/api-lib/consts";
 
 export default function MyAppBar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  let title = "MyReiki";
+  let title = SITE_TITLE;
   const pnt = pathname && pathnames[pathname];
   if (pnt)
     title = typeof pnt === "function" ? pnt({ pathname, searchParams }) : pnt;

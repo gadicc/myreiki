@@ -5,7 +5,7 @@ import Database from "gongo-server-db-mongo";
 import MongoClient from "mongodb-rest-relay/lib/client";
 import { ObjectId } from "./objectId.js";
 
-import { DBNAME } from "./consts";
+import { DBNAME, ROOT_URL } from "./consts";
 import type { User as _User } from "../schemas";
 
 // Can't omit on type with index signature, have to remap.
@@ -19,12 +19,7 @@ type User = FixClientSchema<_User>;
 // const env = process.env;
 // const MONGO_URL = env.MONGO_URL || "mongodb://127.0.0.1";
 
-const MONGO_URL =
-  "http" +
-  (process.env.NODE_ENV === "production"
-    ? "s://myreiki.vercel.app"
-    : "://localhost:3000") +
-  "/api/mongoRelay";
+const MONGO_URL = ROOT_URL + "/api/mongoRelay";
 
 const gs = new GongoServer({
   // dba: new MongoDBA(MONGO_URL, "sd-mui"),
