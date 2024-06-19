@@ -19,6 +19,8 @@ import {
   ArrowForward,
   ArrowUpward,
 } from "@mui/icons-material";
+import { ControllerRenderProps } from "react-hook-form";
+import { Treatment } from "@/schemas";
 
 // https://stackoverflow.com/a/49729715/1839099
 function precisionRound(number: number, precision: number) {
@@ -66,7 +68,9 @@ function PointPopper({
   anchorEl: HTMLElement | null;
   pointIdx: number;
   points: BodyPoint[];
-  setPoints: React.Dispatch<React.SetStateAction<BodyPoint[]>>;
+  setPoints:
+    | React.Dispatch<React.SetStateAction<BodyPoint[]>>
+    | ((points: BodyPoint[]) => void);
 }) {
   const point = points[pointIdx];
   const [arrowRef, setArrowRef] = React.useState<HTMLSpanElement | null>(null);
@@ -230,7 +234,9 @@ function Diagram({
 }: {
   name: string;
   points: BodyPoint[];
-  setPoints: React.Dispatch<React.SetStateAction<BodyPoint[]>>;
+  setPoints:
+    | React.Dispatch<React.SetStateAction<BodyPoint[]>>
+    | ((points: BodyPoint[]) => void);
   Component: typeof BodyFront;
 }) {
   const [pointIdx, setPointIdx] = React.useState(-1);
@@ -354,17 +360,35 @@ const samplePoints: BodyPoint[] = [
 ];
 */
 
-export default function Byosen() {
-  const [backPoints, setBackPoints] = React.useState<BodyPoint[]>(
-    [] /* samplePoints */,
+export default function BodyPoints({
+  value,
+  onChange,
+}: ControllerRenderProps<Treatment, "bodyPoints">) {
+  const [backPoints, _setBackPoints] = React.useState<BodyPoint[]>(
+    value?.back || [],
   );
-  const [frontPoints, setFrontPoints] = React.useState<BodyPoint[]>([]);
+  const [frontPoints, _setFrontPoints] = React.useState<BodyPoint[]>(
+    value?.front || [],
+  );
+  const setBackPoints = React.useCallback(
+    (backPoints: BodyPoint[]) => {
+      _setBackPoints(backPoints);
+      onChange({ front: frontPoints, back: backPoints });
+    },
+    [frontPoints, onChange],
+  );
+  const setFrontPoints = React.useCallback(
+    (frontPoints: BodyPoint[]) => {
+      _setFrontPoints(frontPoints);
+      onChange({ front: frontPoints, back: backPoints });
+    },
+    [backPoints, onChange],
+  );
 
   return (
     <div>
-      <p>
-        <b>Byosen</b>:<i>Work in Progress - doesn&apos;t save yet</i>
-      </p>
+      {/* MuiFormLabel-root */}
+      <Typography sx={{ color: "rgba(0, 0, 0, 0.6)" }}>Byosen</Typography>
       <Stack direction="row" spacing={1}>
         <Diagram
           name="front"

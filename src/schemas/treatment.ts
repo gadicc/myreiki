@@ -1,6 +1,18 @@
 import { z } from "zod";
 import dayjs, { type Dayjs } from "dayjs";
 
+export const bodyPoint = z.object({
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
+  size: z.number().min(1).max(5),
+  level: z.number().min(1).max(5),
+});
+
+export const bodyPoints = z.object({
+  front: bodyPoint.array(),
+  back: bodyPoint.array(),
+});
+
 export const treatmentBaseSchema = z.object({
   _id: z.string().optional(),
   clientId: z.string(),
@@ -8,6 +20,7 @@ export const treatmentBaseSchema = z.object({
   practiceId: z.string(),
   date: z.date().or(z.instanceof(dayjs as unknown as typeof Dayjs)),
   duration: z.coerce.number().int().positive(),
+  bodyPoints: bodyPoints.optional(),
   notes: z.string().optional(),
 });
 

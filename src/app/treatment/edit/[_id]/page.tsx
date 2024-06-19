@@ -29,7 +29,9 @@ import { useForm } from "@/lib/forms";
 import usePracticeId from "@/lib/usePracticeId";
 import useClientId from "@/lib/useClientId";
 import { useWatch } from "react-hook-form";
-import Byosen from "./byosen";
+import BodyPoints from "./bodyPoints";
+
+export type UseFormTreatmentProps = ReturnType<typeof useForm<Treatment>>;
 
 const sxDurationButton = {
   borderColor: "light-dark(rgb(205, 205, 205), rgb(133, 133, 133))",
@@ -76,6 +78,8 @@ export default function TreatmentEdit() {
     if (treatment.date instanceof dayjs)
       treatment.date = (treatment.date as unknown as Dayjs).toDate();
 
+    if (treatment.bodyPoints === undefined) delete treatment.bodyPoints;
+
     // console.log(treatment);
     // return;
 
@@ -95,15 +99,7 @@ export default function TreatmentEdit() {
     if (dest === "back") router.back();
   }
 
-  const {
-    handleSubmit,
-    setValue,
-    getValues,
-    control,
-    Controller,
-    fr,
-    formState: { isDirty },
-  } = useForm<Treatment>({
+  const useFormProps = useForm<Treatment>({
     values: existing ? { ...existing, date: dayjs(existing.date) } : undefined,
     schema: treatmentSchema,
     defaultValues: {
@@ -117,6 +113,15 @@ export default function TreatmentEdit() {
       notes: "",
     },
   });
+  const {
+    handleSubmit,
+    setValue,
+    getValues,
+    control,
+    Controller,
+    fr,
+    formState: { isDirty },
+  } = useFormProps;
 
   useWatch({ control, name: "type" });
   const type = getValues("type");
@@ -247,7 +252,11 @@ export default function TreatmentEdit() {
                     )}
                   />
                 </FormControl>
-                <Byosen />
+                <Controller
+                  name="bodyPoints"
+                  control={control}
+                  render={({ field }) => <BodyPoints {...field} />}
+                />
               </>
             )}
             {/*
