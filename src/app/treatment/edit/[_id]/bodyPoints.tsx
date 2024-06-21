@@ -380,7 +380,9 @@ export default function BodyPoints({
   value,
   onChange,
   treatmentId,
-}: ControllerRenderProps<Treatment, "bodyPoints"> & { treatmentId: string }) {
+}: Omit<ControllerRenderProps<Treatment, "bodyPoints">, "ref" | "onBlur"> & {
+  treatmentId: string;
+}) {
   const [backPoints, _setBackPoints] = React.useState<BodyPoint[]>(
     value?.back || [],
   );

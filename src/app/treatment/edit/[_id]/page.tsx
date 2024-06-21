@@ -268,8 +268,14 @@ export default function TreatmentEdit() {
                 <Controller
                   name="bodyPoints"
                   control={control}
-                  render={({ field }) => (
-                    <BodyPoints {...field} treatmentId={treatmentId} />
+                  render={({ field: { onChange, name, value } }) => (
+                    <BodyPoints
+                      // {...field}
+                      name={name}
+                      value={value}
+                      onChange={onChange}
+                      treatmentId={treatmentId}
+                    />
                   )}
                 />
               </>
