@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { ControllerRenderProps } from "react-hook-form";
+
 import {
   Button,
   IconButton,
@@ -9,18 +11,18 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import Popper, { Arrow } from "@/components/Popper";
-
-import BodyFront from "@/components/body-front.svg";
-import BodyBack from "@/components/body-back.svg";
 import {
   ArrowBack,
   ArrowDownward,
   ArrowForward,
   ArrowUpward,
 } from "@mui/icons-material";
-import { ControllerRenderProps } from "react-hook-form";
+
 import { Treatment } from "@/schemas";
+import Popper, { Arrow } from "@/components/Popper";
+import BodyFront from "@/components/body-front.svg";
+import BodyBack from "@/components/body-back.svg";
+import { ObjectId } from "@/api-lib/objectId";
 
 // https://stackoverflow.com/a/49729715/1839099
 function precisionRound(number: number, precision: number) {
@@ -30,6 +32,8 @@ function precisionRound(number: number, precision: number) {
 }
 
 interface BodyPoint {
+  _id: string;
+  treatmentId: string;
   x: number;
   y: number;
   size: number;
@@ -231,6 +235,7 @@ function Diagram({
   points,
   setPoints,
   Component,
+  treatmentId,
 }: {
   name: string;
   points: BodyPoint[];
@@ -238,6 +243,7 @@ function Diagram({
     | React.Dispatch<React.SetStateAction<BodyPoint[]>>
     | ((points: BodyPoint[]) => void);
   Component: typeof BodyFront;
+  treatmentId: string;
 }) {
   const [pointIdx, setPointIdx] = React.useState(-1);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -252,7 +258,17 @@ function Diagram({
     const y = event.clientY - rect.top + 2;
     const xPct = precisionRound(x / rect.width, 4);
     const yPct = precisionRound(y / rect.height, 4);
-    setPoints([...points, { x: xPct, y: yPct, size: 2, level: 1 }]);
+    setPoints([
+      ...points,
+      {
+        _id: new ObjectId().toHexString(),
+        treatmentId,
+        x: xPct,
+        y: yPct,
+        size: 2,
+        level: 1,
+      },
+    ]);
     /*
     console.log({
       x,
@@ -363,7 +379,8 @@ const samplePoints: BodyPoint[] = [
 export default function BodyPoints({
   value,
   onChange,
-}: ControllerRenderProps<Treatment, "bodyPoints">) {
+  treatmentId,
+}: ControllerRenderProps<Treatment, "bodyPoints"> & { treatmentId: string }) {
   const [backPoints, _setBackPoints] = React.useState<BodyPoint[]>(
     value?.back || [],
   );
@@ -395,12 +412,14 @@ export default function BodyPoints({
           points={frontPoints}
           setPoints={setFrontPoints}
           Component={BodyFront}
+          treatmentId={treatmentId}
         />
         <Diagram
           name="back"
           points={backPoints}
           setPoints={setBackPoints}
           Component={BodyBack}
+          treatmentId={treatmentId}
         />
       </Stack>
     </div>

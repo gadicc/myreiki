@@ -2,6 +2,8 @@ import { z } from "zod";
 import dayjs, { type Dayjs } from "dayjs";
 
 export const bodyPoint = z.object({
+  _id: z.string(),
+  treatmentId: z.string(),
   x: z.number().min(0).max(1),
   y: z.number().min(0).max(1),
   size: z.number().min(1).max(5),

@@ -30,6 +30,7 @@ import usePracticeId from "@/lib/usePracticeId";
 import useClientId from "@/lib/useClientId";
 import { useWatch } from "react-hook-form";
 import BodyPoints from "./bodyPoints";
+import { ObjectId } from "@/api-lib/objectId";
 
 export type UseFormTreatmentProps = ReturnType<typeof useForm<Treatment>>;
 
@@ -71,7 +72,7 @@ export default function TreatmentEdit() {
     treatment.clientId = clientId;
 
     if (!treatment.__ObjectIDs) treatment.__ObjectIDs = [];
-    for (const key of ["clientId", "practitionerId", "practiceId"]) {
+    for (const key of ["_id", "clientId", "practitionerId", "practiceId"]) {
       if (!treatment.__ObjectIDs.includes(key)) treatment.__ObjectIDs.push(key);
     }
 
@@ -84,7 +85,9 @@ export default function TreatmentEdit() {
     // return;
 
     if (_id === "new" || cloneId) {
-      if (cloneId) delete treatment._id;
+      // No longer necessary, we now set this explicitly earlier.
+      // if (cloneId) delete treatment._id;
+
       const insertedDoc = db.collection("treatments").insert(treatment);
       router.push(`/treatment/edit/${insertedDoc._id}`);
     } else {
@@ -103,6 +106,8 @@ export default function TreatmentEdit() {
     values: existing ? { ...existing, date: dayjs(existing.date) } : undefined,
     schema: treatmentSchema,
     defaultValues: {
+      // We assign _id now so it can be used in subforms, e.g. bodyPoints.
+      _id: new ObjectId().toHexString(),
       clientId: "",
       practitionerId: userId || "",
       practiceId: practiceId || "",
@@ -126,9 +131,17 @@ export default function TreatmentEdit() {
   useWatch({ control, name: "type" });
   const type = getValues("type");
 
+  // Used for subforms, e.g. bodyPoints.  Differs from route _id which
+  // could be "new".
+  const treatmentId = getValues("_id");
+  if (!treatmentId) throw new Error("treatmentId not set");
+
   // If we are cloning a treatment, set the date to now and dirty the form.
   React.useEffect(() => {
-    if (existing && cloneId) setValue("date", dayjs(), { shouldDirty: true });
+    if (existing && cloneId) {
+      setValue("_id", new ObjectId().toHexString(), { shouldDirty: true });
+      setValue("date", dayjs(), { shouldDirty: true });
+    }
   }, [existing, cloneId, setValue]);
 
   if (!existing && _id !== "new") return "Loading or not found...";
@@ -255,7 +268,9 @@ export default function TreatmentEdit() {
                 <Controller
                   name="bodyPoints"
                   control={control}
-                  render={({ field }) => <BodyPoints {...field} />}
+                  render={({ field }) => (
+                    <BodyPoints {...field} treatmentId={treatmentId} />
+                  )}
                 />
               </>
             )}
