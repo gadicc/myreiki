@@ -31,7 +31,7 @@
     "mongodb": "^6.5.0",
     "mongodb-rest-relay": "^1.11.0",
     "music-metadata": "^7.14.0",
-    "next": "^14.2.3",
+    "next": "15.0.5",
     "next-auth": "^4.24.7",
     "prettier": "^3.2.5",
     "radash": "^12.1.0",
