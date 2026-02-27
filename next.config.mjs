@@ -1,4 +1,5 @@
 import withSerwistInit from "@serwist/next";
+import path from "path";
 
 const withSerwist = withSerwistInit({
   // Note: This is only an example. If you use Pages Router,
@@ -11,6 +12,14 @@ const withSerwist = withSerwistInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   webpack(config) {
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      "next-auth/react": path.resolve(
+        process.cwd(),
+        "src/lib/next-auth-react-compat.tsx",
+      ),
+    };
+
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) =>
       rule.test?.test?.(".svg"),

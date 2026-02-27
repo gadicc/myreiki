@@ -63,6 +63,16 @@ function fixedHeaderContent() {
 }
 
 function rowContent(_index: number, user: User) {
+  const displayName =
+    typeof user.displayName === "string"
+      ? user.displayName
+      : typeof user.name === "string"
+        ? user.name
+        : "Unnamed user";
+  const primaryEmail =
+    user.emails?.[0]?.value ||
+    (typeof user.email === "string" ? user.email : undefined);
+
   /*
   function onClick(userId: string, field: string, oldValue: number) {
     return function () {
@@ -78,10 +88,10 @@ function rowContent(_index: number, user: User) {
   return (
     <React.Fragment>
       <TableCell component="th" scope="row">
-        {user.displayName}
+        {displayName}
         {user.username && " (" + user.username + ")"}
         <br />
-        {user.emails?.[0]?.value}
+        {primaryEmail}
       </TableCell>
     </React.Fragment>
   );
@@ -105,8 +115,10 @@ function Users() {
     const re = new RegExp(filter, "i");
     return _users.filter((user) => {
       if (!filter) return true;
-      if (re.test(user.displayName)) return true;
-      for (const email of user.emails) if (re.test(email.value)) return true;
+      if (user.displayName && re.test(user.displayName)) return true;
+      if (typeof user.name === "string" && re.test(user.name)) return true;
+      for (const email of user.emails || []) if (re.test(email.value)) return true;
+      if (typeof user.email === "string" && re.test(user.email)) return true;
       if (user.username && re.test(user.username)) return true;
       return false;
     });

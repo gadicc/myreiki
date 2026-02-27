@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
 import { useGongoOne, useGongoUserId } from "gongo-client-react";
-import { signIn, signOut } from "next-auth/react";
 import { usePathname, useSearchParams } from "next/navigation";
 import NextLink from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 import {
   AppBar,
@@ -244,8 +244,8 @@ export default function MyAppBar() {
                   My account
                 </MenuItem>
                 <MenuItem
-                  onClick={() => {
-                    signOut();
+                  onClick={async () => {
+                    await authClient.signOut();
                     handleUserClose();
                   }}
                 >
@@ -257,7 +257,11 @@ export default function MyAppBar() {
             <Button
               variant="text"
               sx={{ color: "white" }}
-              onClick={() => signIn()}
+              onClick={() =>
+                authClient.signIn.social({
+                  provider: "google",
+                })
+              }
             >
               LOGIN
             </Button>
