@@ -8,12 +8,14 @@ const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1";
 const mongoClient = new MongoClient(MONGO_URL);
 const mongoDb = mongoClient.db(DBNAME);
 
+const isProd = process.env.NODE_ENV === "production";
 const devAuthBaseURL =
-  process.env.BETTER_AUTH_DEV_URL || "http://localhost:" + DEV_PORT;
-const authBaseURL =
-  process.env.NODE_ENV === "production"
-    ? process.env.BETTER_AUTH_URL || ROOT_URL
-    : devAuthBaseURL;
+  process.env.BETTER_AUTH_DEV_URL ||
+  process.env.DEV_ROOT_URL ||
+  "http://localhost:" + DEV_PORT;
+const authBaseURL = isProd
+  ? process.env.BETTER_AUTH_URL || ROOT_URL
+  : devAuthBaseURL;
 const trustedOrigins = [
   authBaseURL,
   "http://localhost:3000",
