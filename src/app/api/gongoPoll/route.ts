@@ -223,6 +223,31 @@ if (gs.dba) {
 const gsExpressPost =
   runtime === "edge" ? gs.vercelEdgePost() : gs.expressPost();
 
+function getUnsignedFromSignedCookieValue(signedValue: string): string | null {
+  let decoded = signedValue;
+  try {
+    decoded = decodeURIComponent(signedValue);
+  } catch {
+    // Keep original if not URI-encoded.
+  }
+
+  const signatureStartPos = decoded.lastIndexOf(".");
+  if (signatureStartPos < 1) return decoded;
+  return decoded.substring(0, signatureStartPos);
+}
+
+async function getUnsignedSidFromCookie(cookieHeader: string) {
+  const match =
+    cookieHeader.match(/\bnext-auth\.session-token=([^;]+)/) ||
+    cookieHeader.match(/\b__Secure-next-auth\.session-token=([^;]+)/) ||
+    cookieHeader.match(/\bnext-auth\.session_token=([^;]+)/) ||
+    cookieHeader.match(/\b__Secure-next-auth\.session_token=([^;]+)/);
+  if (!match) return null;
+
+  const signed = match[1]!;
+  return getUnsignedFromSignedCookieValue(signed);
+}
+
 /*
 async function gongoPoll(req: Request) {
   /*
@@ -240,4 +265,35 @@ async function gongoPoll(req: Request) {
 }
 */
 
-export const POST = gsExpressPost;
+export async function POST(req: Request) {
+  if (runtime !== "edge") {
+    // @ts-expect-error: gsExpressPost has req-only signature in edge mode.
+    return gsExpressPost(req);
+  }
+
+  const rawBody = await req.text();
+  const cookie = req.headers.get("cookie");
+  const sid = cookie ? await getUnsignedSidFromCookie(cookie) : null;
+
+  let body = rawBody;
+  if (sid) {
+    try {
+      const query = gs.ARSON.decode(rawBody) as {
+        auth?: Record<string, unknown>;
+      };
+      query.auth = { ...(query.auth || {}), sid };
+      body = gs.ARSON.encode(query);
+    } catch {
+      // Fall through and let gongo process the original payload.
+    }
+  }
+
+  const normalizedReq = new Request(req.url, {
+    method: req.method,
+    headers: req.headers,
+    body,
+  });
+
+  // @ts-expect-error: gsExpressPost has req-only signature in edge mode.
+  return gsExpressPost(normalizedReq);
+}
