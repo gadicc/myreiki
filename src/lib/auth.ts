@@ -2,13 +2,18 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { nextCookies } from "better-auth/next-js";
 import { MongoClient } from "mongodb";
-import { DBNAME, ROOT_URL } from "@/api-lib/consts";
+import { DBNAME, DEV_PORT, ROOT_URL } from "@/api-lib/consts";
 
 const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1";
 const mongoClient = new MongoClient(MONGO_URL);
 const mongoDb = mongoClient.db(DBNAME);
 
-const authBaseURL = process.env.BETTER_AUTH_URL || ROOT_URL;
+const devAuthBaseURL =
+  process.env.BETTER_AUTH_DEV_URL || "http://localhost:" + DEV_PORT;
+const authBaseURL =
+  process.env.NODE_ENV === "production"
+    ? process.env.BETTER_AUTH_URL || ROOT_URL
+    : devAuthBaseURL;
 const trustedOrigins = [
   authBaseURL,
   "http://localhost:3000",
