@@ -161,7 +161,17 @@ export default function TreatmentEdit() {
               control={control}
               name="date"
               render={({ field }) => (
-                <DateTimePicker label="Date *" {...field} />
+                <DateTimePicker
+                  label="Date *"
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(value) => field.onChange(value ?? undefined)}
+                  slotProps={{
+                    textField: {
+                      name: field.name,
+                      onBlur: field.onBlur,
+                    },
+                  }}
+                />
               )}
             />
             <Stack direction="row" spacing={2} useFlexGap>
