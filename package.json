@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && NO_UPDATE_NOTIFIER=1 node node_modules/@serwist/cli/dist/bin.mjs build serwist.config.mjs",
     "start": "next start",
     "lint": "next lint",
     "post-update": "echo \"codesandbox preview only, need an update\" && pnpm update --latest"
@@ -13,13 +13,14 @@
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@gadicc/loom": "^1.4.0",
     "@hookform/resolvers": "^3.3.4",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@mui/material-nextjs": "^7.2.0",
     "@mui/system": "^7.3.8",
     "@mui/x-date-pickers": "^8.27.2",
-    "@serwist/next": "^9.0.2",
+    "@serwist/next": "^9.5.7",
     "aws-sdk": "^2.1602.0",
     "better-auth": "^1.3.7",
     "dayjs": "^1.11.10",
@@ -45,6 +46,7 @@
     "zod": "^3.22.5"
   },
   "devDependencies": {
+    "@serwist/cli": "^9.5.7",
     "@svgr/webpack": "^8.1.0",
     "@types/node": "^20.12.7",
     "@types/react": "^18.2.79",
@@ -53,7 +55,7 @@
     "eslint": "^8.41.0",
     "eslint-config-next": "^14.2.3",
     "eslint-plugin-unused-imports": "^3.1.0",
-    "serwist": "^9.0.2",
+    "serwist": "^9.5.7",
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.7.0"
   },

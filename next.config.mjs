@@ -1,16 +1,8 @@
-import withSerwistInit from "@serwist/next";
 import path from "path";
-
-const withSerwist = withSerwistInit({
-  // Note: This is only an example. If you use Pages Router,
-  // use something else that works, such as "service-worker/index.ts".
-  swSrc: "src/app/sw.ts",
-  swDest: "public/sw.js",
-  disable: process.env.NODE_ENV === "development",
-});
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  transpilePackages: ["@serwist/next"],
   webpack(config) {
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
@@ -22,7 +14,7 @@ const nextConfig = {
 
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) =>
-      rule.test?.test?.(".svg"),
+      rule.test?.test?.(".svg")
     );
 
     config.module.rules.push(
@@ -48,4 +40,4 @@ const nextConfig = {
   },
 };
 
-export default withSerwist(nextConfig);
+export default nextConfig;
