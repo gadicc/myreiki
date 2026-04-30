@@ -21,7 +21,9 @@ export default function ClientProviders({
         confirmUpdate={() =>
           asyncConfirm(
             "A newer version of this web app is available. Reload to update?",
-          )}
+          )
+        }
+        updateCheckIntervalMs={60_000}
       />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         {children}
