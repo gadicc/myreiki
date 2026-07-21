@@ -13,7 +13,7 @@
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "@gadicc/loom": "^1.4.0",
+    "@gadicc/loom": "1.15.2",
     "@hookform/resolvers": "^3.3.4",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
