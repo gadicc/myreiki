@@ -1,7 +1,14 @@
 "use client";
-import React from "react";
-import { ControllerRenderProps } from "react-hook-form";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
 
+import {
+  ArrowBack,
+  ArrowDownward,
+  ArrowForward,
+  ArrowUpward,
+} from "@mui/icons-material";
 import {
   Button,
   IconButton,
@@ -11,18 +18,13 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import {
-  ArrowBack,
-  ArrowDownward,
-  ArrowForward,
-  ArrowUpward,
-} from "@mui/icons-material";
-
-import { Treatment } from "@/schemas";
-import Popper, { Arrow } from "@/components/Popper";
-import BodyFront from "@/components/body-front.svg";
+import React from "react";
+import { ControllerRenderProps } from "react-hook-form";
 import BodyBack from "@/components/body-back.svg";
-import { ObjectId } from "@/api-lib/objectId";
+import BodyFront from "@/components/body-front.svg";
+import Popper, { Arrow } from "@/components/Popper";
+import { uuidV7 } from "@/lib/uuid";
+import { Treatment } from "@/schemas";
 
 // https://stackoverflow.com/a/49729715/1839099
 function precisionRound(number: number, precision: number) {
@@ -50,11 +52,11 @@ const levels = [
 ];
 
 const levelDesc = [
-  "On-Netsu (Warmth)",
-  "Atsui-On-Netsu (Intense Heat)",
-  "Piri-Piri-Kan (Tingling)",
-  "Hibiki (Throbbing)",
-  "Itami (Pain)",
+  msg`On-Netsu (Warmth)`,
+  msg`Atsui-On-Netsu (Intense Heat)`,
+  msg`Piri-Piri-Kan (Tingling)`,
+  msg`Hibiki (Throbbing)`,
+  msg`Itami (Pain)`,
 ];
 
 function PointPopper({
@@ -76,6 +78,8 @@ function PointPopper({
     | React.Dispatch<React.SetStateAction<BodyPoint[]>>
     | ((points: BodyPoint[]) => void);
 }) {
+  const { i18n } = useLingui();
+
   const point = points[pointIdx];
   const [arrowRef, setArrowRef] = React.useState<HTMLSpanElement | null>(null);
 
@@ -85,7 +89,7 @@ function PointPopper({
   ) {
     event.preventDefault();
     event.stopPropagation();
-    if (point) {
+    if (point && Number.isInteger(size) && size >= 1 && size <= 5) {
       const newPoints = [...points];
       newPoints[pointIdx] = { ...point, size };
       setPoints(newPoints);
@@ -97,7 +101,7 @@ function PointPopper({
   ) {
     event.preventDefault();
     event.stopPropagation();
-    if (point) {
+    if (point && Number.isInteger(level) && level >= 1 && level <= 5) {
       const newPoints = [...points];
       newPoints[pointIdx] = { ...point, level };
       setPoints(newPoints);
@@ -112,7 +116,11 @@ function PointPopper({
     event.stopPropagation();
     if (point) {
       const newPoints = [...points];
-      newPoints[pointIdx] = { ...point, x: point.x + x, y: point.y + y };
+      newPoints[pointIdx] = {
+        ...point,
+        x: Math.max(0, Math.min(1, point.x + x)),
+        y: Math.max(0, Math.min(1, point.y + y)),
+      };
       setPoints(newPoints);
     }
   }
@@ -155,15 +163,16 @@ function PointPopper({
           <Stack
             direction="row"
             spacing={1}
-            alignItems="center"
-            sx={{ marginBottom: 1 }}
+            sx={{ marginBottom: 1, alignItems: "center" }}
           >
-            <Typography width={50}>Size: </Typography>
+            <Typography sx={{ width: 50 }}>
+              <Trans>Size: </Trans>
+            </Typography>
             <ToggleButtonGroup
               value={point?.size}
               exclusive
               onChange={handleSizeChange}
-              aria-label="text alignment"
+              aria-label={i18n._(msg`Point size`)}
             >
               {[1, 2, 3, 4, 5].map((value) => (
                 <ToggleButton
@@ -178,13 +187,15 @@ function PointPopper({
             </ToggleButtonGroup>
           </Stack>
 
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography width={50}>Level: </Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Typography sx={{ width: 50 }}>
+              <Trans>Level: </Trans>
+            </Typography>
             <ToggleButtonGroup
               value={point?.level}
               exclusive
               onChange={handleLevelChange}
-              aria-label="text alignment"
+              aria-label={i18n._(msg`Byosen level`)}
             >
               {[1, 2, 3, 4, 5].map((value) => (
                 <ToggleButton
@@ -199,29 +210,41 @@ function PointPopper({
             </ToggleButtonGroup>
           </Stack>
           <Typography variant="caption">
-            {point && levelDesc[point.level - 1]}
+            {point && i18n._(levelDesc[point.level - 1])}
           </Typography>
           <br />
           <div>
-            <IconButton onClick={(e) => handleMove(e, -0.01, 0)}>
+            <IconButton
+              aria-label={i18n._(msg`Move left`)}
+              onClick={(e) => handleMove(e, -0.01, 0)}
+            >
               <ArrowBack />
             </IconButton>
-            <IconButton onClick={(e) => handleMove(e, 0, -0.01)}>
+            <IconButton
+              aria-label={i18n._(msg`Move up`)}
+              onClick={(e) => handleMove(e, 0, -0.01)}
+            >
               <ArrowUpward />
             </IconButton>
-            <IconButton onClick={(e) => handleMove(e, 0, 0.01)}>
+            <IconButton
+              aria-label={i18n._(msg`Move down`)}
+              onClick={(e) => handleMove(e, 0, 0.01)}
+            >
               <ArrowDownward />
             </IconButton>
-            <IconButton onClick={(e) => handleMove(e, 0.01, 0)}>
+            <IconButton
+              aria-label={i18n._(msg`Move right`)}
+              onClick={(e) => handleMove(e, 0.01, 0)}
+            >
               <ArrowForward />
             </IconButton>
           </div>
           <div>
             <Button color="warning" onClick={handleDelete}>
-              Delete
+              <Trans>Delete</Trans>
             </Button>
             <Button color="primary" onClick={handleCloseEvent}>
-              Close
+              <Trans>Close</Trans>
             </Button>
           </div>
         </Paper>
@@ -245,6 +268,7 @@ function Diagram({
   Component: typeof BodyFront;
   treatmentId: string;
 }) {
+  const { i18n } = useLingui();
   const [pointIdx, setPointIdx] = React.useState(-1);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const popoverId = anchorEl ? "point-popover" : undefined;
@@ -258,27 +282,20 @@ function Diagram({
     const y = event.clientY - rect.top + 2;
     const xPct = precisionRound(x / rect.width, 4);
     const yPct = precisionRound(y / rect.height, 4);
+    addPoint(Math.max(0, Math.min(1, xPct)), Math.max(0, Math.min(1, yPct)));
+  }
+  function addPoint(x: number, y: number) {
     setPoints([
       ...points,
       {
-        _id: new ObjectId().toHexString(),
+        _id: uuidV7(),
         treatmentId,
-        x: xPct,
-        y: yPct,
+        x,
+        y,
         size: 2,
         level: 1,
       },
     ]);
-    /*
-    console.log({
-      x,
-      y,
-      xPct,
-      yPct,
-      rectWidth: rect.width,
-      rectHeight: rect.height,
-    });
-    */
   }
 
   const onClickPoint = React.useCallback(
@@ -320,7 +337,23 @@ function Diagram({
         cursor: "pointer",
         WebkitTapHighlightColor: "transparent",
       }}
+      role="button"
+      tabIndex={0}
+      aria-label={
+        name === "front"
+          ? i18n._(msg`Add front body point`)
+          : i18n._(msg`Add back body point`)
+      }
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (
+          event.target === event.currentTarget &&
+          (event.key === "Enter" || event.key === " ")
+        ) {
+          event.preventDefault();
+          addPoint(0.5, 0.5);
+        }
+      }}
     >
       <Component width="100%" height={undefined} />
       <div
@@ -383,31 +416,19 @@ export default function BodyPoints({
 }: Omit<ControllerRenderProps<Treatment, "bodyPoints">, "ref" | "onBlur"> & {
   treatmentId: string;
 }) {
-  const [backPoints, _setBackPoints] = React.useState<BodyPoint[]>(
-    value?.back || [],
-  );
-  const [frontPoints, _setFrontPoints] = React.useState<BodyPoint[]>(
-    value?.front || [],
-  );
-  const setBackPoints = React.useCallback(
-    (backPoints: BodyPoint[]) => {
-      _setBackPoints(backPoints);
-      onChange({ front: frontPoints, back: backPoints });
-    },
-    [frontPoints, onChange],
-  );
-  const setFrontPoints = React.useCallback(
-    (frontPoints: BodyPoint[]) => {
-      _setFrontPoints(frontPoints);
-      onChange({ front: frontPoints, back: backPoints });
-    },
-    [backPoints, onChange],
-  );
+  const backPoints = value?.back ?? [];
+  const frontPoints = value?.front ?? [];
+  const setBackPoints = (back: BodyPoint[]) =>
+    onChange({ front: frontPoints, back });
+  const setFrontPoints = (front: BodyPoint[]) =>
+    onChange({ front, back: backPoints });
 
   return (
     <div>
       {/* MuiFormLabel-root */}
-      <Typography sx={{ color: "rgba(0, 0, 0, 0.6)" }}>Byosen</Typography>
+      <Typography sx={{ color: "rgba(0, 0, 0, 0.6)" }}>
+        <Trans>Byosen</Trans>
+      </Typography>
       <Stack direction="row" spacing={1}>
         <Diagram
           name="front"

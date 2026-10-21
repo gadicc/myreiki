@@ -1,0 +1,36 @@
+{
+  "requirements": [
+    {
+      "name": "application database",
+      "keys": ["DATABASE_URL"],
+      "placeholder": { "key": "DATABASE_URL", "kind": "postgres-url" }
+    },
+    {
+      "name": "direct database",
+      "keys": ["DATABASE_URL_UNPOOLED"],
+      "placeholder": { "key": "DATABASE_URL_UNPOOLED", "kind": "postgres-url" }
+    },
+    { "name": "Better Auth public origin", "keys": ["BETTER_AUTH_URL"] },
+    {
+      "name": "Better Auth signing secret",
+      "keys": ["BETTER_AUTH_SECRET"],
+      "sensitive": true,
+      "placeholder": { "key": "BETTER_AUTH_SECRET", "kind": "secret" }
+    },
+    {
+      "name": "Google client ID",
+      "keys": ["GOOGLE_CLIENT_ID"],
+      "placeholder": { "key": "GOOGLE_CLIENT_ID", "kind": "secret" }
+    },
+    {
+      "name": "Google client secret",
+      "keys": ["GOOGLE_CLIENT_SECRET"],
+      "sensitive": true,
+      "placeholder": { "key": "GOOGLE_CLIENT_SECRET", "kind": "secret" }
+    },
+    {
+      "name": "reviewed bootstrap plan",
+      "keys": ["MYREIKI_IMPORT_PLAN_SHA256"]
+    }
+  ]
+}

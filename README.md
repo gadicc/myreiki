@@ -1,18 +1,82 @@
-# myholpra
+# MyReiki
 
-Manage a holistic practice (reiki, etc)
+Practice management for Reiki practitioners. Previously named MyHolpra; the
+schema retains generic treatments for future modalities.
 
-Copyright (c) 2024 by Gadi Cohen, [MIT Licensed](./LICENSE.txt).
+The working tree now uses Next.js 16, React 19, MUI 9, Better Auth, Valibot with
+React Hook Form, Neon/PostgreSQL and an owner-scoped Dexie offline store. Bun
+1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.0.4 supplies
+shared auth, database, PWA, Lingui tooling and client identity primitives.
 
-# Introduction
+**Production still runs the legacy Mongo application.** Provider ownership and
+Singapore placement are configured, and the Mongo backup has been imported and
+compared on a protected rehearsal branch. The Production SQL branch has not
+been populated or activated. The implementation is saved on the local `codex/modernize-myreiki` review branch.
+See [current evidence](plans/001-modernization.md),
+[dependency decisions](plans/002-upgrade-ledger.md) and the
+[cutover gates](plans/003-release-and-recovery.md).
 
-TODO
+```sh
+bun install --frozen-lockfile --ignore-scripts
+bun run loom init
+bun run dev
+```
 
-# Quick Start
+Use Node 24 and configure `.env.local` from `.env.example`. Local development
+and Vercel Preview use an independent synthetic Neon root. Patient backup data
+belongs only in the protected rehearsal and approved Production target. Next
+loads its own environment; standalone tools use `bun run loom env -- <command>`.
 
-1. Clone
-2. `npm run dev`
+```sh
+bun run check
+bun run build
+bun run loom skills check
+bun run check:production
+# After a production build, with a compatible Chromium installed:
+PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium bun run test:browser
+```
 
-# Deployment
+The browser harness refuses every database except the approved synthetic root.
+Its test-only Better Auth instance creates session cookies without adding
+production HTTP bypasses. `/dev-login` is separately opt-in, development-only
+and loopback-only. Real Google sign-in was also confirmed locally by the operator.
 
-TODO... list necessary environment vars
+The offline store preserves edits across reloads and account switches. Sign-out
+locks access and retains pending work for the same account; reconnecting freshly
+authorizes every replay. There is no app-imposed offline expiry. Browser storage
+can still be removed by the browser or operating system. Account settings offer
+persistent-storage requests, private device export and explicit device removal.
+Old Gongo pending work is outside the requested recovery scope.
+
+English is the source language; Japanese is available from the language selector.
+The saved device preference wins over browser language negotiation. Both catalogs
+are bundled for offline switching, which preserves open form drafts and unsynced
+work. User-entered names and notes are never translated. Dates and picker controls
+follow the selected language; stored dates and treatment type codes stay unchanged.
+
+For copy changes, use `<Trans>` from `@lingui/react/macro`, or `msg` from
+`@lingui/core/macro` and the component's `useLingui()` instance. Server Components
+that use translation macros must call `initRequestI18n()` in their own render.
+Never use the global `t` macro in client components. Run `bun run i18n:extract`,
+translate missing Japanese entries in `src/locales/ja/messages.po`, then run
+`bun run check` and `bun run build`. Generated ESM `.mjs` catalogs are ignored and
+compiled before development, validation and builds. See
+[localization decisions and evidence](plans/005-localization.md).
+
+Drizzle schemas are in `src/db/schema`; use `bun run db:generate` and
+`bun run schema:gen`. Migrations require `pg_uuidv7`. The app's pg adapter
+verifies Neon TLS and required SCRAM channel binding. The app-owned `db:migrate` uses this same transport; its intentional Loom task
+override is advisory. Protected migration credentials are configured; a full
+staged release still needs its runtime acceptance checks.
+
+The release workflow is disabled until the explicit repository release switch
+is enabled after cutover review. Automatic Vercel deployments from `main` are
+fenced by `vercel.json`. Production auth/data routes also require the exact
+completed import receipt. Passing local checks alone does not activate production.
+
+MongoDB remains a development dependency for backup inventory/import tools.
+Runtime Gongo, the Mongo relay and experimental uploads are retired. The dump
+contains no files collection or domain attachment references; no object-store
+recovery claim is made.
+
+Copyright (c) 2024 Gadi Cohen. [MIT Licensed](LICENSE.txt).

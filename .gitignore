@@ -35,3 +35,18 @@ yarn-error.log*
 *.tsbuildinfo
 # next-env.d.ts
 public/sw.js
+.loom/skills/
+/public/sw.js.map
+/public/workbox-*.js
+/public/workbox-*.js.map
+
+# Managed local skill links and protected migration material
+/.agents/skills/
+/.private/
+
+# Isolated browser test artifacts
+/output/playwright/
+/playwright-report/
+/test-results/
+src/locales/*/messages.js
+src/locales/*/messages.mjs

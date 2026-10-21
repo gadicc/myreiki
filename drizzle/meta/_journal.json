@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792572179488,
+      "tag": "0000_enable_uuidv7",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792572216330,
+      "tag": "0001_practice_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792575648196,
+      "tag": "0002_import_checkpoint",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792576167643,
+      "tag": "0003_sync_receipts",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792576815098,
+      "tag": "0004_snapshot_revision",
+      "breakpoints": true
+    }
+  ]
+}

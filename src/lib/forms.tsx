@@ -1,117 +1,85 @@
-import {
-  FieldValues,
-  useForm as reactHookUseForm,
-  UseFormProps,
-  UseFormReturn,
-  UseFormRegisterReturn,
-  FieldPath,
-  RegisterOptions,
-  DeepPartial,
-  FieldErrors,
-  Controller,
-} from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ZodDiscriminatedUnion, type ZodRawShape } from "zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useLingui } from "@lingui/react";
 import { get } from "radash";
+import {
+  Controller,
+  type DeepPartial,
+  type FieldPath,
+  type FieldValues,
+  type RegisterOptions,
+  type Resolver,
+  useForm as reactHookUseForm,
+  type UseFormProps,
+  type UseFormRegisterReturn,
+  type UseFormReturn,
+} from "react-hook-form";
+import { formFieldRequired } from "./formSchema";
+import { displayError } from "./i18n/messages";
 
-interface FrProps<
-  TFieldValues extends FieldValues = FieldValues,
-  TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> {
+type ValibotSchema = Parameters<typeof valibotResolver>[0];
+type FieldProps<
+  T extends FieldValues,
+  Name extends FieldPath<T>,
+> = UseFormRegisterReturn<Name> & {
   required: boolean;
-  defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
+  defaultValue?: Readonly<DeepPartial<T>>[Name];
   error: boolean;
   helperText?: string;
-}
+};
 
+/** Keep the MUI registration API while Valibot owns validation and coercion. */
 export function useForm<
-  TFieldValues extends FieldValues = FieldValues,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TContext = any,
-  TTransformedValues extends FieldValues | undefined = undefined,
+  T extends FieldValues = FieldValues,
+  Context = unknown,
+  Output extends FieldValues = T,
 >(
-  props?: UseFormProps<TFieldValues, TContext> & {
-    schema?: Parameters<typeof zodResolver>[0];
-  },
-): UseFormReturn<TFieldValues, TContext, TTransformedValues> & {
-  fr<TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>>(
-    name: TFieldName,
-    options?: RegisterOptions<TFieldValues, TFieldName> & {
-      onChangeTransform?: boolean;
-    },
-  ): UseFormRegisterReturn<TFieldName> & FrProps<TFieldValues, TFieldName>;
-} & { Controller: typeof Controller } {
-  if (!props?.schema) throw new Error("useForm requires a { schema } prop");
+  props: UseFormProps<T, Context, Output> & { schema: ValibotSchema },
+): UseFormReturn<T, Context, Output> & {
+  fr<Name extends FieldPath<T>>(
+    name: Name,
+    options?: RegisterOptions<T, Name> & { onChangeTransform?: boolean },
+  ): FieldProps<T, Name>;
+  Controller: typeof Controller;
+} {
+  const { schema, ...formProps } = props;
+  const { i18n } = useLingui();
+  // The schema strips persistence metadata; callers retain their edit revision.
+  const resolver = valibotResolver(schema, {
+    message: "Enter a valid value.",
+  }) as Resolver<T, Context, Output>;
+  const form = reactHookUseForm<T, Context, Output>({
+    resolver,
+    mode: "onChange",
+    reValidateMode: "onChange",
+    ...formProps,
+  });
 
-  const defaults = {
-    resolver: zodResolver(props.schema),
-    mode: "onChange" as const,
-    reValidateMode: "onChange" as const,
-  };
-
-  const useFormProps = reactHookUseForm<
-    TFieldValues,
-    TContext,
-    TTransformedValues
-  >({ ...defaults, ...props });
-
-  // function fr(name: keyof Omit<TFieldValues, "__ObjectIDs">) {
-  function fr<
-    TFieldName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-  >(
-    name: TFieldName,
-    options = {} as RegisterOptions<TFieldValues, TFieldName> & {
-      onChangeTransform?: boolean;
-    },
-  ): UseFormRegisterReturn<TFieldName> & {
-    required: boolean;
-    defaultValue?: Readonly<DeepPartial<TFieldValues>>[TFieldName];
-    error: boolean;
-    helperText?: string;
-  } {
-    if (!(props && props.schema))
-      throw new Error("useForm requires a { schema } prop");
-    const { formState, register } = useFormProps;
-
-    const shape = (function () {
-      let shape = props.schema;
-
-      if (shape instanceof ZodDiscriminatedUnion) {
-        const discriminator = shape.discriminator;
-        const discriminatorValue = useFormProps.getValues(discriminator);
-        shape = shape.optionsMap.get(discriminatorValue)!;
-      }
-
-      for (const key of name.split(".")) {
-        if ("shape" in shape) shape = (shape.shape as ZodRawShape)[key];
-      }
-      return shape;
-    })();
-
-    if (!shape) throw new Error(`Form has no such field "${name}"`);
-
-    const error = get(
-      formState.errors,
+  function fr<Name extends FieldPath<T>>(
+    name: Name,
+    options: RegisterOptions<T, Name> & { onChangeTransform?: boolean } = {},
+  ): FieldProps<T, Name> {
+    const { onChangeTransform, ...registrationOptions } = options;
+    const error = get<{ message?: unknown }>(form.formState.errors, name);
+    const registration = form.register(
       name,
-    ) as FieldErrors<TFieldValues>[TFieldName];
-
-    const frProps: FrProps<TFieldValues, TFieldName> = {
-      required: !shape.isOptional(),
-      defaultValue: get(formState.defaultValues, name),
-      error: !!error,
-    };
-    // console.log(name, frProps, shape, shape.isOptional());
-
-    if (error?.message) frProps.helperText = (error.message as string) || "";
-
-    const regProps = register(name);
-    if (options.onChangeTransform) {
-      const orig = regProps.onChange;
-      regProps.onChange = (newValue) => orig({ target: { value: newValue } });
+      registrationOptions as RegisterOptions<T, Name>,
+    );
+    if (onChangeTransform) {
+      const original = registration.onChange;
+      registration.onChange = (value) => original({ target: { name, value } });
     }
-
-    return { ...regProps, ...frProps };
+    return {
+      ...registration,
+      required: formFieldRequired(schema, name, (path) =>
+        form.getValues(path as FieldPath<T>),
+      ),
+      defaultValue: get(form.formState.defaultValues, name),
+      error: Boolean(error),
+      ...(typeof error?.message === "string"
+        ? { helperText: displayError(i18n, error.message) }
+        : {}),
+    };
   }
 
-  return { ...useFormProps, fr, Controller };
+  return { ...form, fr, Controller };
 }

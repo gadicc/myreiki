@@ -1,54 +1,45 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
 
-import React from "react";
-// import { t, Trans } from "@lingui/macro";
-import { useGongoSub, useGongoLive } from "gongo-client-react";
-import { Virtuoso } from "react-virtuoso";
-import NextLink from "next/link";
-import { usePathname } from "next/navigation";
-import Highlighter from "react-highlight-words";
-import dayjs from "dayjs";
-import { db } from "gongo-client-react";
-
+import { Add, Edit } from "@mui/icons-material";
 import {
   Box,
-  Fab,
   Container,
-  IconButton,
-  TextField,
-  Stack,
+  Fab,
   FormControl,
   FormControlLabel,
   FormLabel,
+  IconButton,
   Radio,
   RadioGroup,
+  Stack,
+  TextField,
 } from "@mui/material";
-import { Add, Edit } from "@mui/icons-material";
-
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import Highlighter from "react-highlight-words";
+import { Virtuoso } from "react-virtuoso";
+import { usePracticeData } from "@/client-data/Provider";
+import { formatTreatmentDate } from "@/lib/i18n/dates";
 import Link from "@/lib/link";
-import { ClientAvatar } from "./clientUtils";
 import { Client, Treatment } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
+import { ClientAvatar } from "./clientUtils";
 
-function clientRow(
-  _index: number,
-  client: Client & { lastTreatment?: Treatment },
-  context: { filterRegExp: RegExp; sortBy: string },
-) {
-  const now = dayjs();
-
-  const lastTreatment = client.lastTreatment;
-
-  const date = lastTreatment && dayjs(lastTreatment.date);
-  let dateStr;
-  if (date) {
-    if (date.isToday()) dateStr = date.format("HH:mm");
-    else if (now.diff(date, "days") < 7) dateStr = date.format("ddd Do");
-    else if (date.year() === now.year()) dateStr = date.format("D MMM");
-    else dateStr = (lastTreatment.date as Date).toLocaleDateString();
-  } else {
-    dateStr = "";
-  }
+function ClientRow({
+  client,
+  context,
+}: {
+  client: Client & { lastTreatment?: Treatment };
+  context: { filterRegExp: RegExp; sortBy: string };
+}) {
+  const { i18n } = useLingui();
+  const dateStr = client.lastTreatment
+    ? formatTreatmentDate(client.lastTreatment.date, i18n.locale)
+    : "";
 
   /*
   function onClick(userId: string, field: string, oldValue: number) {
@@ -159,13 +150,12 @@ function clientRow(
       </div>
       <div className="dateAndActions">
         <div style={{ fontWeight: dateStr ? 500 : undefined }}>
-          {dateStr || "Never"}
+          {dateStr || i18n._(msg`Never`)}
         </div>
         <Stack
           direction="row"
           spacing={0}
-          alignItems="center"
-          justifyContent="right"
+          sx={{ alignItems: "center", justifyContent: "right" }}
         >
           <Link href={`/client/edit/${client._id}`}>
             <IconButton size="small">
@@ -179,25 +169,23 @@ function clientRow(
 }
 
 export default function Clients() {
+  const { i18n } = useLingui();
+
   const { practiceId, PracticeSelect } = usePracticeId();
   const [sortBy, setSortBy] = React.useState("givenName");
 
   const pathname = usePathname();
   const fabBottom = pathname === "/clients" ? 16 : 72;
 
-  useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
-  useGongoSub(practiceId && "treatmentsForPractice", { _id: practiceId });
-
   const [filter, setFilter] = React.useState("");
-  const _clients = useGongoLive((db) =>
-    db.collection("clients").find({ practiceId }),
-  );
-  const _treatments = useGongoLive((db) =>
-    db.collection("treatments").find({ practiceId }),
+  const data = usePracticeData();
+  const _clients = data.clients.filter((c) => c.practiceId === practiceId);
+  const _treatments = data.treatments.filter(
+    (t) => t.practiceId === practiceId,
   );
 
   const { clients, filterRegExp } = React.useMemo(() => {
-    const re = new RegExp(filter, "i");
+    const re = new RegExp(filter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     const clients = _clients
       .filter((client) => {
         if (!filter) return true;
@@ -211,21 +199,25 @@ export default function Clients() {
         return false;
       })
       .map((client) => {
-        _treatments; // to trigger reactivity
-        const lastTreatment = db
-          .collection("treatments")
-          .find({
-            clientId: client._id,
-          })
-          .sort("date", -1)
-          .limit(1)
-          .toArraySync()[0];
+        const lastTreatment = _treatments
+          .filter((t) => t.clientId === client._id)
+          .sort(
+            (a, b) =>
+              new Date(b.date as Date).getTime() -
+              new Date(a.date as Date).getTime(),
+          )[0];
         return { ...client, lastTreatment };
       })
       .sort((a, b) => {
         if (sortBy === "lastTreatment") {
-          // @ts-expect-error: it's fine
-          return (b.lastTreatment?.date || 0) - (a.lastTreatment?.date || 0);
+          return (
+            (b.lastTreatment
+              ? new Date(b.lastTreatment.date as Date).getTime()
+              : 0) -
+            (a.lastTreatment
+              ? new Date(a.lastTreatment.date as Date).getTime()
+              : 0)
+          );
         } else {
           // @ts-expect-error: it's fine
           return a[sortBy] < b[sortBy] ? -1 : 1;
@@ -243,7 +235,9 @@ export default function Clients() {
           <FormControl
             sx={{ flexDirection: "row", alignItems: "center", gap: 2 }}
           >
-            <FormLabel id="sortby-label">Sort by</FormLabel>
+            <FormLabel id="sortby-label">
+              <Trans>Sort by</Trans>
+            </FormLabel>
             <RadioGroup
               aria-labelledby="sortby-label"
               value={sortBy}
@@ -253,17 +247,17 @@ export default function Clients() {
               <FormControlLabel
                 value="givenName"
                 control={<Radio size="small" />}
-                label="first"
+                label={i18n._(msg`first`)}
               />
               <FormControlLabel
                 value="familyName"
                 control={<Radio size="small" />}
-                label="last"
+                label={i18n._(msg`last`)}
               />
               <FormControlLabel
                 value="lastTreatment"
                 control={<Radio size="small" />}
-                label="treatment"
+                label={i18n._(msg`treatment`)}
               />
             </RadioGroup>
           </FormControl>
@@ -272,18 +266,22 @@ export default function Clients() {
         <TextField
           size="small"
           value={filter}
-          placeholder="Filter by name, email, phone"
+          placeholder={i18n._(msg`Filter by name, email, phone`)}
           onChange={(event) => setFilter(event.target.value)}
         />
 
-        <p>Total clients: {clients.length}</p>
+        <p>
+          <Trans>Total clients: {clients.length}</Trans>
+        </p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
         <div role="list">
           <Virtuoso
             context={{ filterRegExp, sortBy }}
             data={clients}
-            itemContent={clientRow}
+            itemContent={(_index, client, context) => (
+              <ClientRow client={client} context={context} />
+            )}
             useWindowScroll
           />
         </div>

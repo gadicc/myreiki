@@ -1,20 +1,28 @@
-import { z } from "zod";
+import * as v from "valibot";
+import { emailSchema, phoneSchema } from "./contact";
 
-export const practiceSchema = z.object({
-  _id: z.string(),
-  userId: z.string(),
-  name: z.string(),
-  // address: string(),
-  countryId: z.string().min(2).max(2).optional().or(z.literal("")),
-  phone: z
-    .string()
-    .regex(/^(\+[1-9]\d{1,14})?$/) // Intl +XX or nothing
-    .optional(),
-  email: z.string().email().optional().or(z.literal("")),
-  website: z.string().url().optional().or(z.literal("")),
-  notes: z.string().optional(),
+export const practiceSchema = v.object({
+  _id: v.string(),
+  userId: v.string(),
+  name: v.string(),
+  countryId: v.optional(
+    v.union(
+      [
+        v.literal(""),
+        v.pipe(v.string(), v.length(2, "Enter a two-letter country code.")),
+      ],
+      "Enter a two-letter country code.",
+    ),
+  ),
+  phone: phoneSchema,
+  email: emailSchema,
+  website: v.optional(
+    v.union(
+      [v.literal(""), v.pipe(v.string(), v.url("Enter a valid website URL."))],
+      "Enter a valid website URL.",
+    ),
+  ),
+  notes: v.optional(v.string()),
 });
 
-export type Practice = z.infer<typeof practiceSchema> & {
-  __ObjectIDs: string[];
-};
+export type Practice = v.InferOutput<typeof practiceSchema>;

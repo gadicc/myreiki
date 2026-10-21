@@ -1,0 +1,729 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-10-21 12:25+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+
+#. placeholder {0}: context.pending.length
+#: src/client-data/Provider.tsx
+msgid "{0, plural, one {# change saved on this device, waiting to sync.} other {# changes saved on this device, waiting to sync.}}"
+msgstr "{0, plural, one {# change saved on this device, waiting to sync.} other {# changes saved on this device, waiting to sync.}}"
+
+#. placeholder {0}: treatment.duration
+#: src/app/treatments/page.tsx
+msgid "{0}m"
+msgstr "{0}m"
+
+#: src/lib/i18n/messages.ts
+msgid "{count} treatments saved on this device."
+msgstr "{count} treatments saved on this device."
+
+#: src/app/MyAppBar.tsx
+msgid "<0/>MyReiki"
+msgstr "<0/>MyReiki"
+
+#: src/lib/i18n/messages.ts
+msgid "A client name matches multiple records. Import these treatments individually."
+msgstr "A client name matches multiple records. Import these treatments individually."
+
+#: src/app/clientProviders.tsx
+msgid "A newer version of this web app is available. Reload to update?"
+msgstr "A newer version of this web app is available. Reload to update?"
+
+#: src/lib/i18n/messages.ts
+msgid "A saved change could not be synchronized. Your work remains on this device."
+msgstr "A saved change could not be synchronized. Your work remains on this device."
+
+#: src/app/about/page.tsx
+#: src/app/MyAppBar.tsx
+#: src/app/pathnames.ts
+msgid "About"
+msgstr "About"
+
+#: src/app/admin/page.tsx
+msgid "Access denied."
+msgstr "Access denied."
+
+#: src/app/account/page.tsx
+#: src/app/pathnames.ts
+msgid "Account"
+msgstr "Account"
+
+#: src/lib/i18n/messages.ts
+msgid "Account changed; reopen the record before saving."
+msgstr "Account changed; reopen the record before saving."
+
+#: src/app/MyAppBar.tsx
+msgid "account of current user"
+msgstr "account of current user"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Add back body point"
+msgstr "Add back body point"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Add front body point"
+msgstr "Add front body point"
+
+#: src/app/practices/page.tsx
+msgid "Add New Practice"
+msgstr "Add New Practice"
+
+#: src/app/MyAppBar.tsx
+#: src/app/pathnames.ts
+msgid "Admin"
+msgstr "Admin"
+
+#: src/lib/i18n/messages.ts
+msgid "Administrator access is required online."
+msgstr "Administrator access is required online."
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Atsui-On-Netsu (Intense Heat)"
+msgstr "Atsui-On-Netsu (Intense Heat)"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Byosen"
+msgstr "Byosen"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Byosen level"
+msgstr "Byosen level"
+
+#: src/lib/i18n/messages.ts
+msgid "Choose an available practice."
+msgstr "Choose an available practice."
+
+#: src/lib/useClientId.tsx
+msgid "Clear"
+msgstr "Clear"
+
+#: src/app/treatments/import/page.tsx
+#: src/lib/useClientId.tsx
+msgid "Client"
+msgstr "Client"
+
+#: src/app/home.tsx
+msgid "clients"
+msgstr "clients"
+
+#: src/app/home.tsx
+#: src/app/MyAppBar.tsx
+#: src/app/page.tsx
+#: src/app/pathnames.ts
+msgid "Clients"
+msgstr "Clients"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+#: src/lib/useClientId.tsx
+msgid "Close"
+msgstr "Close"
+
+#: src/lib/i18n/messages.ts
+msgid "Conflict changed"
+msgstr "Conflict changed"
+
+#: src/lib/i18n/messages.ts
+msgid "Connect and sign in again before changing this setting."
+msgstr "Connect and sign in again before changing this setting."
+
+#: src/lib/i18n/messages.ts
+msgid "Connect to the internet before signing in."
+msgstr "Connect to the internet before signing in."
+
+#: src/lib/i18n/messages.ts
+msgid "Could not load users"
+msgstr "Could not load users"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not resolve conflict"
+msgstr "Could not resolve conflict"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not save import"
+msgstr "Could not save import"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not save on this device"
+msgstr "Could not save on this device"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not update setting"
+msgstr "Could not update setting"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not verify the account. Saved device records remain available offline."
+msgstr "Could not verify the account. Saved device records remain available offline."
+
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Country Code"
+msgstr "Country Code"
+
+#: src/app/treatments/import/page.tsx
+#: src/components/TreatmentDateField.tsx
+msgid "Date"
+msgstr "Date"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Delete"
+msgstr "Delete"
+
+#: src/lib/i18n/messages.ts
+msgid "Device storage is unavailable. Enable browser storage to open or edit records."
+msgstr "Device storage is unavailable. Enable browser storage to open or edit records."
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Distance"
+msgstr "Distance"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Duration (m)"
+msgstr "Duration (m)"
+
+#: src/app/admin/page.tsx
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Email"
+msgstr "Email"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a two-letter country code."
+msgstr "Enter a two-letter country code."
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid date"
+msgstr "Enter a valid date"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid email address."
+msgstr "Enter a valid email address."
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid value."
+msgstr "Enter a valid value."
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid website URL."
+msgstr "Enter a valid website URL."
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a whole number of minutes greater than zero."
+msgstr "Enter a whole number of minutes greater than zero."
+
+#: src/app/account/page.tsx
+msgid "Export my device records and pending work"
+msgstr "Export my device records and pending work"
+
+#: src/client-data/Provider.tsx
+msgid "Export pending work"
+msgstr "Export pending work"
+
+#: src/app/account/page.tsx
+msgid "Exports include private client notes. Store them privately."
+msgstr "Exports include private client notes. Store them privately."
+
+#: src/app/client/edit/[_id]/page.tsx
+msgid "Family name"
+msgstr "Family name"
+
+#: src/app/upload/page.tsx
+msgid "File uploads are not enabled in MyReiki."
+msgstr "File uploads are not enabled in MyReiki."
+
+#: src/app/treatments/page.tsx
+msgid "Filter by contact, notes"
+msgstr "Filter by contact, notes"
+
+#: src/app/clients/page.tsx
+msgid "Filter by name, email, phone"
+msgstr "Filter by name, email, phone"
+
+#: src/app/admin/page.tsx
+msgid "Find a loaded user"
+msgstr "Find a loaded user"
+
+#: src/app/clients/page.tsx
+msgid "first"
+msgstr "first"
+
+#: src/app/client/edit/[_id]/page.tsx
+msgid "First name"
+msgstr "First name"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Generic"
+msgstr "Generic"
+
+#: src/lib/i18n/messages.ts
+msgid "Google sign-in failed"
+msgstr "Google sign-in failed"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Hibiki (Throbbing)"
+msgstr "Hibiki (Throbbing)"
+
+#: src/app/MyAppBar.tsx
+#: src/app/page.tsx
+#: src/app/pathnames.ts
+msgid "Home"
+msgstr "Home"
+
+#: src/app/home.tsx
+msgid "hours"
+msgstr "hours"
+
+#: src/app/home.tsx
+msgid "Hours"
+msgstr "Hours"
+
+#: src/app/treatments/import/page.tsx
+msgid "Import Reiki treatments"
+msgstr "Import Reiki treatments"
+
+#: src/lib/i18n/messages.ts
+msgid "Invalid paste"
+msgstr "Invalid paste"
+
+#: src/app/about/page.tsx
+msgid "It is a work in progress and will be updated regularly."
+msgstr "It is a work in progress and will be updated regularly."
+
+#: src/app/about/page.tsx
+msgid "It is designed to help practitioners manage their clients and treatments."
+msgstr "It is designed to help practitioners manage their clients and treatments."
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Itami (Pain)"
+msgstr "Itami (Pain)"
+
+#: src/lib/i18n/messages.ts
+msgid "Keep my changes"
+msgstr "Keep my changes"
+
+#: src/components/LanguageSelect.tsx
+msgid "Language"
+msgstr "Language"
+
+#: src/app/clients/page.tsx
+msgid "last"
+msgstr "last"
+
+#: src/app/clientProviders.tsx
+msgid "Later"
+msgstr "Later"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Level: "
+msgstr "Level: "
+
+#: src/app/admin/page.tsx
+msgid "Load more"
+msgstr "Load more"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Loading or not found..."
+msgstr "Loading or not found..."
+
+#: src/app/dev-login/page.tsx
+msgid "Local development fixture"
+msgstr "Local development fixture"
+
+#: src/app/MyAppBar.tsx
+msgid "LOGIN"
+msgstr "LOGIN"
+
+#: src/app/MyAppBar.tsx
+msgid "Logout"
+msgstr "Logout"
+
+#: src/app/MyAppBar.tsx
+msgid "menu"
+msgstr "menu"
+
+#: src/app/treatments/import/page.tsx
+msgid "Minutes"
+msgstr "Minutes"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move down"
+msgstr "Move down"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move left"
+msgstr "Move left"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move right"
+msgstr "Move right"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move up"
+msgstr "Move up"
+
+#: src/app/MyAppBar.tsx
+msgid "My account"
+msgstr "My account"
+
+#: src/app/about/page.tsx
+msgid "MyReiki is a simple practice management system for Reiki practitioners."
+msgstr "MyReiki is a simple practice management system for Reiki practitioners."
+
+#: src/app/admin/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Name"
+msgstr "Name"
+
+#: src/app/clients/page.tsx
+msgid "Never"
+msgstr "Never"
+
+#: src/app/home.tsx
+msgid "New Treatment"
+msgstr "New Treatment"
+
+#: src/lib/useClientId.tsx
+msgid "No matching clients"
+msgstr "No matching clients"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Non-Human"
+msgstr "Non-Human"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Not logged in"
+msgstr "Not logged in"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/app/treatments/import/page.tsx
+msgid "Notes"
+msgstr "Notes"
+
+#: src/app/account/page.tsx
+msgid "Offline records"
+msgstr "Offline records"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "On-Netsu (Warmth)"
+msgstr "On-Netsu (Warmth)"
+
+#: src/lib/useClientId.tsx
+msgid "Open"
+msgstr "Open"
+
+#: src/app/treatments/import/page.tsx
+msgid "Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO date and time with timezone), full client name, whole minutes, Reiki type, notes. All rows are checked before saving."
+msgstr "Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO date and time with timezone), full client name, whole minutes, Reiki type, notes. All rows are checked before saving."
+
+#: src/lib/i18n/messages.ts
+msgid "Persistent storage was not granted. Pending work is still saved locally."
+msgstr "Persistent storage was not granted. Pending work is still saved locally."
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Phone (Intl +XX)"
+msgstr "Phone (Intl +XX)"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Piri-Piri-Kan (Tingling)"
+msgstr "Piri-Piri-Kan (Tingling)"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Point size"
+msgstr "Point size"
+
+#: src/lib/usePracticeId.tsx
+msgid "Practice"
+msgstr "Practice"
+
+#: src/app/MyAppBar.tsx
+#: src/app/pathnames.ts
+#: src/app/practices/page.tsx
+msgid "Practices"
+msgstr "Practices"
+
+#: src/app/account/page.tsx
+msgid "Practitioner mode"
+msgstr "Practitioner mode"
+
+#: src/app/treatments/import/page.tsx
+msgid "Preview"
+msgstr "Preview"
+
+#: src/app/MyAppBar.tsx
+msgid "Profile image"
+msgstr "Profile image"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Psychological"
+msgstr "Psychological"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Regular"
+msgstr "Regular"
+
+#: src/app/home.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Reiki"
+msgstr "Reiki"
+
+#: src/app/layout.tsx
+msgid "Reiki Practice Management"
+msgstr "Reiki Practice Management"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Reiki Type"
+msgstr "Reiki Type"
+
+#: src/app/clientProviders.tsx
+msgid "Reload"
+msgstr "Reload"
+
+#: src/app/account/page.tsx
+msgid "Remove my data from this device"
+msgstr "Remove my data from this device"
+
+#. placeholder {0}: data.pending.length
+#: src/app/account/page.tsx
+msgid "Remove this account's saved records and {0} pending change(s) from this device? Export anything you need first."
+msgstr "Remove this account's saved records and {0} pending change(s) from this device? Export anything you need first."
+
+#: src/app/account/page.tsx
+msgid "Request persistent storage"
+msgstr "Request persistent storage"
+
+#: src/client-data/Provider.tsx
+msgid "Retry"
+msgstr "Retry"
+
+#: src/client-data/Provider.tsx
+msgid "Retry synchronization"
+msgstr "Retry synchronization"
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: client name and whole minutes are required."
+msgstr "Row {row}: client name and whole minutes are required."
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: expected four or five tab-separated columns."
+msgstr "Row {row}: expected four or five tab-separated columns."
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: invalid date."
+msgstr "Row {row}: invalid date."
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: invalid duration or Reiki type."
+msgstr "Row {row}: invalid duration or Reiki type."
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: use YYYY-MM-DD or an ISO date and time with timezone."
+msgstr "Row {row}: use YYYY-MM-DD or an ISO date and time with timezone."
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Save"
+msgstr "Save"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Save & Back"
+msgstr "Save & Back"
+
+#: src/app/treatments/import/page.tsx
+msgid "Save import"
+msgstr "Save import"
+
+#: src/app/account/page.tsx
+msgid "Saved records and edits remain available offline until you sign out or remove this device's data. Browsers can erase local storage, so synchronize and keep private backups."
+msgstr "Saved records and edits remain available offline until you sign out or remove this device's data. Browsers can erase local storage, so synchronize and keep private backups."
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Self"
+msgstr "Self"
+
+#: src/lib/i18n/messages.ts
+msgid "Server sign-out was unavailable"
+msgstr "Server sign-out was unavailable"
+
+#: src/app/treatments/page.tsx
+msgid "Shihankaku"
+msgstr "Shihankaku"
+
+#: src/app/home.tsx
+msgid "Shihankaku Progress"
+msgstr "Shihankaku Progress"
+
+#: src/lib/i18n/messages.ts
+msgid "Sign in again"
+msgstr "Sign in again"
+
+#: src/lib/i18n/messages.ts
+msgid "Sign in before editing records."
+msgstr "Sign in before editing records."
+
+#: src/app/treatments/import/page.tsx
+msgid "Sign in to import treatments."
+msgstr "Sign in to import treatments."
+
+#: src/app/account/page.tsx
+msgid "Sign in to open your account."
+msgstr "Sign in to open your account."
+
+#: src/lib/i18n/messages.ts
+msgid "Signed out on this device. Connect before signing in again."
+msgstr "Signed out on this device. Connect before signing in again."
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Size: "
+msgstr "Size: "
+
+#: src/app/clients/page.tsx
+msgid "Sort by"
+msgstr "Sort by"
+
+#: src/app/treatments/import/page.tsx
+msgid "Spreadsheet cells"
+msgstr "Spreadsheet cells"
+
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Submit"
+msgstr "Submit"
+
+#: src/lib/i18n/messages.ts
+msgid "Synchronization paused; pending work is retained."
+msgstr "Synchronization paused; pending work is retained."
+
+#: src/lib/i18n/messages.ts
+msgid "Synchronization paused. Your pending work remains on this device."
+msgstr "Synchronization paused. Your pending work remains on this device."
+
+#. placeholder {0}: duration + 2
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "T-{0}"
+msgstr "T-{0}"
+
+#: src/lib/i18n/messages.ts
+msgid "The browser granted persistent storage."
+msgstr "The browser granted persistent storage."
+
+#: src/lib/i18n/messages.ts
+msgid "The device operation failed. Your saved work is retained."
+msgstr "The device operation failed. Your saved work is retained."
+
+#: src/lib/i18n/messages.ts
+msgid "The operation could not be completed. Your saved work is retained. Please try again."
+msgstr "The operation could not be completed. Your saved work is retained. Please try again."
+
+#: src/app/dev-login/page.tsx
+msgid "These fixed synthetic accounts exist only for local UI and offline testing."
+msgstr "These fixed synthetic accounts exist only for local UI and offline testing."
+
+#: src/lib/i18n/messages.ts
+msgid "This paste was already saved on this device."
+msgstr "This paste was already saved on this device."
+
+#: src/lib/i18n/messages.ts
+msgid "This record changed on another device. Choose which version to keep below."
+msgstr "This record changed on another device. Choose which version to keep below."
+
+#: src/lib/i18n/messages.ts
+msgid "This record changed on another device. Choose which version to keep."
+msgstr "This record changed on another device. Choose which version to keep."
+
+#: src/lib/i18n/messages.ts
+msgid "This record changed while you were editing. Copy your changes and reopen it before saving."
+msgstr "This record changed while you were editing. Copy your changes and reopen it before saving."
+
+#: src/lib/i18n/messages.ts
+msgid "This record has been deleted."
+msgstr "This record has been deleted."
+
+#: src/lib/i18n/messages.ts
+msgid "This record is unavailable on the server. Export the pending work before removing device data."
+msgstr "This record is unavailable on the server. Export the pending work before removing device data."
+
+#. placeholder {0}: clients.length
+#: src/app/clients/page.tsx
+msgid "Total clients: {0}"
+msgstr "Total clients: {0}"
+
+#: src/app/home.tsx
+msgid "Total Progress"
+msgstr "Total Progress"
+
+#. placeholder {0}: treatments.length
+#: src/app/treatments/page.tsx
+msgid "Total treatments: {0} ({hours} hours)"
+msgstr "Total treatments: {0} ({hours} hours)"
+
+#: src/app/clients/page.tsx
+msgid "treatment"
+msgstr "treatment"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Treatment Type"
+msgstr "Treatment Type"
+
+#: src/app/home.tsx
+msgid "treatments"
+msgstr "treatments"
+
+#: src/app/MyAppBar.tsx
+#: src/app/page.tsx
+#: src/app/pathnames.ts
+msgid "Treatments"
+msgstr "Treatments"
+
+#: src/lib/i18n/messages.ts
+msgid "Turn off"
+msgstr "Turn off"
+
+#: src/lib/i18n/messages.ts
+msgid "Turn on"
+msgstr "Turn on"
+
+#: src/app/treatments/import/page.tsx
+msgid "Type"
+msgstr "Type"
+
+#: src/lib/i18n/messages.ts
+msgid "Unexpected synchronization receipt"
+msgstr "Unexpected synchronization receipt"
+
+#: src/app/treatments/page.tsx
+msgid "Unknown"
+msgstr "Unknown"
+
+#: src/app/upload/page.tsx
+msgid "Uploads"
+msgstr "Uploads"
+
+#: src/lib/i18n/messages.ts
+msgid "Use an international phone number starting with +."
+msgstr "Use an international phone number starting with +."
+
+#: src/lib/i18n/messages.ts
+msgid "Use server version"
+msgstr "Use server version"
+
+#: src/app/admin/page.tsx
+msgid "Users"
+msgstr "Users"
+
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Website URL"
+msgstr "Website URL"

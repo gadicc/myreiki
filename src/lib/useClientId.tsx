@@ -1,7 +1,9 @@
-import React from "react";
-import { db, useGongoLive, useGongoSub } from "gongo-client-react";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { Autocomplete, TextField } from "@mui/material";
 import { useSearchParams } from "next/navigation";
+import React from "react";
+import { usePracticeData } from "@/client-data/Provider";
 
 export default function useClientId({
   initialClientId,
@@ -45,21 +47,32 @@ export function ClientSelect({
   practiceId: string;
   required?: boolean;
 }) {
-  const clients = useGongoLive((db) =>
-    db.collection("clients").find({ practiceId }),
-  );
-  useGongoSub("clientsForPractice", { _id: practiceId });
+  const { i18n } = useLingui();
+
+  const { clients: allClients } = usePracticeData();
+  const clients = allClients.filter((c) => c.practiceId === practiceId);
+  React.useEffect(() => {
+    if (clientId && !clients.some((c) => c._id === clientId)) setClientId("");
+  }, [clientId, clients, setClientId]);
 
   return (
     <Autocomplete
       options={clients}
       getOptionKey={(c) => c._id}
-      getOptionLabel={(c) => `${c.givenName} ${c.familyName}`}
-      value={db.collection("clients").findOne(clientId)}
+      getOptionLabel={(c) => `${c.givenName} ${c.familyName || ""}`.trim()}
+      value={clients.find((c) => c._id === clientId) ?? null}
       onChange={(event, newInput) => setClientId(newInput?._id || "")}
+      clearText={i18n._(msg`Clear`)}
+      closeText={i18n._(msg`Close`)}
+      openText={i18n._(msg`Open`)}
+      noOptionsText={i18n._(msg`No matching clients`)}
       disablePortal
       renderInput={(params) => (
-        <TextField {...params} label="Client" required={required} />
+        <TextField
+          {...params}
+          label={i18n._(msg`Client`)}
+          required={required}
+        />
       )}
     />
     /*

@@ -1,0 +1,114 @@
+name: Production release
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Bounded Production operation
+        type: choice
+        default: credential-smoke
+        options: [credential-smoke, cutover-release]
+concurrency:
+  group: myreiki-production
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  release:
+    # Enable only after bootstrap import, the legacy writer fence, and credential
+    # smoke have been reviewed. Merely pushing this workflow cannot cut over.
+    if: ${{ github.ref == 'refs/heads/main' && ((github.event_name == 'workflow_dispatch' && inputs.mode == 'credential-smoke' && vars.MYREIKI_PRODUCTION_SMOKE_ENABLED == 'true') || ((github.event_name != 'workflow_dispatch' || inputs.mode == 'cutover-release') && vars.MYREIKI_PRODUCTION_RELEASE_ENABLED == 'true')) }}
+    environment: Production
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24.21.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.3
+      - name: Install locked dependencies and restore managed links
+        run: |
+          bun install --frozen-lockfile --ignore-scripts
+          bun run loom init
+      - name: Check application and release wiring
+        run: bun run check:production
+      - name: Verify tracked source
+        run: node scripts/production-release.mjs source
+      - name: Prepare project-scoped production inputs
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          bun run loom db release prepare-vercel-project production .vercel/.env.production.local "$RUNNER_TEMP/vercel-production-env.json" .vercel/project.json
+          cp .vercel/.env.production.local "$RUNNER_TEMP/vercel-production.env"
+          chmod 600 "$RUNNER_TEMP/vercel-production.env"
+      - name: Verify exact project link
+        run: node scripts/production-release.mjs project
+      - name: Mask readable production values
+        run: bun run loom db release mask-env .vercel/.env.production.local
+      - name: Prepare metadata-backed build placeholders
+        run: bun run loom db release prepare-build-env .vercel/.env.production.local "$RUNNER_TEMP/vercel-production-env.json" .github/vercel-production-env.json .vercel/build-placeholders.json
+      - name: Validate migration credential
+        env:
+          LOOM_MIGRATION_DATABASE_ROLE: ${{ vars.LOOM_MIGRATION_DATABASE_ROLE }}
+          MIGRATION_DATABASE_URL_UNPOOLED: ${{ secrets.MIGRATION_DATABASE_URL_UNPOOLED }}
+        run: |
+          bun run loom db migrations verify-env --connect --env-file "$RUNNER_TEMP/vercel-production.env"
+      - name: Build without deployment credentials
+        run: env -u VERCEL_ORG_ID -u VERCEL_PROJECT_ID bunx --no-install vercel build --standalone --prod
+      - name: Verify deployable artifact
+        run: bun run loom db release verify-build-env .vercel/output .vercel/build-placeholders.json
+      - name: Reject local environment files in the standalone artifact
+        run: node scripts/artifact-policy.mjs
+      - name: Reverify source
+        run: node scripts/production-release.mjs source
+      - name: Record the current public deployment
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: node scripts/production-release.mjs snapshot "$RUNNER_TEMP/public-before-stage.json"
+      - name: Stage production without changing domains
+        id: stage
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          deployment_url="$(env -u VERCEL_ORG_ID -u VERCEL_PROJECT_ID bunx --no-install vercel deploy --prebuilt --prod --skip-domain --yes --meta "myreikiSourceSha=$GITHUB_SHA")"
+          DEPLOYMENT_URL="$deployment_url" node scripts/production-release.mjs staged >> "$GITHUB_OUTPUT"
+      - name: Verify staging left the public deployment unchanged
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: node scripts/production-release.mjs unchanged "$RUNNER_TEMP/public-before-stage.json"
+      - name: Run Drizzle migrations with the preserved production environment
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode != 'credential-smoke' }}
+        env:
+          LOOM_MIGRATION_DATABASE_ROLE: ${{ vars.LOOM_MIGRATION_DATABASE_ROLE }}
+          MIGRATION_DATABASE_URL_UNPOOLED: ${{ secrets.MIGRATION_DATABASE_URL_UNPOOLED }}
+        run: |
+          cp "$RUNNER_TEMP/vercel-production.env" .vercel/.env.production.local
+          node --env-file=.vercel/.env.production.local -e 'const {spawnSync}=require("node:child_process"); const result=spawnSync("bun",["run","db:migrate"],{stdio:"inherit"});process.exit(result.status ?? 1)'
+      - name: Smoke staged readiness before promotion
+        env:
+          DEPLOYMENT_URL: ${{ steps.stage.outputs.deployment_url }}
+          MYREIKI_CREDENTIAL_SMOKE: ${{ inputs.mode == 'credential-smoke' && 'true' || 'false' }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: node scripts/production-release.mjs smoke
+      - name: Verify smoke left the public deployment unchanged
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: node scripts/production-release.mjs unchanged "$RUNNER_TEMP/public-before-stage.json"
+      - name: Promote the verified deployment
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode != 'credential-smoke' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DEPLOYMENT_ID: ${{ steps.stage.outputs.deployment_id }}
+        run: bun run loom db release promote-vercel "$DEPLOYMENT_ID"
+      - name: Verify live readiness and alias identity
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode != 'credential-smoke' }}
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DEPLOYMENT_ID: ${{ steps.stage.outputs.deployment_id }}
+        run: node scripts/production-release.mjs live

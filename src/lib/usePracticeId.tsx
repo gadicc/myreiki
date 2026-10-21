@@ -1,6 +1,9 @@
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React from "react";
-import { useGongoUserId, useGongoLive, useGongoSub } from "gongo-client-react";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { usePracticeData } from "@/client-data/Provider";
 
 export default function usePracticeId() {
   const [practiceId, setPracticeId] = React.useState("");
@@ -40,15 +43,13 @@ export function PracticeSelect({
   sx?: Parameters<typeof FormControl>[0]["sx"];
   show?: boolean;
 }) {
-  const userId = useGongoUserId();
+  const { i18n } = useLingui();
 
-  const practices = useGongoLive((db) =>
-    db.collection("practices").find({ userId }),
-  );
-  useGongoSub("practicesForUser");
+  const { practices } = usePracticeData();
 
   React.useEffect(() => {
-    if (!practiceId && practices.length) setPracticeId(practices[0]._id);
+    if (!practices.some((p) => p._id === practiceId))
+      setPracticeId(practices[0]?._id ?? "");
   }, [practiceId, practices, setPracticeId]);
 
   if (show === undefined) show = practices.length > 1;
@@ -56,12 +57,14 @@ export function PracticeSelect({
 
   return (
     <FormControl fullWidth sx={{ my: 1, ...sx }}>
-      <InputLabel id="practiceId-label">Practice</InputLabel>
+      <InputLabel id="practiceId-label">
+        <Trans>Practice</Trans>
+      </InputLabel>
       <Select
         labelId="practiceId-label"
         id="practiceId-select"
         value={practiceId}
-        label="Practice"
+        label={i18n._(msg`Practice`)}
         onChange={(e) => setPracticeId(e.target.value)}
       >
         {practices.map((practice) => (

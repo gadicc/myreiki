@@ -1,19 +1,15 @@
-import { z } from "zod";
+import * as v from "valibot";
+import { emailSchema, phoneSchema } from "./contact";
 
-export const clientSchema = z.object({
-  _id: z.string().optional(),
-  practiceId: z.string(),
-  givenName: z.string(),
-  familyName: z.string().optional(),
-  phone: z
-    .string()
-    .regex(/^(\+[1-9]\d{1,14})?$/) // Intl +XX or nothing
-    .optional(),
-  email: z.string().email().optional().or(z.literal("")),
-  notes: z.string().optional(),
-  createdAt: z.date().optional(),
+export const clientSchema = v.object({
+  _id: v.optional(v.string()),
+  practiceId: v.string(),
+  givenName: v.string(),
+  familyName: v.optional(v.string()),
+  phone: phoneSchema,
+  email: emailSchema,
+  notes: v.optional(v.string()),
+  createdAt: v.optional(v.date()),
 });
 
-export type Client = z.infer<typeof clientSchema> & {
-  __ObjectIDs: string[];
-};
+export type Client = v.InferOutput<typeof clientSchema>;

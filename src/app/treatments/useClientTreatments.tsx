@@ -1,33 +1,22 @@
-import React from "react";
-import { db, useGongoSub, useGongoLive } from "gongo-client-react";
-import { Cursor } from "gongo-client";
-import { Treatment } from "@/schemas";
+import { usePracticeData } from "@/client-data/Provider";
 
 export default function useClientTreatments(
   practiceId: string,
-  { sort }: { sort?: Parameters<Cursor<Treatment>["sort"]> } = {},
+  { sort }: { sort?: ["date", "asc" | "desc"] } = {},
 ) {
-  useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
-  useGongoSub(practiceId && "treatmentsForPractice", { _id: practiceId });
-
-  const _clients = useGongoLive((db) =>
-    db.collection("clients").find({ practiceId }),
-  );
-  const _treatments = useGongoLive((db) => {
-    const cursor = db.collection("treatments").find({ practiceId });
-    if (sort) cursor.sort(...sort);
-    return cursor;
-  });
-  const combined = React.useMemo(
-    () =>
-      _treatments.map((treatment) => {
-        const client =
-          _clients &&
-          db.collection("clients").findOne({ _id: treatment.clientId });
-        return { ...treatment, client };
-      }),
-    [_treatments, _clients],
-  );
-
+  const { clients, treatments } = usePracticeData();
+  const combined = treatments
+    .filter((t) => t.practiceId === practiceId)
+    .map((treatment) => ({
+      ...treatment,
+      client: clients.find((c) => c._id === treatment.clientId),
+    }));
+  if (sort)
+    combined.sort(
+      (a, b) =>
+        (new Date(a.date as Date).getTime() -
+          new Date(b.date as Date).getTime()) *
+        (sort[1] === "desc" ? -1 : 1),
+    );
   return combined;
 }
