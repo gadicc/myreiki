@@ -6,10 +6,10 @@ import {
   LinearProgressProps,
   Typography,
 } from "@mui/material";
+import NextLink from "next/link";
 import React from "react";
 import useClientTreatments from "@/app/treatments/useClientTreatments";
 import usePracticeId from "@/lib/usePracticeId";
-import NextLink from "next/link";
 
 const SHIHANKAKU_REQUIRED_CLIENTS = 40;
 const SHIHANKAKU_REQUIRED_HOURS = 120;

@@ -1,6 +1,6 @@
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React from "react";
-import { useGongoUserId, useGongoLive, useGongoSub } from "gongo-client-react";
-import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { usePracticeData } from "@/client-data/Provider";
 
 export default function usePracticeId() {
   const [practiceId, setPracticeId] = React.useState("");
@@ -40,15 +40,11 @@ export function PracticeSelect({
   sx?: Parameters<typeof FormControl>[0]["sx"];
   show?: boolean;
 }) {
-  const userId = useGongoUserId();
-
-  const practices = useGongoLive((db) =>
-    db.collection("practices").find({ userId }),
-  );
-  useGongoSub("practicesForUser");
+  const { practices } = usePracticeData();
 
   React.useEffect(() => {
-    if (!practiceId && practices.length) setPracticeId(practices[0]._id);
+    if (!practices.some((p) => p._id === practiceId))
+      setPracticeId(practices[0]?._id ?? "");
   }, [practiceId, practices, setPracticeId]);
 
   if (show === undefined) show = practices.length > 1;

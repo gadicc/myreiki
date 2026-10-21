@@ -1,167 +1,130 @@
 "use client";
+import {
+  Alert,
+  Button,
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React from "react";
-import { Container, Typography } from "@mui/material";
-import { Client, Treatment, clientSchema, treatmentSchema } from "@/schemas";
-import { WithId, db, useGongoUserId } from "gongo-client-react";
+import { practiceDatabase as database } from "@/client-data/database";
+import { usePracticeData } from "@/client-data/Provider";
+import { parseSpreadsheet } from "@/data/spreadsheet";
 import usePracticeId from "@/lib/usePracticeId";
 
-const cifmCache = new Map<string, string>();
-function clientIdFromName(name: string, practiceId: string) {
-  const cached = cifmCache.get(name);
-  if (cached) return cached;
-
-  const [givenName, familyName] = name.split(" ");
-  const query = { givenName, familyName, practiceId };
-  const existingClient = db.collection("clients").findOne(query);
-  if (existingClient) {
-    cifmCache.set(name, existingClient._id);
-    return existingClient._id;
-  }
-
-  const doc = { ...query, createdAt: new Date(), __ObjectIDs: ["practiceId"] };
-  clientSchema.parse(doc);
-  const client = db.collection("clients").insert(doc) as WithId<Client>; // TODO, gongo
-  cifmCache.set(name, client._id);
-  return client._id;
-}
-
 export default function TreatmentsImport() {
-  const userId = useGongoUserId();
-  const [input, setInput] = React.useState("");
-  const [data, setData] = React.useState<
-    Array<
-      Omit<Extract<Treatment, { type: "reiki" }>, "clientId"> & {
-        clientName: string;
-      }
-    >
-  >([]);
+  const data = usePracticeData();
   const { practiceId, PracticeSelect } = usePracticeId();
-
-  React.useMemo(() => {
-    const lines = input.split("\n");
-    if (!lines.length || lines[0] === "") return;
-
-    const treatments = lines.map((line) => {
-      const [date, clientName, duration, type, notes] = line.split("\t");
+  const [input, setInput] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [saving, setSaving] = React.useState(false);
+  const preview = React.useMemo(() => {
+    try {
+      return { rows: parseSpreadsheet(input), error: "" };
+    } catch (error) {
       return {
-        date: new Date(date),
-        clientName: clientName?.trim(),
-        practitionerId: userId || "NO_USER_ID_SET_YET",
-        practiceId: practiceId || "NO_PRACTICE_ID_SET_YET",
-        duration: parseInt(duration),
-        type: "reiki" as const,
-        reiki: {
-          type:
-            (type?.trim() as Extract<
-              Treatment,
-              { type: "reiki" }
-            >["reiki"]["type"]) || "regular",
-        },
-        notes: notes?.trim(),
-        __ObjectIDs: ["practitionerId", "practiceId"],
+        rows: [],
+        error: error instanceof Error ? error.message : "Invalid paste",
       };
-    });
-    setData(treatments);
-  }, [input, practiceId, userId]);
-
-  function onSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    if (!userId) throw new Error("No user ID");
-    if (!practiceId) throw new Error("No practice ID");
-
-    const treatments = data.map((_treatment) => {
-      const { clientName, ...rest } = _treatment;
-      const clientId = clientIdFromName(clientName || "Unknown", practiceId);
-      const treatment: Extract<Treatment, { type: "reiki" }> = {
-        ...rest,
-        clientId,
-      };
-      treatmentSchema.parse(treatment);
-      return treatment;
-    });
-    console.log(treatments);
-
-    for (const treatment of treatments) {
-      db.collection("treatments").insert(treatment);
     }
-  }
-
+  }, [input]);
+  if (!data.binding)
+    return <Container>Sign in to import treatments.</Container>;
+  const binding = data.binding;
   return (
     <Container sx={{ my: 2 }}>
+      <Typography variant="h4">Import Reiki treatments</Typography>
       <PracticeSelect />
-      <Typography variant="h4">Import Reiki Treatments</Typography>
       <Typography>
-        Copy and paste and relevant cells from a spreadsheet into the box below.
+        Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO
+        date and time with timezone), full client name, whole minutes, Reiki
+        type, notes. All rows are checked before saving.
       </Typography>
-      <Typography>
-        Skip the header row. The columns should be in the following order: Date,
-        Client Name, Minutes, Type
-        {' ("regular", "self", "distance", "non-human")'}, Comments / Byosen.
-        Fields should be tab separated (automatic when copying from Google
-        Sheets).
-      </Typography>
-      <form onSubmit={onSubmit}>
-        <textarea
-          rows={10}
-          style={{ width: "100%" }}
+      <form
+        onSubmit={async (event) => {
+          event.preventDefault();
+          setSaving(true);
+          try {
+            const digest = Array.from(
+              new Uint8Array(
+                await crypto.subtle.digest(
+                  "SHA-256",
+                  new TextEncoder().encode(input),
+                ),
+              ),
+              (byte) => byte.toString(16).padStart(2, "0"),
+            ).join("");
+            const result = await database.importSpreadsheet(
+              binding,
+              practiceId,
+              preview.rows,
+              digest,
+            );
+            setMessage(
+              result.repeated
+                ? "This paste was already saved on this device."
+                : `${result.imported} treatments saved on this device.`,
+            );
+            void data.sync();
+          } catch (error) {
+            setMessage(
+              error instanceof Error ? error.message : "Could not save import",
+            );
+          } finally {
+            setSaving(false);
+          }
+        }}
+      >
+        <TextField
+          label="Spreadsheet cells"
+          multiline
+          minRows={8}
+          fullWidth
           value={input}
-          onChange={(e) => setInput(e.target.value)}
-        ></textarea>
-        {/*
-      <Typography>
-        This page allows you to import treatments from a CSV file.
-      </Typography>
-      <Typography>
-        The CSV file should have the following columns:
-      </Typography>
-      <ul>
-        <li>Date</li>
-        <li>Client</li>
-        <li>Duration</li>
-        <li>Type</li>
-        <li>Notes</li>
-      </ul>
-      <Typography>
-        The date should be in the format YYYY-MM-DD. The client should be the
-        full name of the client.
-      </Typography>
-      <Typography>
-        The duration should be in minutes. The type should be one of "regular",
-        "self", "distance", or "animal".
-      </Typography>
-      <Typography>
-        The notes should be any additional notes about the treatment.
-      </Typography>
-      <Typography>
-        The file should be uploaded below.
-      </Typography>
-      <input type="file" />
-      */}
-        <button type="submit">Submit</button>
+          disabled={saving}
+          onChange={(event) => setInput(event.target.value)}
+          sx={{ my: 2 }}
+        />
+        {preview.error && <Alert severity="error">{preview.error}</Alert>}
+        {message && <Alert severity="info">{message}</Alert>}
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={
+            saving || !practiceId || !preview.rows.length || !!preview.error
+          }
+        >
+          Save import
+        </Button>
       </form>
-      <p>Preview:</p>
-      <table width="100%" border={1} cellSpacing={0} cellPadding={3}>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Client</th>
-            <th>Duration</th>
-            <th>Type</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((treatment, i) => (
-            <tr key={i}>
-              <td>{(treatment.date as Date)?.toDateString()}</td>
-              <td>{treatment.clientName}</td>
-              <td>{treatment.duration}</td>
-              <td>{treatment.type}</td>
-              <td>{treatment.notes}</td>
-            </tr>
+      <Typography variant="h6" sx={{ mt: 2 }}>
+        Preview
+      </Typography>
+      <Table>
+        <TableHead>
+          <TableRow>
+            {["Date", "Client", "Minutes", "Type", "Notes"].map((title) => (
+              <TableCell key={title}>{title}</TableCell>
+            ))}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {preview.rows.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{row.date.toISOString()}</TableCell>
+              <TableCell>{row.clientName}</TableCell>
+              <TableCell>{row.duration}</TableCell>
+              <TableCell>{row.reikiType}</TableCell>
+              <TableCell sx={{ whiteSpace: "pre-wrap" }}>{row.notes}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </Container>
   );
 }

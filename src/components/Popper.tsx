@@ -1,8 +1,8 @@
 import {
   Popper as MuiPopper,
+  styled,
   Theme,
   TypeBackground,
-  styled,
 } from "@mui/material";
 
 // From https://github.com/mui/material-ui/blob/master/docs/data/material/components/popper/ScrollPlayground.js

@@ -1,6 +1,3 @@
-import React from "react";
-import { sha256 } from "js-sha256";
-
 import { Avatar } from "@mui/material";
 import { Client } from "@/schemas/client";
 
@@ -45,11 +42,6 @@ export function ClientAvatar({
 }) {
   const avatarProps: Parameters<typeof Avatar>[0]["sx"] =
     clientAvatarProps(client);
-  const avatarSrc =
-    ("email" in client &&
-      client.email &&
-      `https://www.gravatar.com/avatar/${sha256(client.email.trim().toLowerCase())}?d=wavatar`) ||
-    undefined;
 
-  return <Avatar src={avatarSrc} {...avatarProps} />;
+  return <Avatar {...avatarProps} />;
 }

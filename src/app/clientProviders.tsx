@@ -1,9 +1,10 @@
 "use client";
 import { asyncConfirm, ConfirmDialog } from "@gadicc/loom/mui/confirm";
 import { LoomPwaLifecycle } from "@gadicc/loom/next/pwa";
-import { SerwistProvider } from "@serwist/next/react";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { SerwistProvider } from "@serwist/next/react";
+import { PracticeDataProvider } from "@/client-data/Provider";
 
 export default function ClientProviders({
   children,
@@ -26,7 +27,7 @@ export default function ClientProviders({
         updateCheckIntervalMs={60_000}
       />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        {children}
+        <PracticeDataProvider>{children}</PracticeDataProvider>
         <ConfirmDialog />
       </LocalizationProvider>
     </SerwistProvider>

@@ -1,14 +1,10 @@
 "use client";
-import React from "react";
-import { useGongoUserId, useGongoLive } from "gongo-client-react";
 import { Button, Container } from "@mui/material";
 import NextLink from "next/link";
+import { usePracticeData } from "@/client-data/Provider";
 
 export default function Practices() {
-  const userId = useGongoUserId();
-  const practices = useGongoLive((db) =>
-    db.collection("practices").find({ userId }),
-  );
+  const { practices } = usePracticeData();
 
   return (
     <Container sx={{ my: 2 }}>
@@ -16,7 +12,9 @@ export default function Practices() {
       <ol style={{ marginBottom: 30 }}>
         {practices.map((practice) => (
           <li key={practice._id}>
-            <a href={"/practice/edit/" + practice._id}>{practice.name}</a>
+            <NextLink href={"/practice/edit/" + practice._id}>
+              {practice.name}
+            </NextLink>
           </li>
         ))}
       </ol>

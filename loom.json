@@ -1,0 +1,107 @@
+{
+  "$schema": "https://loom.gadicc.local/project-manifest.schema.json",
+  "version": 1,
+  "project": {
+    "name": "myreiki",
+    "framework": {
+      "kind": "nextjs",
+      "router": "app",
+      "srcDir": true
+    },
+    "tooling": {
+      "dependencies": {
+        "config": "package.json",
+        "manager": "bun"
+      },
+      "tasks": {
+        "config": "package.json",
+        "runner": "bun"
+      }
+    }
+  },
+  "features": {
+    "pwa": {
+      "status": "active",
+      "activatedOn": "2026-10-21",
+      "config": {
+        "confirmAdapter": "mui",
+        "modules": {
+          "clientProviderModule": "src/app/clientProviders.tsx",
+          "serviceWorkerModule": "src/app/sw.ts",
+          "serwistConfig": "serwist.config.mjs"
+        },
+        "provider": {
+          "managed": false
+        },
+        "updateCheckIntervalMs": 60000,
+        "updateMode": "prompt"
+      },
+      "managedTasks": {
+        "pwa:build": "c1:5655e3544e51558effbad6d4ef564399f108be4f819d7a64ef0236bcec7bc771"
+      }
+    },
+    "db": {
+      "status": "active",
+      "activatedOn": "2026-10-21",
+      "config": {
+        "dirs": {
+          "drizzleOutDir": "drizzle",
+          "fixtureDir": "tests/fixtures/db",
+          "schemaDir": "src/db/schema",
+          "valibotGeneratedDir": "src/db/valibot/generated",
+          "valibotRefinementsDir": "src/db/valibot/refinements"
+        },
+        "modules": {
+          "drizzleConfig": "drizzle.config.ts",
+          "fixtureDumpScript": "scripts/dump-test-tables.ts",
+          "neonFullModule": "src/db/neonFull.ts",
+          "neonModule": "src/db/neon.ts",
+          "pgliteHarnessModule": "tests/memory-pglite.ts",
+          "refinementsCommonModule": "src/db/valibot/refinements/_common.ts",
+          "scriptsTsconfig": "scripts/tsconfig.scripts.json",
+          "valibotBarrelModule": "src/db/valibot/index.ts"
+        },
+        "provider": {
+          "connectionStatus": "connected",
+          "development": false,
+          "kind": "neon",
+          "provisionedBy": "vercel-marketplace",
+          "region": "sin1",
+          "resourceName": "myreiki-db",
+          "vercelEnvironments": ["production"]
+        }
+      },
+      "managedTasks": {
+        "db:fixtures": "c1:d2b6a4f963f3dc74413d67f5b74c300336fb7935d0a2f437f6e6c887062c402a",
+        "db:generate": "c1:67ddd19dbc78986398b98d08d09c771057eb721a9a71fc453a42a31b41813101",
+        "db:migrate": "c1:ac1f3c5abac61f36d736559d8ec806e2bbf6c11d12d81559f207629914c95a6d",
+        "db:push": "c1:eb9d0f44ae0d110fc8a583bd3298140dee5199375dca15e0e0c3f43ef57eb2f0",
+        "drizzle-kit": "c1:643fe3e02158b2750321209ac65c7b4ef550347d3550b57b5db513de7c6e0555",
+        "schema:gen": "c1:a2e30ae4b6dab6ed65061a832b3f2664089de4473b7a9e257a5bd80e7af2772c"
+      },
+      "managedFiles": {
+        "drizzle.config.ts": "c1:625551b34f258035cdd7ef497aa8e6e5ba424817613f40fd2fdc98417a556bbc",
+        "scripts/tsconfig.scripts.json": "c1:8c6348421471ae95dd5e4e052de5ae5408df88ce36628f318c7f98a1cd7fe23d",
+        "src/db/neon.ts": "c1:dada6ee7764b7ba9211779388f062ae6e65e1e53f2107fe6cc50b2c5146afe6f",
+        "src/db/neonFull.ts": "c1:d89ad7be91e4e17065af01785c5479ae16a0028d1a702f4a6384919bc483112b",
+        "src/db/valibot/refinements/_common.ts": "c1:316d0ec999633f08b76fe3aa3c887de10095667365f8b15347e9b6184b8819bf",
+        "tests/memory-pglite.ts": "c1:40630af6a52ff83201d4f734dbeaadab120ef39743edcbef4b768b70196e51dd"
+      }
+    },
+    "auth": {
+      "status": "active",
+      "activatedOn": "2026-10-21",
+      "config": {
+        "entrypoints": {
+          "routeHandler": "src/app/api/auth/[...all]/route.ts"
+        },
+        "modules": {
+          "authClientModule": "src/lib/auth-client.ts",
+          "authModule": "src/server/authFactory.ts",
+          "authRuntimeModule": "src/server/sqlAuth.ts"
+        },
+        "requestSessionReaders": "app-owned"
+      }
+    }
+  }
+}

@@ -1,15 +1,6 @@
 "use client";
-import React from "react";
 import {
-  db,
-  useGongoOne,
-  useGongoSub,
-  useGongoUserId,
-  OptionalId,
-} from "gongo-client-react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import dayjs, { type Dayjs } from "dayjs";
-import {
+  Alert,
   Button,
   Container,
   FormControl,
@@ -21,16 +12,21 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers";
-
-import { treatmentSchema, Treatment } from "@/schemas";
+import dayjs, { type Dayjs } from "dayjs";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React from "react";
+import { useWatch } from "react-hook-form";
+import { usePracticeData } from "@/client-data/Provider";
+import { useCanonicalRecordId } from "@/client-data/useCanonicalRecordId";
+import { useRecordDraft } from "@/client-data/useRecordDraft";
+import TreatmentDateField from "@/components/TreatmentDateField";
 import ClientOnly from "@/lib/ClientOnly";
 import { useForm } from "@/lib/forms";
-import usePracticeId from "@/lib/usePracticeId";
 import useClientId from "@/lib/useClientId";
-import { useWatch } from "react-hook-form";
+import usePracticeId from "@/lib/usePracticeId";
+import { uuidV7 } from "@/lib/uuid";
+import { Treatment, treatmentSchema } from "@/schemas";
 import BodyPoints from "./bodyPoints";
-import { ObjectId } from "@/api-lib/objectId";
 
 export type UseFormTreatmentProps = ReturnType<typeof useForm<Treatment>>;
 
@@ -43,38 +39,37 @@ const sxDurationButton = {
 
 export default function TreatmentEdit() {
   const router = useRouter();
-  const userId = useGongoUserId();
+  const data = usePracticeData();
+  const userId = data.profile?._id;
+  const [saveError, setSaveError] = React.useState("");
   const params = useParams();
   const searchParams = useSearchParams();
-  const { practiceId, PracticeSelect } = usePracticeId();
+  const { practiceId, setPracticeId, PracticeSelect } = usePracticeId();
   const _id = params?._id;
   const cloneId = searchParams?.get("cloneId");
 
-  useGongoSub(_id === "new" ? false : "treatment", { _id });
-  const existing = useGongoOne((db) =>
-    db.collection("treatments").find({ _id: cloneId || _id }),
-  );
+  const canonicalRecordId = useCanonicalRecordId("treatments", cloneId || _id);
+  const existing = data.treatments.find((row) => row._id === canonicalRecordId);
+  const { draft, acceptSaved } = useRecordDraft(existing);
+  React.useEffect(() => {
+    if (existing) setPracticeId(existing.practiceId);
+  }, [existing?.practiceId, setPracticeId]);
   const { clientId, ClientSelect } = useClientId({
     initialClientId: existing?.clientId,
   });
 
-  function onSubmit(
-    treatment: OptionalId<Treatment>,
+  async function onSubmit(
+    treatment: Treatment,
     _event?: React.BaseSyntheticEvent,
   ) {
     if (!practiceId) return;
-    treatment.practiceId = practiceId;
+    treatment.practiceId = existing?.practiceId || practiceId;
 
     if (!userId) return;
     treatment.practitionerId = userId;
 
     if (!clientId) return;
     treatment.clientId = clientId;
-
-    if (!treatment.__ObjectIDs) treatment.__ObjectIDs = [];
-    for (const key of ["_id", "clientId", "practitionerId", "practiceId"]) {
-      if (!treatment.__ObjectIDs.includes(key)) treatment.__ObjectIDs.push(key);
-    }
 
     if (treatment.date instanceof dayjs)
       treatment.date = (treatment.date as unknown as Dayjs).toDate();
@@ -84,14 +79,22 @@ export default function TreatmentEdit() {
     // console.log(treatment);
     // return;
 
-    if (_id === "new" || cloneId) {
-      // No longer necessary, we now set this explicitly earlier.
-      // if (cloneId) delete treatment._id;
-
-      const insertedDoc = db.collection("treatments").insert(treatment);
-      router.push(`/treatment/edit/${insertedDoc._id}`);
-    } else {
-      db.collection("treatments").update({ _id }, { $set: treatment });
+    try {
+      const saved = await data.save(
+        "treatments",
+        { ...treatment, _id: treatment._id || uuidV7() },
+        _id === "new" || cloneId ? 0 : draft?.version,
+      );
+      acceptSaved(saved);
+      setSaveError("");
+      if (_id === "new" || cloneId) router.push(`/treatment/edit/${saved._id}`);
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Could not save on this device",
+      );
+      return;
     }
 
     const event = _event as
@@ -102,12 +105,33 @@ export default function TreatmentEdit() {
     if (dest === "back") router.back();
   }
 
+  const newId = React.useRef(uuidV7()).current;
+  const formValues = React.useMemo(() => {
+    if (!draft) return undefined;
+    const id = cloneId ? newId : draft._id;
+    return {
+      ...draft,
+      _id: id,
+      date: cloneId ? dayjs() : dayjs(draft.date),
+      ...(cloneId && draft.bodyPoints
+        ? {
+            bodyPoints: Object.fromEntries(
+              Object.entries(draft.bodyPoints).map(([side, points]) => [
+                side,
+                points.map((p) => ({ ...p, _id: uuidV7(), treatmentId: id })),
+              ]),
+            ) as Treatment["bodyPoints"],
+          }
+        : {}),
+    };
+  }, [draft, cloneId, newId]);
+
   const useFormProps = useForm<Treatment>({
-    values: existing ? { ...existing, date: dayjs(existing.date) } : undefined,
+    values: formValues,
     schema: treatmentSchema,
     defaultValues: {
       // We assign _id now so it can be used in subforms, e.g. bodyPoints.
-      _id: new ObjectId().toHexString(),
+      _id: newId,
       clientId: "",
       practitionerId: userId || "",
       practiceId: practiceId || "",
@@ -136,14 +160,6 @@ export default function TreatmentEdit() {
   const treatmentId = getValues("_id");
   if (!treatmentId) throw new Error("treatmentId not set");
 
-  // If we are cloning a treatment, set the date to now and dirty the form.
-  React.useEffect(() => {
-    if (existing && cloneId) {
-      setValue("_id", new ObjectId().toHexString(), { shouldDirty: true });
-      setValue("date", dayjs(), { shouldDirty: true });
-    }
-  }, [existing, cloneId, setValue]);
-
   if (!existing && _id !== "new") return "Loading or not found...";
   if (!userId) return "Not logged in";
 
@@ -151,29 +167,13 @@ export default function TreatmentEdit() {
 
   return (
     <Container sx={{ my: 2 }}>
+      {saveError && <Alert severity="error">{saveError}</Alert>}
       <ClientOnly>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2} direction="column">
-            <PracticeSelect />
+            {!existing && <PracticeSelect />}
             <ClientSelect practiceId={practiceId} required />
-            <Controller
-              rules={{ required: true }}
-              control={control}
-              name="date"
-              render={({ field }) => (
-                <DateTimePicker
-                  label="Date *"
-                  value={field.value ? dayjs(field.value) : null}
-                  onChange={(value) => field.onChange(value ?? undefined)}
-                  slotProps={{
-                    textField: {
-                      name: field.name,
-                      onBlur: field.onBlur,
-                    },
-                  }}
-                />
-              )}
-            />
+            <TreatmentDateField control={control} />
             <Stack direction="row" spacing={2} useFlexGap>
               <TextField
                 {...fr("duration")}

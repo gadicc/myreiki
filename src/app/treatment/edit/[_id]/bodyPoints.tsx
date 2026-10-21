@@ -1,7 +1,10 @@
 "use client";
-import React from "react";
-import { ControllerRenderProps } from "react-hook-form";
-
+import {
+  ArrowBack,
+  ArrowDownward,
+  ArrowForward,
+  ArrowUpward,
+} from "@mui/icons-material";
 import {
   Button,
   IconButton,
@@ -11,18 +14,13 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import {
-  ArrowBack,
-  ArrowDownward,
-  ArrowForward,
-  ArrowUpward,
-} from "@mui/icons-material";
-
-import { Treatment } from "@/schemas";
-import Popper, { Arrow } from "@/components/Popper";
-import BodyFront from "@/components/body-front.svg";
+import React from "react";
+import { ControllerRenderProps } from "react-hook-form";
 import BodyBack from "@/components/body-back.svg";
-import { ObjectId } from "@/api-lib/objectId";
+import BodyFront from "@/components/body-front.svg";
+import Popper, { Arrow } from "@/components/Popper";
+import { uuidV7 } from "@/lib/uuid";
+import { Treatment } from "@/schemas";
 
 // https://stackoverflow.com/a/49729715/1839099
 function precisionRound(number: number, precision: number) {
@@ -85,7 +83,7 @@ function PointPopper({
   ) {
     event.preventDefault();
     event.stopPropagation();
-    if (point) {
+    if (point && Number.isInteger(size) && size >= 1 && size <= 5) {
       const newPoints = [...points];
       newPoints[pointIdx] = { ...point, size };
       setPoints(newPoints);
@@ -97,7 +95,7 @@ function PointPopper({
   ) {
     event.preventDefault();
     event.stopPropagation();
-    if (point) {
+    if (point && Number.isInteger(level) && level >= 1 && level <= 5) {
       const newPoints = [...points];
       newPoints[pointIdx] = { ...point, level };
       setPoints(newPoints);
@@ -112,7 +110,11 @@ function PointPopper({
     event.stopPropagation();
     if (point) {
       const newPoints = [...points];
-      newPoints[pointIdx] = { ...point, x: point.x + x, y: point.y + y };
+      newPoints[pointIdx] = {
+        ...point,
+        x: Math.max(0, Math.min(1, point.x + x)),
+        y: Math.max(0, Math.min(1, point.y + y)),
+      };
       setPoints(newPoints);
     }
   }
@@ -155,10 +157,9 @@ function PointPopper({
           <Stack
             direction="row"
             spacing={1}
-            alignItems="center"
-            sx={{ marginBottom: 1 }}
+            sx={{ marginBottom: 1, alignItems: "center" }}
           >
-            <Typography width={50}>Size: </Typography>
+            <Typography sx={{ width: 50 }}>Size: </Typography>
             <ToggleButtonGroup
               value={point?.size}
               exclusive
@@ -178,8 +179,8 @@ function PointPopper({
             </ToggleButtonGroup>
           </Stack>
 
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography width={50}>Level: </Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Typography sx={{ width: 50 }}>Level: </Typography>
             <ToggleButtonGroup
               value={point?.level}
               exclusive
@@ -258,27 +259,20 @@ function Diagram({
     const y = event.clientY - rect.top + 2;
     const xPct = precisionRound(x / rect.width, 4);
     const yPct = precisionRound(y / rect.height, 4);
+    addPoint(Math.max(0, Math.min(1, xPct)), Math.max(0, Math.min(1, yPct)));
+  }
+  function addPoint(x: number, y: number) {
     setPoints([
       ...points,
       {
-        _id: new ObjectId().toHexString(),
+        _id: uuidV7(),
         treatmentId,
-        x: xPct,
-        y: yPct,
+        x,
+        y,
         size: 2,
         level: 1,
       },
     ]);
-    /*
-    console.log({
-      x,
-      y,
-      xPct,
-      yPct,
-      rectWidth: rect.width,
-      rectHeight: rect.height,
-    });
-    */
   }
 
   const onClickPoint = React.useCallback(
@@ -320,7 +314,19 @@ function Diagram({
         cursor: "pointer",
         WebkitTapHighlightColor: "transparent",
       }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Add ${name} body point`}
       onClick={onClick}
+      onKeyDown={(event) => {
+        if (
+          event.target === event.currentTarget &&
+          (event.key === "Enter" || event.key === " ")
+        ) {
+          event.preventDefault();
+          addPoint(0.5, 0.5);
+        }
+      }}
     >
       <Component width="100%" height={undefined} />
       <div
@@ -383,26 +389,12 @@ export default function BodyPoints({
 }: Omit<ControllerRenderProps<Treatment, "bodyPoints">, "ref" | "onBlur"> & {
   treatmentId: string;
 }) {
-  const [backPoints, _setBackPoints] = React.useState<BodyPoint[]>(
-    value?.back || [],
-  );
-  const [frontPoints, _setFrontPoints] = React.useState<BodyPoint[]>(
-    value?.front || [],
-  );
-  const setBackPoints = React.useCallback(
-    (backPoints: BodyPoint[]) => {
-      _setBackPoints(backPoints);
-      onChange({ front: frontPoints, back: backPoints });
-    },
-    [frontPoints, onChange],
-  );
-  const setFrontPoints = React.useCallback(
-    (frontPoints: BodyPoint[]) => {
-      _setFrontPoints(frontPoints);
-      onChange({ front: frontPoints, back: backPoints });
-    },
-    [backPoints, onChange],
-  );
+  const backPoints = value?.back ?? [];
+  const frontPoints = value?.front ?? [];
+  const setBackPoints = (back: BodyPoint[]) =>
+    onChange({ front: frontPoints, back });
+  const setFrontPoints = (front: BodyPoint[]) =>
+    onChange({ front, back: backPoints });
 
   return (
     <div>

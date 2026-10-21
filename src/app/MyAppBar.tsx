@@ -1,41 +1,39 @@
 "use client";
-import * as React from "react";
-import { useGongoOne, useGongoUserId } from "gongo-client-react";
-import { usePathname, useSearchParams } from "next/navigation";
-import NextLink from "next/link";
-import { authClient } from "@/lib/auth-client";
-
+import {
+  AccountCircle,
+  AdminPanelSettings,
+  Dry,
+  Groups,
+  Home,
+  Info,
+  Menu as MenuIcon,
+  NightShelter,
+} from "@mui/icons-material";
 import {
   AppBar,
   Avatar,
   Box,
   Button,
   Divider,
-  Toolbar,
-  Typography,
   IconButton,
-  SwipeableDrawer,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  MenuItem,
   Menu,
+  MenuItem,
+  SwipeableDrawer,
+  Toolbar,
+  Typography,
 } from "@mui/material";
-import {
-  AccountCircle,
-  Info,
-  AdminPanelSettings,
-  Home,
-  Menu as MenuIcon,
-  Groups,
-  Dry,
-  NightShelter,
-} from "@mui/icons-material";
+import NextLink from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import * as React from "react";
+import { SITE_TITLE } from "@/api-lib/consts";
+import { usePracticeData } from "@/client-data/Provider";
 
 import pathnames from "./pathnames";
-import { SITE_TITLE } from "@/api-lib/consts";
 
 export default function MyAppBar() {
   const pathname = usePathname();
@@ -49,10 +47,8 @@ export default function MyAppBar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const userId = useGongoUserId();
-  const user = useGongoOne((db) =>
-    db.collection("users").find({ _id: userId }),
-  );
+  const { profile: user, signIn, signOut } = usePracticeData();
+  const userId = user?._id;
   const isAdmin = user && user.admin;
   const isPractitioner = user && user.practitioner;
 
@@ -215,7 +211,7 @@ export default function MyAppBar() {
                         : "avatar"
                     }
                     src={user?.image as string}
-                    imgProps={{ referrerPolicy: "no-referrer" }}
+                    slotProps={{ img: { referrerPolicy: "no-referrer" } }}
                   />
                 ) : (
                   <AccountCircle />
@@ -245,7 +241,7 @@ export default function MyAppBar() {
                 </MenuItem>
                 <MenuItem
                   onClick={async () => {
-                    await authClient.signOut();
+                    await signOut();
                     handleUserClose();
                   }}
                 >
@@ -257,11 +253,7 @@ export default function MyAppBar() {
             <Button
               variant="text"
               sx={{ color: "white" }}
-              onClick={() =>
-                authClient.signIn.social({
-                  provider: "google",
-                })
-              }
+              onClick={() => signIn().catch((error) => alert(error.message))}
             >
               LOGIN
             </Button>

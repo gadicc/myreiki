@@ -1,34 +1,32 @@
 "use client";
 
-import React from "react";
-// import { t, Trans } from "@lingui/macro";
-import { useGongoSub, useGongoLive } from "gongo-client-react";
-import { Virtuoso } from "react-virtuoso";
-import NextLink from "next/link";
-import { usePathname } from "next/navigation";
-import Highlighter from "react-highlight-words";
-import dayjs from "dayjs";
-import { db } from "gongo-client-react";
-
+import { Add, Edit } from "@mui/icons-material";
 import {
   Box,
-  Fab,
   Container,
-  IconButton,
-  TextField,
-  Stack,
+  Fab,
   FormControl,
   FormControlLabel,
   FormLabel,
+  IconButton,
   Radio,
   RadioGroup,
+  Stack,
+  TextField,
 } from "@mui/material";
-import { Add, Edit } from "@mui/icons-material";
+import dayjs from "dayjs";
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import Highlighter from "react-highlight-words";
+import { Virtuoso } from "react-virtuoso";
+// import { t, Trans } from "@lingui/macro";
+import { usePracticeData } from "@/client-data/Provider";
 
 import Link from "@/lib/link";
-import { ClientAvatar } from "./clientUtils";
 import { Client, Treatment } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
+import { ClientAvatar } from "./clientUtils";
 
 function clientRow(
   _index: number,
@@ -164,8 +162,7 @@ function clientRow(
         <Stack
           direction="row"
           spacing={0}
-          alignItems="center"
-          justifyContent="right"
+          sx={{ alignItems: "center", justifyContent: "right" }}
         >
           <Link href={`/client/edit/${client._id}`}>
             <IconButton size="small">
@@ -185,19 +182,15 @@ export default function Clients() {
   const pathname = usePathname();
   const fabBottom = pathname === "/clients" ? 16 : 72;
 
-  useGongoSub(practiceId && "clientsForPractice", { _id: practiceId });
-  useGongoSub(practiceId && "treatmentsForPractice", { _id: practiceId });
-
   const [filter, setFilter] = React.useState("");
-  const _clients = useGongoLive((db) =>
-    db.collection("clients").find({ practiceId }),
-  );
-  const _treatments = useGongoLive((db) =>
-    db.collection("treatments").find({ practiceId }),
+  const data = usePracticeData();
+  const _clients = data.clients.filter((c) => c.practiceId === practiceId);
+  const _treatments = data.treatments.filter(
+    (t) => t.practiceId === practiceId,
   );
 
   const { clients, filterRegExp } = React.useMemo(() => {
-    const re = new RegExp(filter, "i");
+    const re = new RegExp(filter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     const clients = _clients
       .filter((client) => {
         if (!filter) return true;
@@ -211,21 +204,25 @@ export default function Clients() {
         return false;
       })
       .map((client) => {
-        _treatments; // to trigger reactivity
-        const lastTreatment = db
-          .collection("treatments")
-          .find({
-            clientId: client._id,
-          })
-          .sort("date", -1)
-          .limit(1)
-          .toArraySync()[0];
+        const lastTreatment = _treatments
+          .filter((t) => t.clientId === client._id)
+          .sort(
+            (a, b) =>
+              new Date(b.date as Date).getTime() -
+              new Date(a.date as Date).getTime(),
+          )[0];
         return { ...client, lastTreatment };
       })
       .sort((a, b) => {
         if (sortBy === "lastTreatment") {
-          // @ts-expect-error: it's fine
-          return (b.lastTreatment?.date || 0) - (a.lastTreatment?.date || 0);
+          return (
+            (b.lastTreatment
+              ? new Date(b.lastTreatment.date as Date).getTime()
+              : 0) -
+            (a.lastTreatment
+              ? new Date(a.lastTreatment.date as Date).getTime()
+              : 0)
+          );
         } else {
           // @ts-expect-error: it's fine
           return a[sortBy] < b[sortBy] ? -1 : 1;

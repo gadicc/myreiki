@@ -1,17 +1,16 @@
-import * as React from "react";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
 import type { Metadata, Viewport } from "next";
+import * as React from "react";
 
 import theme from "@/theme";
-import MyAppBar from "./MyAppBar";
 import ClientProviders from "./clientProviders";
-import "@/lib/db";
+import MyAppBar from "./MyAppBar";
 
 const APP_NAME = "MyReiki";
 const APP_DEFAULT_TITLE = "MyReiki";
-const APP_TITLE_TEMPLATE = "%s - PWA App";
+const APP_TITLE_TEMPLATE = "%s - MyReiki";
 const APP_DESCRIPTION = "Reiki Practice Management";
 
 export const metadata: Metadata = {

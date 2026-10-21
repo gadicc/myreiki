@@ -1,13 +1,12 @@
 "use client";
-import * as React from "react";
-
-import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
 import { Dry, Groups, Home } from "@mui/icons-material";
 
-import TreatmentsPage from "@/app/treatments/page";
-import ClientsPage from "@/app/clients/page";
-import HomePage from "./home";
+import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import * as React from "react";
+import ClientsPage from "@/app/clients/page";
+import TreatmentsPage from "@/app/treatments/page";
+import HomePage from "./home";
 
 function Index() {
   const router = useRouter();

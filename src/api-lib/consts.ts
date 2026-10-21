@@ -9,5 +9,3 @@ const PROD_ROOT_URL = process.env.ROOT_URL || "https://" + PROD_HOST;
 
 export const ROOT_URL =
   process.env.NODE_ENV === "production" ? PROD_ROOT_URL : DEV_ROOT_URL;
-
-if (!process.env.NEXTAUTH_URL) process.env.NEXTAUTH_URL = ROOT_URL;

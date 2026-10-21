@@ -1,16 +1,6 @@
 "use client";
 
-import React from "react";
-// import { t, Trans } from "@lingui/macro";
-import { Virtuoso } from "react-virtuoso";
-import NextLink from "next/link";
-import { usePathname } from "next/navigation";
-import Highlighter from "react-highlight-words";
-
-import dayjs from "dayjs";
-import dayJsIsToday from "dayjs/plugin/isToday";
-import dayJsAdvancedFormat from "dayjs/plugin/advancedFormat";
-
+import { Add, Edit, EventRepeat } from "@mui/icons-material";
 import {
   Box,
   Checkbox,
@@ -22,13 +12,21 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { Add, Edit, EventRepeat } from "@mui/icons-material";
+import dayjs from "dayjs";
+import dayJsAdvancedFormat from "dayjs/plugin/advancedFormat";
+import dayJsIsToday from "dayjs/plugin/isToday";
+import NextLink from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import Highlighter from "react-highlight-words";
+// import { t, Trans } from "@lingui/macro";
+import { Virtuoso } from "react-virtuoso";
 
 import Link from "@/lib/link";
-import { Treatment, Client } from "@/schemas";
+import { Client, Treatment } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
-import useClientTreatments from "./useClientTreatments";
 import { ClientAvatar } from "../clients/clientUtils";
+import useClientTreatments from "./useClientTreatments";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
 
@@ -144,8 +142,7 @@ function treatmentRow(
         <Stack
           direction="row"
           spacing={0}
-          alignItems="center"
-          justifyContent="right"
+          sx={{ alignItems: "center", justifyContent: "right" }}
         >
           <Link href={`/treatment/edit/${treatment._id}`}>
             <IconButton size="small">
@@ -183,7 +180,7 @@ export default function Clients() {
 
   const [filter, setFilter] = React.useState("");
   const { treatments, hours, filterRegExp } = React.useMemo(() => {
-    const re = new RegExp(filter, "i");
+    const re = new RegExp(filter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
     const treatments = combined.filter((treatment) => {
       if (!filter) return true;
       const client = treatment.client;
