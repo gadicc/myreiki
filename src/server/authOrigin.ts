@@ -7,6 +7,6 @@ export function authOrigin(env: Record<string, string | undefined>) {
     return `https://${env.VERCEL_URL}`;
   }
   return env.NODE_ENV === "production"
-    ? "https://myreiki.vercel.app"
+    ? "https://www.myreiki.app"
     : env.BETTER_AUTH_DEV_URL || "http://localhost:3006";
 }

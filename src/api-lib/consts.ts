@@ -1,7 +1,7 @@
 export const DBNAME = "myreiki";
 export const SITE_TITLE = "MyReiki";
 export const DEV_PORT = Number(process.env.DEV_PORT || 3006);
-export const PROD_HOST = "myreiki.vercel.app";
+export const PROD_HOST = "www.myreiki.app";
 
 const DEV_ROOT_URL = process.env.DEV_ROOT_URL || "http://localhost:" + DEV_PORT;
 

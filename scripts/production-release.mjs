@@ -5,7 +5,7 @@ import { pathToFileURL } from "node:url";
 export const target = Object.freeze({
   orgId: "team_csZisOffvMIGjgEuwRLc2eAX",
   projectId: "prj_4lUymF9XOiQJx1H6etvUmQ3Bk0Lg",
-  publicOrigin: "https://myreiki.vercel.app",
+  publicOrigin: "https://www.myreiki.app",
 });
 
 /** Bind provider evidence to this project's exact artifact, owner and commit. */
@@ -13,7 +13,9 @@ export function verifyDeployment(value, origin, source, expectedId) {
   const url = new URL(origin);
   if (
     url.protocol !== "https:" ||
-    !url.hostname.endsWith(".vercel.app") ||
+    (expectedId
+      ? url.origin !== target.publicOrigin
+      : !/^[a-z\d-]+\.vercel\.app$/.test(url.hostname)) ||
     url.username ||
     url.password ||
     url.port ||

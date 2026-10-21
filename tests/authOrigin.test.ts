@@ -13,7 +13,7 @@ it("separates public Production, deployed Preview and local callback origins", (
       NODE_ENV: "production",
       BETTER_AUTH_DEV_URL: "http://localhost:3006",
     }),
-  ).toBe("https://myreiki.vercel.app");
+  ).toBe("https://www.myreiki.app");
   expect(
     authOrigin({
       NODE_ENV: "production",
@@ -30,7 +30,7 @@ it("separates public Production, deployed Preview and local callback origins", (
   expect(() =>
     authOrigin({
       VERCEL_ENV: "preview",
-      VERCEL_URL: "myreiki.vercel.app@evil.test",
+      VERCEL_URL: "www.myreiki.app@evil.test",
     }),
   ).toThrow();
 });
