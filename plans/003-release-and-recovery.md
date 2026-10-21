@@ -15,7 +15,8 @@ the migration fence without migrations or promotion; both enablement variables
 remain unset. Loom configured a main-only GitHub `Production` environment and a
 project-scoped Vercel credential expiring 19 January 2027; its project access and
 denial of team-level access were verified. The direct migration secret and role
-metadata are installed there too. No workflow has been pushed or executed.
+metadata are installed there too. The merged workflow passed credential-smoke
+run `39600941271`; it staged production without migrations or promotion. Both enablement flags remain unset.
 
 Separate Production/Preview auth signing keys, the Production origin and import
 fingerprint are configured in Vercel. Recovery keys are owner-only under
@@ -30,7 +31,8 @@ It is installed as `VERCEL_AUTOMATION_BYPASS_SECRET` in the main-only GitHub
 an owner-only recovery file; it was not printed. A HEAD request to a static icon
 on the existing protected deployment returned 302 anonymously and 200 with the
 credential. The public deployment was unchanged. This verifies the protection
-gate, not the unexecuted GitHub release workflow or the new staged runtime.
+gate. The actual GitHub credential-smoke and subsequent staged runtime
+acceptance also passed; these do not establish production Google sign-in.
 
 A read-only Loom OIDC Trusted Sources proposal is prepared but unapplied.
 See [OIDC follow-up](006-oidc-trusted-sources.md). Keep the current credential
@@ -72,10 +74,10 @@ accounts or records. Preview remains bound to the independent synthetic root.
    still equals the fenced authority. A dump without oplog capture does not prove
    consistency. The operator supplied a protected live Mongo credential. A primary snapshot
    transaction matched every raw BSON document in the backup. The account is
-   dedicated to MyReiki but currently has cross-database `atlasAdmin`; it must
-   have only `read` on `myreiki` (or the explicitly supported `readAnyDatabase`)
-   during cutover. The verifier checks effective privileges, an authorization
-   denial for an impossible-ID non-upserting update, and a new consistent read
+   dedicated to MyReiki. The operator restricted it to the sole
+   `readAnyDatabase@admin` role; the importer verified its effective read-only
+   privileges and denied update before completing the Production import. The
+   verifier checks effective privileges, an authorization denial for an impossible-ID non-upserting update, and a new consistent read
    after a drain interval.
 6. Rebuild the reviewed plan if source changed; retain stable allocations and
    exact dispositions. Rehearse it, import the approved Production target, compare
@@ -103,9 +105,10 @@ contain client notes; browsers can still erase local storage.
 ## Evidence still separate from release readiness
 
 Local Google success, synthetic browser tests, live synthetic SQL races and a
-protected exact import replay each prove their own boundary. None establishes
-Production OAuth configuration, a final legacy fence, a successful full GitHub
-release token path or deployed runtime acceptance.
+protected exact import replay each prove their own boundary. Production import,
+the legacy writer fence and staged deployed runtime acceptance are now verified. The GitHub credential-smoke passed; the full promotion path
+and production Google sign-in remain pending. The primary domain update and
+its release boundary are recorded in [the domain plan](007-production-domain.md).
 
 Local Vercel prebuilds must use an isolated copy of nonignored source. The
 installed Vercel builder explicitly copies root dotenv files, independently of

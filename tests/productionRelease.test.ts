@@ -32,12 +32,26 @@ it("binds the staged and promoted artifact to the exact org, project, source and
     expect(() =>
       verifyDeployment({ ...deployment, ...patch }, origin, sha),
     ).toThrow();
+  // Promotion accepts only the canonical custom origin with the exact ID.
+  for (const origin of [
+    "https://myreiki.app",
+    "https://other.myreiki.app",
+    "https://www.myreiki.app.evil.test",
+    "https://another.vercel.app",
+    "https://www.myreiki.app:8443",
+    "https://www.myreiki.app/path",
+    "https://www.myreiki.app?x=1",
+    "https://www.myreiki.app#fragment",
+  ])
+    expect(() =>
+      verifyDeployment(deployment, origin, sha, deployment.id),
+    ).toThrow();
   expect(() =>
-    verifyDeployment(deployment, origin, sha, "dpl_Other"),
+    verifyDeployment(deployment, target.publicOrigin, sha, "dpl_Other"),
   ).toThrow();
   for (const url of [
     "https://example.com",
-    "https://myreiki.vercel.app@evil.test",
+    "https://www.myreiki.app@evil.test",
     "https://myreiki.vercel.app/path",
     "https://myreiki.vercel.app?x=1",
   ])

@@ -11,10 +11,10 @@ it("accepts the browser's actual loopback HTTP authority when Next normalizes it
   ).toBe(true);
   expect(
     isSameOriginRequest(
-      new Request("https://myreiki.vercel.app/api/data", {
+      new Request("https://www.myreiki.app/api/data", {
         headers: {
-          host: "myreiki.vercel.app",
-          origin: "https://myreiki.vercel.app",
+          host: "www.myreiki.app",
+          origin: "https://www.myreiki.app",
         },
       }),
     ),
