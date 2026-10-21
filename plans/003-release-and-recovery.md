@@ -24,10 +24,18 @@ wallet. Existing Google credentials are retained. Preview now derives its own
 callback origin; actual Preview Google callback registration is still separate
 from database isolation.
 
-The prepared protection path uses a separately protected automation-bypass
-credential. Creating this persistent credential and transferring it to GitHub
-was stopped by automatic approval review; explicit operator approval is pending.
-Do not silently fall back to public staging or broaden the Vercel token.
+The operator approved the MyReiki-only persistent automation-bypass credential.
+It is installed as `VERCEL_AUTOMATION_BYPASS_SECRET` in the main-only GitHub
+`Production` environment. The value was transferred over stdin and retained in
+an owner-only recovery file; it was not printed. A HEAD request to a static icon
+on the existing protected deployment returned 302 anonymously and 200 with the
+credential. The public deployment was unchanged. This verifies the protection
+gate, not the unexecuted GitHub release workflow or the new staged runtime.
+
+A read-only Loom OIDC Trusted Sources proposal is prepared but unapplied.
+See [OIDC follow-up](006-oidc-trusted-sources.md). Keep the current credential
+path until an OIDC replacement passes its own runtime checks. Do not silently
+fall back to public staging or broaden the Vercel deployment token.
 
 Production auth and domain routes independently require
 `MYREIKI_IMPORT_PLAN_SHA256` to match a completed SQL `legacy_import` receipt.
