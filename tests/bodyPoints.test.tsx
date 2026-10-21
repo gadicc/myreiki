@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
+import { render } from "./i18nRender";
 
 vi.mock("@/components/body-front.svg", () => ({ default: () => <svg /> }));
 vi.mock("@/components/body-back.svg", () => ({ default: () => <svg /> }));

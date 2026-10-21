@@ -1,4 +1,8 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+
 import { Alert, Button, Container, Stack, TextField } from "@mui/material";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
@@ -7,10 +11,13 @@ import { useCanonicalRecordId } from "@/client-data/useCanonicalRecordId";
 import { useRecordDraft } from "@/client-data/useRecordDraft";
 import ClientOnly from "@/lib/ClientOnly";
 import { useForm } from "@/lib/forms";
+import { displayError } from "@/lib/i18n/messages";
 import { uuidV7 } from "@/lib/uuid";
 import { Practice, practiceSchema } from "@/schemas/practice";
 
 export default function PracticeEdit() {
+  const { i18n } = useLingui();
+
   const router = useRouter();
   const data = usePracticeData();
   const userId = data.profile?._id;
@@ -60,25 +67,44 @@ export default function PracticeEdit() {
     },
   });
 
-  if (!existing && _id !== "new") return "Loading or not found...";
-  if (!userId) return "Not logged in";
+  if (!existing && _id !== "new") return <Trans>Loading or not found...</Trans>;
+  if (!userId) return <Trans>Not logged in</Trans>;
 
   // console.log(formState);
 
   return (
     <Container sx={{ my: 2 }}>
-      {saveError && <Alert severity="error">{saveError}</Alert>}
+      {saveError && (
+        <Alert severity="error">{displayError(i18n, saveError)}</Alert>
+      )}
       <ClientOnly>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={1} direction="column">
-            <TextField {...fr("name")} label="Name" fullWidth />
-            <TextField {...fr("countryId")} label="Country Code" fullWidth />
-            <TextField {...fr("phone")} label="Phone (Intl +XX)" fullWidth />
-            <TextField {...fr("email")} label="Email" fullWidth />
-            <TextField {...fr("website")} label="Website URL" fullWidth />
-            <TextField {...fr("notes")} label="Notes" fullWidth multiline />
+            <TextField {...fr("name")} label={i18n._(msg`Name`)} fullWidth />
+            <TextField
+              {...fr("countryId")}
+              label={i18n._(msg`Country Code`)}
+              fullWidth
+            />
+            <TextField
+              {...fr("phone")}
+              label={i18n._(msg`Phone (Intl +XX)`)}
+              fullWidth
+            />
+            <TextField {...fr("email")} label={i18n._(msg`Email`)} fullWidth />
+            <TextField
+              {...fr("website")}
+              label={i18n._(msg`Website URL`)}
+              fullWidth
+            />
+            <TextField
+              {...fr("notes")}
+              label={i18n._(msg`Notes`)}
+              fullWidth
+              multiline
+            />
             <Button variant="contained" type="submit">
-              Submit
+              <Trans>Submit</Trans>
             </Button>
           </Stack>
         </form>

@@ -1,3 +1,5 @@
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { Autocomplete, TextField } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import React from "react";
@@ -45,6 +47,8 @@ export function ClientSelect({
   practiceId: string;
   required?: boolean;
 }) {
+  const { i18n } = useLingui();
+
   const { clients: allClients } = usePracticeData();
   const clients = allClients.filter((c) => c.practiceId === practiceId);
   React.useEffect(() => {
@@ -55,12 +59,20 @@ export function ClientSelect({
     <Autocomplete
       options={clients}
       getOptionKey={(c) => c._id}
-      getOptionLabel={(c) => `${c.givenName} ${c.familyName}`}
+      getOptionLabel={(c) => `${c.givenName} ${c.familyName || ""}`.trim()}
       value={clients.find((c) => c._id === clientId) ?? null}
       onChange={(event, newInput) => setClientId(newInput?._id || "")}
+      clearText={i18n._(msg`Clear`)}
+      closeText={i18n._(msg`Close`)}
+      openText={i18n._(msg`Open`)}
+      noOptionsText={i18n._(msg`No matching clients`)}
       disablePortal
       renderInput={(params) => (
-        <TextField {...params} label="Client" required={required} />
+        <TextField
+          {...params}
+          label={i18n._(msg`Client`)}
+          required={required}
+        />
       )}
     />
     /*

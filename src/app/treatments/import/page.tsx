@@ -1,4 +1,8 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+
 import {
   Alert,
   Button,
@@ -15,9 +19,13 @@ import React from "react";
 import { practiceDatabase as database } from "@/client-data/database";
 import { usePracticeData } from "@/client-data/Provider";
 import { parseSpreadsheet } from "@/data/spreadsheet";
+import { displayError } from "@/lib/i18n/messages";
+import { reikiTypes } from "@/lib/i18n/treatmentTypes";
 import usePracticeId from "@/lib/usePracticeId";
 
 export default function TreatmentsImport() {
+  const { i18n } = useLingui();
+
   const data = usePracticeData();
   const { practiceId, PracticeSelect } = usePracticeId();
   const [input, setInput] = React.useState("");
@@ -34,16 +42,24 @@ export default function TreatmentsImport() {
     }
   }, [input]);
   if (!data.binding)
-    return <Container>Sign in to import treatments.</Container>;
+    return (
+      <Container>
+        <Trans>Sign in to import treatments.</Trans>
+      </Container>
+    );
   const binding = data.binding;
   return (
     <Container sx={{ my: 2 }}>
-      <Typography variant="h4">Import Reiki treatments</Typography>
+      <Typography variant="h4">
+        <Trans>Import Reiki treatments</Trans>
+      </Typography>
       <PracticeSelect />
       <Typography>
-        Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO
-        date and time with timezone), full client name, whole minutes, Reiki
-        type, notes. All rows are checked before saving.
+        <Trans>
+          Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO
+          date and time with timezone), full client name, whole minutes, Reiki
+          type, notes. All rows are checked before saving.
+        </Trans>
       </Typography>
       <form
         onSubmit={async (event) => {
@@ -81,7 +97,7 @@ export default function TreatmentsImport() {
         }}
       >
         <TextField
-          label="Spreadsheet cells"
+          label={i18n._(msg`Spreadsheet cells`)}
           multiline
           minRows={8}
           fullWidth
@@ -90,8 +106,12 @@ export default function TreatmentsImport() {
           onChange={(event) => setInput(event.target.value)}
           sx={{ my: 2 }}
         />
-        {preview.error && <Alert severity="error">{preview.error}</Alert>}
-        {message && <Alert severity="info">{message}</Alert>}
+        {preview.error && (
+          <Alert severity="error">{displayError(i18n, preview.error)}</Alert>
+        )}
+        {message && (
+          <Alert severity="info">{displayError(i18n, message)}</Alert>
+        )}
         <Button
           type="submit"
           variant="contained"
@@ -99,18 +119,20 @@ export default function TreatmentsImport() {
             saving || !practiceId || !preview.rows.length || !!preview.error
           }
         >
-          Save import
+          <Trans>Save import</Trans>
         </Button>
       </form>
       <Typography variant="h6" sx={{ mt: 2 }}>
-        Preview
+        <Trans>Preview</Trans>
       </Typography>
       <Table>
         <TableHead>
           <TableRow>
-            {["Date", "Client", "Minutes", "Type", "Notes"].map((title) => (
-              <TableCell key={title}>{title}</TableCell>
-            ))}
+            {[msg`Date`, msg`Client`, msg`Minutes`, msg`Type`, msg`Notes`].map(
+              (title) => (
+                <TableCell key={title.id}>{i18n._(title)}</TableCell>
+              ),
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -119,7 +141,7 @@ export default function TreatmentsImport() {
               <TableCell>{row.date.toISOString()}</TableCell>
               <TableCell>{row.clientName}</TableCell>
               <TableCell>{row.duration}</TableCell>
-              <TableCell>{row.reikiType}</TableCell>
+              <TableCell>{i18n._(reikiTypes[row.reikiType])}</TableCell>
               <TableCell sx={{ whiteSpace: "pre-wrap" }}>{row.notes}</TableCell>
             </TableRow>
           ))}

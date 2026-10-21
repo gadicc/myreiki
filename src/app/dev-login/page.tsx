@@ -1,5 +1,7 @@
+import { Trans } from "@lingui/react/macro";
 import { Button, Container, Typography } from "@mui/material";
 import { notFound } from "next/navigation";
+import { initRequestI18n } from "@/lib/i18n/server";
 import {
   localIdentities,
   localTestLoginEnabled,
@@ -9,14 +11,19 @@ import {
 // production prerender manifest used for offline installation.
 export const dynamic = "force-dynamic";
 
-export default function LocalTestLoginPage() {
+export default async function LocalTestLoginPage() {
   if (!localTestLoginEnabled) notFound();
+  await initRequestI18n();
   return (
     <Container sx={{ my: 2 }}>
-      <Typography variant="h5">Local development fixture</Typography>
+      <Typography variant="h5">
+        <Trans>Local development fixture</Trans>
+      </Typography>
       <Typography>
-        These fixed synthetic accounts exist only for local UI and offline
-        testing.
+        <Trans>
+          These fixed synthetic accounts exist only for local UI and offline
+          testing.
+        </Trans>
       </Typography>
       {Object.entries(localIdentities).map(([key, identity]) => (
         <form key={key} method="post" action="/api/dev-login">

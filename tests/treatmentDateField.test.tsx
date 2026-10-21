@@ -2,17 +2,12 @@
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { cleanup, fireEvent, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import TreatmentDateField from "@/components/TreatmentDateField";
 import { useForm } from "@/lib/forms";
 import { type Treatment, treatmentSchema } from "@/schemas";
+import { render } from "./i18nRender";
 
 afterEach(cleanup);
 function setup() {

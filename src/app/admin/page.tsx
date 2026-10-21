@@ -1,4 +1,8 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+
 import {
   Alert,
   Button,
@@ -13,8 +17,11 @@ import {
 } from "@mui/material";
 import React from "react";
 import { usePracticeData } from "@/client-data/Provider";
+import { displayError } from "@/lib/i18n/messages";
 
 export default function Admin() {
+  const { i18n } = useLingui();
+
   const { profile } = usePracticeData();
   const [users, setUsers] = React.useState<
     { id: string; name: string; email: string; practitioner: boolean }[]
@@ -46,21 +53,32 @@ export default function Admin() {
   React.useEffect(() => {
     if (profile?.admin) void load();
   }, [profile?.admin, load]);
-  if (!profile?.admin) return <Container>Access denied.</Container>;
+  if (!profile?.admin)
+    return (
+      <Container>
+        <Trans>Access denied.</Trans>
+      </Container>
+    );
   return (
     <Container sx={{ my: 2 }}>
-      <Typography variant="h5">Users</Typography>
-      {error && <Alert severity="error">{error}</Alert>}
+      <Typography variant="h5">
+        <Trans>Users</Trans>
+      </Typography>
+      {error && <Alert severity="error">{displayError(i18n, error)}</Alert>}
       <TextField
-        label="Find a loaded user"
+        label={i18n._(msg`Find a loaded user`)}
         value={filter}
         onChange={(event) => setFilter(event.target.value)}
       />
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Email</TableCell>
+            <TableCell>
+              <Trans>Name</Trans>
+            </TableCell>
+            <TableCell>
+              <Trans>Email</Trans>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -78,7 +96,11 @@ export default function Admin() {
             ))}
         </TableBody>
       </Table>
-      {next && <Button onClick={() => void load(next)}>Load more</Button>}
+      {next && (
+        <Button onClick={() => void load(next)}>
+          <Trans>Load more</Trans>
+        </Button>
+      )}
     </Container>
   );
 }

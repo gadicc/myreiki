@@ -1,4 +1,5 @@
 import { valibotResolver } from "@hookform/resolvers/valibot";
+import { useLingui } from "@lingui/react";
 import { get } from "radash";
 import {
   Controller,
@@ -13,6 +14,7 @@ import {
   type UseFormReturn,
 } from "react-hook-form";
 import { formFieldRequired } from "./formSchema";
+import { displayError } from "./i18n/messages";
 
 type ValibotSchema = Parameters<typeof valibotResolver>[0];
 type FieldProps<
@@ -40,8 +42,11 @@ export function useForm<
   Controller: typeof Controller;
 } {
   const { schema, ...formProps } = props;
+  const { i18n } = useLingui();
   // The schema strips persistence metadata; callers retain their edit revision.
-  const resolver = valibotResolver(schema) as Resolver<T, Context, Output>;
+  const resolver = valibotResolver(schema, {
+    message: "Enter a valid value.",
+  }) as Resolver<T, Context, Output>;
   const form = reactHookUseForm<T, Context, Output>({
     resolver,
     mode: "onChange",
@@ -71,7 +76,7 @@ export function useForm<
       defaultValue: get(form.formState.defaultValues, name),
       error: Boolean(error),
       ...(typeof error?.message === "string"
-        ? { helperText: error.message }
+        ? { helperText: displayError(i18n, error.message) }
         : {}),
     };
   }

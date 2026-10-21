@@ -1,4 +1,8 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+
 import {
   Alert,
   Button,
@@ -22,6 +26,7 @@ import { useRecordDraft } from "@/client-data/useRecordDraft";
 import TreatmentDateField from "@/components/TreatmentDateField";
 import ClientOnly from "@/lib/ClientOnly";
 import { useForm } from "@/lib/forms";
+import { displayError } from "@/lib/i18n/messages";
 import useClientId from "@/lib/useClientId";
 import usePracticeId from "@/lib/usePracticeId";
 import { uuidV7 } from "@/lib/uuid";
@@ -38,6 +43,8 @@ const sxDurationButton = {
 };
 
 export default function TreatmentEdit() {
+  const { i18n } = useLingui();
+
   const router = useRouter();
   const data = usePracticeData();
   const userId = data.profile?._id;
@@ -160,14 +167,16 @@ export default function TreatmentEdit() {
   const treatmentId = getValues("_id");
   if (!treatmentId) throw new Error("treatmentId not set");
 
-  if (!existing && _id !== "new") return "Loading or not found...";
-  if (!userId) return "Not logged in";
+  if (!existing && _id !== "new") return <Trans>Loading or not found...</Trans>;
+  if (!userId) return <Trans>Not logged in</Trans>;
 
   // console.log(formState);
 
   return (
     <Container sx={{ my: 2 }}>
-      {saveError && <Alert severity="error">{saveError}</Alert>}
+      {saveError && (
+        <Alert severity="error">{displayError(i18n, saveError)}</Alert>
+      )}
       <ClientOnly>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2} direction="column">
@@ -177,7 +186,7 @@ export default function TreatmentEdit() {
             <Stack direction="row" spacing={2} useFlexGap>
               <TextField
                 {...fr("duration")}
-                label="Duration (m)"
+                label={i18n._(msg`Duration (m)`)}
                 type="number"
               />
               {[30, 60, 90].map((duration) => (
@@ -196,13 +205,15 @@ export default function TreatmentEdit() {
                 >
                   <div>{duration}</div>
                   <div style={{ fontSize: "80%", color: "#999" }}>
-                    T-{duration + 2}
+                    <Trans>T-{duration + 2}</Trans>
                   </div>
                 </Button>
               ))}
             </Stack>
             <FormControl required>
-              <FormLabel id="type-buttons-group">Treatment Type</FormLabel>
+              <FormLabel id="type-buttons-group">
+                <Trans>Treatment Type</Trans>
+              </FormLabel>
               <Controller
                 rules={{ required: true }}
                 control={control}
@@ -216,14 +227,18 @@ export default function TreatmentEdit() {
                     <FormControlLabel
                       value="generic"
                       control={<Radio />}
-                      label="Generic"
+                      label={i18n._(msg`Generic`)}
                     />
                     <FormControlLabel
                       value="reiki"
                       control={<Radio />}
-                      label="Reiki"
+                      label={i18n._(msg`Reiki`)}
                     />
-                    <FormHelperText>{fieldState.error?.message}</FormHelperText>
+                    <FormHelperText>
+                      {fieldState.error
+                        ? displayError(i18n, fieldState.error.message)
+                        : undefined}
+                    </FormHelperText>
                   </RadioGroup>
                 )}
               />
@@ -232,7 +247,9 @@ export default function TreatmentEdit() {
             {type === "reiki" && (
               <>
                 <FormControl required>
-                  <FormLabel id="type-buttons-group">Reiki Type</FormLabel>
+                  <FormLabel id="type-buttons-group">
+                    <Trans>Reiki Type</Trans>
+                  </FormLabel>
                   <Controller
                     rules={{ required: true }}
                     control={control}
@@ -246,30 +263,32 @@ export default function TreatmentEdit() {
                         <FormControlLabel
                           value="regular"
                           control={<Radio />}
-                          label="Regular"
+                          label={i18n._(msg`Regular`)}
                         />
                         <FormControlLabel
                           value="psychological"
                           control={<Radio />}
-                          label="Psychological"
+                          label={i18n._(msg`Psychological`)}
                         />
                         <FormControlLabel
                           value="distance"
                           control={<Radio />}
-                          label="Distance"
+                          label={i18n._(msg`Distance`)}
                         />
                         <FormControlLabel
                           value="self"
                           control={<Radio />}
-                          label="Self"
+                          label={i18n._(msg`Self`)}
                         />
                         <FormControlLabel
                           value="non-human"
                           control={<Radio />}
-                          label="Non-Human"
+                          label={i18n._(msg`Non-Human`)}
                         />
                         <FormHelperText>
-                          {fieldState.error?.message}
+                          {fieldState.error
+                            ? displayError(i18n, fieldState.error.message)
+                            : undefined}
                         </FormHelperText>
                       </RadioGroup>
                     )}
@@ -299,7 +318,12 @@ export default function TreatmentEdit() {
             </ToggleButtonGroup>
             */}
 
-            <TextField {...fr("notes")} label="Notes" fullWidth multiline />
+            <TextField
+              {...fr("notes")}
+              label={i18n._(msg`Notes`)}
+              fullWidth
+              multiline
+            />
 
             <Stack spacing={1} direction="row">
               <Button
@@ -308,7 +332,7 @@ export default function TreatmentEdit() {
                 fullWidth
                 disabled={!isDirty}
               >
-                Save
+                <Trans>Save</Trans>
               </Button>
               <Button
                 variant="contained"
@@ -317,7 +341,7 @@ export default function TreatmentEdit() {
                 data-dest="back"
                 disabled={!isDirty}
               >
-                Save & Back
+                <Trans>Save & Back</Trans>
               </Button>
             </Stack>
           </Stack>

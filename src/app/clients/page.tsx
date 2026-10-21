@@ -1,4 +1,7 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
 
 import { Add, Edit } from "@mui/icons-material";
 import {
@@ -14,39 +17,29 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import dayjs from "dayjs";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import Highlighter from "react-highlight-words";
 import { Virtuoso } from "react-virtuoso";
-// import { t, Trans } from "@lingui/macro";
 import { usePracticeData } from "@/client-data/Provider";
-
+import { formatTreatmentDate } from "@/lib/i18n/dates";
 import Link from "@/lib/link";
 import { Client, Treatment } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
 import { ClientAvatar } from "./clientUtils";
 
-function clientRow(
-  _index: number,
-  client: Client & { lastTreatment?: Treatment },
-  context: { filterRegExp: RegExp; sortBy: string },
-) {
-  const now = dayjs();
-
-  const lastTreatment = client.lastTreatment;
-
-  const date = lastTreatment && dayjs(lastTreatment.date);
-  let dateStr;
-  if (date) {
-    if (date.isToday()) dateStr = date.format("HH:mm");
-    else if (now.diff(date, "days") < 7) dateStr = date.format("ddd Do");
-    else if (date.year() === now.year()) dateStr = date.format("D MMM");
-    else dateStr = (lastTreatment.date as Date).toLocaleDateString();
-  } else {
-    dateStr = "";
-  }
+function ClientRow({
+  client,
+  context,
+}: {
+  client: Client & { lastTreatment?: Treatment };
+  context: { filterRegExp: RegExp; sortBy: string };
+}) {
+  const { i18n } = useLingui();
+  const dateStr = client.lastTreatment
+    ? formatTreatmentDate(client.lastTreatment.date, i18n.locale)
+    : "";
 
   /*
   function onClick(userId: string, field: string, oldValue: number) {
@@ -157,7 +150,7 @@ function clientRow(
       </div>
       <div className="dateAndActions">
         <div style={{ fontWeight: dateStr ? 500 : undefined }}>
-          {dateStr || "Never"}
+          {dateStr || i18n._(msg`Never`)}
         </div>
         <Stack
           direction="row"
@@ -176,6 +169,8 @@ function clientRow(
 }
 
 export default function Clients() {
+  const { i18n } = useLingui();
+
   const { practiceId, PracticeSelect } = usePracticeId();
   const [sortBy, setSortBy] = React.useState("givenName");
 
@@ -240,7 +235,9 @@ export default function Clients() {
           <FormControl
             sx={{ flexDirection: "row", alignItems: "center", gap: 2 }}
           >
-            <FormLabel id="sortby-label">Sort by</FormLabel>
+            <FormLabel id="sortby-label">
+              <Trans>Sort by</Trans>
+            </FormLabel>
             <RadioGroup
               aria-labelledby="sortby-label"
               value={sortBy}
@@ -250,17 +247,17 @@ export default function Clients() {
               <FormControlLabel
                 value="givenName"
                 control={<Radio size="small" />}
-                label="first"
+                label={i18n._(msg`first`)}
               />
               <FormControlLabel
                 value="familyName"
                 control={<Radio size="small" />}
-                label="last"
+                label={i18n._(msg`last`)}
               />
               <FormControlLabel
                 value="lastTreatment"
                 control={<Radio size="small" />}
-                label="treatment"
+                label={i18n._(msg`treatment`)}
               />
             </RadioGroup>
           </FormControl>
@@ -269,18 +266,22 @@ export default function Clients() {
         <TextField
           size="small"
           value={filter}
-          placeholder="Filter by name, email, phone"
+          placeholder={i18n._(msg`Filter by name, email, phone`)}
           onChange={(event) => setFilter(event.target.value)}
         />
 
-        <p>Total clients: {clients.length}</p>
+        <p>
+          <Trans>Total clients: {clients.length}</Trans>
+        </p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
         <div role="list">
           <Virtuoso
             context={{ filterRegExp, sortBy }}
             data={clients}
-            itemContent={clientRow}
+            itemContent={(_index, client, context) => (
+              <ClientRow client={client} context={context} />
+            )}
             useWindowScroll
           />
         </div>

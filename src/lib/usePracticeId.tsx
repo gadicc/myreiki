@@ -1,3 +1,6 @@
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import React from "react";
 import { usePracticeData } from "@/client-data/Provider";
@@ -40,6 +43,8 @@ export function PracticeSelect({
   sx?: Parameters<typeof FormControl>[0]["sx"];
   show?: boolean;
 }) {
+  const { i18n } = useLingui();
+
   const { practices } = usePracticeData();
 
   React.useEffect(() => {
@@ -52,12 +57,14 @@ export function PracticeSelect({
 
   return (
     <FormControl fullWidth sx={{ my: 1, ...sx }}>
-      <InputLabel id="practiceId-label">Practice</InputLabel>
+      <InputLabel id="practiceId-label">
+        <Trans>Practice</Trans>
+      </InputLabel>
       <Select
         labelId="practiceId-label"
         id="practiceId-select"
         value={practiceId}
-        label="Practice"
+        label={i18n._(msg`Practice`)}
         onChange={(e) => setPracticeId(e.target.value)}
       >
         {practices.map((practice) => (

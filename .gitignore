@@ -48,3 +48,5 @@ public/sw.js
 /output/playwright/
 /playwright-report/
 /test-results/
+src/locales/*/messages.js
+src/locales/*/messages.mjs

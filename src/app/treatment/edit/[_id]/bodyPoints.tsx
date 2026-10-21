@@ -1,4 +1,8 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+
 import {
   ArrowBack,
   ArrowDownward,
@@ -48,11 +52,11 @@ const levels = [
 ];
 
 const levelDesc = [
-  "On-Netsu (Warmth)",
-  "Atsui-On-Netsu (Intense Heat)",
-  "Piri-Piri-Kan (Tingling)",
-  "Hibiki (Throbbing)",
-  "Itami (Pain)",
+  msg`On-Netsu (Warmth)`,
+  msg`Atsui-On-Netsu (Intense Heat)`,
+  msg`Piri-Piri-Kan (Tingling)`,
+  msg`Hibiki (Throbbing)`,
+  msg`Itami (Pain)`,
 ];
 
 function PointPopper({
@@ -74,6 +78,8 @@ function PointPopper({
     | React.Dispatch<React.SetStateAction<BodyPoint[]>>
     | ((points: BodyPoint[]) => void);
 }) {
+  const { i18n } = useLingui();
+
   const point = points[pointIdx];
   const [arrowRef, setArrowRef] = React.useState<HTMLSpanElement | null>(null);
 
@@ -159,12 +165,14 @@ function PointPopper({
             spacing={1}
             sx={{ marginBottom: 1, alignItems: "center" }}
           >
-            <Typography sx={{ width: 50 }}>Size: </Typography>
+            <Typography sx={{ width: 50 }}>
+              <Trans>Size: </Trans>
+            </Typography>
             <ToggleButtonGroup
               value={point?.size}
               exclusive
               onChange={handleSizeChange}
-              aria-label="text alignment"
+              aria-label={i18n._(msg`Point size`)}
             >
               {[1, 2, 3, 4, 5].map((value) => (
                 <ToggleButton
@@ -180,12 +188,14 @@ function PointPopper({
           </Stack>
 
           <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
-            <Typography sx={{ width: 50 }}>Level: </Typography>
+            <Typography sx={{ width: 50 }}>
+              <Trans>Level: </Trans>
+            </Typography>
             <ToggleButtonGroup
               value={point?.level}
               exclusive
               onChange={handleLevelChange}
-              aria-label="text alignment"
+              aria-label={i18n._(msg`Byosen level`)}
             >
               {[1, 2, 3, 4, 5].map((value) => (
                 <ToggleButton
@@ -200,29 +210,41 @@ function PointPopper({
             </ToggleButtonGroup>
           </Stack>
           <Typography variant="caption">
-            {point && levelDesc[point.level - 1]}
+            {point && i18n._(levelDesc[point.level - 1])}
           </Typography>
           <br />
           <div>
-            <IconButton onClick={(e) => handleMove(e, -0.01, 0)}>
+            <IconButton
+              aria-label={i18n._(msg`Move left`)}
+              onClick={(e) => handleMove(e, -0.01, 0)}
+            >
               <ArrowBack />
             </IconButton>
-            <IconButton onClick={(e) => handleMove(e, 0, -0.01)}>
+            <IconButton
+              aria-label={i18n._(msg`Move up`)}
+              onClick={(e) => handleMove(e, 0, -0.01)}
+            >
               <ArrowUpward />
             </IconButton>
-            <IconButton onClick={(e) => handleMove(e, 0, 0.01)}>
+            <IconButton
+              aria-label={i18n._(msg`Move down`)}
+              onClick={(e) => handleMove(e, 0, 0.01)}
+            >
               <ArrowDownward />
             </IconButton>
-            <IconButton onClick={(e) => handleMove(e, 0.01, 0)}>
+            <IconButton
+              aria-label={i18n._(msg`Move right`)}
+              onClick={(e) => handleMove(e, 0.01, 0)}
+            >
               <ArrowForward />
             </IconButton>
           </div>
           <div>
             <Button color="warning" onClick={handleDelete}>
-              Delete
+              <Trans>Delete</Trans>
             </Button>
             <Button color="primary" onClick={handleCloseEvent}>
-              Close
+              <Trans>Close</Trans>
             </Button>
           </div>
         </Paper>
@@ -246,6 +268,7 @@ function Diagram({
   Component: typeof BodyFront;
   treatmentId: string;
 }) {
+  const { i18n } = useLingui();
   const [pointIdx, setPointIdx] = React.useState(-1);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const popoverId = anchorEl ? "point-popover" : undefined;
@@ -316,7 +339,11 @@ function Diagram({
       }}
       role="button"
       tabIndex={0}
-      aria-label={`Add ${name} body point`}
+      aria-label={
+        name === "front"
+          ? i18n._(msg`Add front body point`)
+          : i18n._(msg`Add back body point`)
+      }
       onClick={onClick}
       onKeyDown={(event) => {
         if (
@@ -399,7 +426,9 @@ export default function BodyPoints({
   return (
     <div>
       {/* MuiFormLabel-root */}
-      <Typography sx={{ color: "rgba(0, 0, 0, 0.6)" }}>Byosen</Typography>
+      <Typography sx={{ color: "rgba(0, 0, 0, 0.6)" }}>
+        <Trans>Byosen</Trans>
+      </Typography>
       <Stack direction="row" spacing={1}>
         <Diagram
           name="front"

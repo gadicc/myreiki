@@ -16,9 +16,7 @@ test("offline save, cold reload, sign-out fence, account switch and same-owner r
   await page.getByRole("button", { name: "Submit", exact: true }).click();
   await expect(page).toHaveURL(/practice\/edit\/[a-f\d-]{36}$/);
   const recordPath = new URL(page.url()).pathname;
-  await expect(page.getByText(/change\(s\) saved on this device/)).toHaveCount(
-    0,
-  );
+  await expect(page.getByText(/changes? saved on this device/)).toHaveCount(0);
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
   });
@@ -31,9 +29,7 @@ test("offline save, cold reload, sign-out fence, account switch and same-owner r
     .getByRole("textbox", { name: "Notes", exact: true })
     .fill("Saved offline\n未同期 🌱");
   await page.getByRole("button", { name: "Submit", exact: true }).click();
-  await expect(
-    page.getByText(/1 change\(s\) saved on this device/),
-  ).toBeVisible();
+  await expect(page.getByText(/1 changes? saved on this device/)).toBeVisible();
   await page.reload();
   await expect(
     page.getByRole("textbox", { name: "Notes", exact: true }),
@@ -71,10 +67,9 @@ test("offline save, cold reload, sign-out fence, account switch and same-owner r
   ).toHaveValue("Saved offline\n未同期 🌱");
   // A document closed during replay retains its durable lease. Periodic sync
   // must reclaim it without forcing a duplicate operation.
-  await expect(page.getByText(/change\(s\) saved on this device/)).toHaveCount(
-    0,
-    { timeout: 75_000 },
-  );
+  await expect(page.getByText(/changes? saved on this device/)).toHaveCount(0, {
+    timeout: 75_000,
+  });
 });
 
 test("private API responses are not cached and deployed-mode local test login stays disabled", async ({

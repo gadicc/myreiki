@@ -1,0 +1,729 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-10-21 12:25+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: ja\n"
+
+#. placeholder {0}: context.pending.length
+#: src/client-data/Provider.tsx
+msgid "{0, plural, one {# change saved on this device, waiting to sync.} other {# changes saved on this device, waiting to sync.}}"
+msgstr "{0, plural, other {この端末に保存した変更 # 件が同期待ちです。}}"
+
+#. placeholder {0}: treatment.duration
+#: src/app/treatments/page.tsx
+msgid "{0}m"
+msgstr "{0}分"
+
+#: src/lib/i18n/messages.ts
+msgid "{count} treatments saved on this device."
+msgstr "この端末に施術記録を{count}件保存しました。"
+
+#: src/app/MyAppBar.tsx
+msgid "<0/>MyReiki"
+msgstr "<0/>MyReiki"
+
+#: src/lib/i18n/messages.ts
+msgid "A client name matches multiple records. Import these treatments individually."
+msgstr "同じ名前のお客様が複数登録されています。これらの施術記録は個別に登録してください。"
+
+#: src/app/clientProviders.tsx
+msgid "A newer version of this web app is available. Reload to update?"
+msgstr "MyReikiの新しいバージョンがあります。再読み込みして更新しますか？"
+
+#: src/lib/i18n/messages.ts
+msgid "A saved change could not be synchronized. Your work remains on this device."
+msgstr "保存した変更を同期できませんでした。変更内容はこの端末に残っています。"
+
+#: src/app/about/page.tsx
+#: src/app/MyAppBar.tsx
+#: src/app/pathnames.ts
+msgid "About"
+msgstr "MyReikiについて"
+
+#: src/app/admin/page.tsx
+msgid "Access denied."
+msgstr "アクセス権限がありません。"
+
+#: src/app/account/page.tsx
+#: src/app/pathnames.ts
+msgid "Account"
+msgstr "アカウント"
+
+#: src/lib/i18n/messages.ts
+msgid "Account changed; reopen the record before saving."
+msgstr "アカウントが変わりました。記録を開き直してから保存してください。"
+
+#: src/app/MyAppBar.tsx
+msgid "account of current user"
+msgstr "アカウントメニュー"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Add back body point"
+msgstr "背面に病腺のポイントを追加"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Add front body point"
+msgstr "前面に病腺のポイントを追加"
+
+#: src/app/practices/page.tsx
+msgid "Add New Practice"
+msgstr "施術所を追加"
+
+#: src/app/MyAppBar.tsx
+#: src/app/pathnames.ts
+msgid "Admin"
+msgstr "管理"
+
+#: src/lib/i18n/messages.ts
+msgid "Administrator access is required online."
+msgstr "インターネット接続と管理者権限が必要です。"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Atsui-On-Netsu (Intense Heat)"
+msgstr "強い温熱（熱い感覚）"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Byosen"
+msgstr "病腺"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Byosen level"
+msgstr "病腺のレベル"
+
+#: src/lib/i18n/messages.ts
+msgid "Choose an available practice."
+msgstr "利用できる施術所を選んでください。"
+
+#: src/lib/useClientId.tsx
+msgid "Clear"
+msgstr "クリア"
+
+#: src/app/treatments/import/page.tsx
+#: src/lib/useClientId.tsx
+msgid "Client"
+msgstr "お客様"
+
+#: src/app/home.tsx
+msgid "clients"
+msgstr "人"
+
+#: src/app/home.tsx
+#: src/app/MyAppBar.tsx
+#: src/app/page.tsx
+#: src/app/pathnames.ts
+msgid "Clients"
+msgstr "お客様"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+#: src/lib/useClientId.tsx
+msgid "Close"
+msgstr "閉じる"
+
+#: src/lib/i18n/messages.ts
+msgid "Conflict changed"
+msgstr "競合の状態が変わりました。記録を確認して、もう一度お試しください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Connect and sign in again before changing this setting."
+msgstr "この設定を変えるには、インターネットに接続してログインし直してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Connect to the internet before signing in."
+msgstr "ログインするにはインターネットに接続してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not load users"
+msgstr "ユーザーを読み込めませんでした。"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not resolve conflict"
+msgstr "変更内容の競合を解決できませんでした。"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not save import"
+msgstr "取り込んだ記録を保存できませんでした。"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not save on this device"
+msgstr "この端末に保存できませんでした。"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not update setting"
+msgstr "設定を更新できませんでした。"
+
+#: src/lib/i18n/messages.ts
+msgid "Could not verify the account. Saved device records remain available offline."
+msgstr "アカウントを確認できませんでした。この端末に保存済みの記録はオフラインでも使えます。"
+
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Country Code"
+msgstr "国コード"
+
+#: src/app/treatments/import/page.tsx
+#: src/components/TreatmentDateField.tsx
+msgid "Date"
+msgstr "日時"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Delete"
+msgstr "削除"
+
+#: src/lib/i18n/messages.ts
+msgid "Device storage is unavailable. Enable browser storage to open or edit records."
+msgstr "端末の保存領域を利用できません。記録を開いたり編集したりするには、ブラウザーでデータの保存を許可してください。"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Distance"
+msgstr "遠隔"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Duration (m)"
+msgstr "施術時間（分）"
+
+#: src/app/admin/page.tsx
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Email"
+msgstr "メールアドレス"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a two-letter country code."
+msgstr "国コードを半角英字2文字で入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid date"
+msgstr "正しい日時を入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid email address."
+msgstr "正しいメールアドレスを入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid value."
+msgstr "正しい値を入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a valid website URL."
+msgstr "正しいウェブサイトのURLを入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Enter a whole number of minutes greater than zero."
+msgstr "施術時間を1分以上の整数で入力してください。"
+
+#: src/app/account/page.tsx
+msgid "Export my device records and pending work"
+msgstr "この端末の記録と未同期の変更を書き出す"
+
+#: src/client-data/Provider.tsx
+msgid "Export pending work"
+msgstr "未同期の変更を書き出す"
+
+#: src/app/account/page.tsx
+msgid "Exports include private client notes. Store them privately."
+msgstr "書き出したファイルにはお客様の個人情報やメモが含まれます。安全な場所に保管してください。"
+
+#: src/app/client/edit/[_id]/page.tsx
+msgid "Family name"
+msgstr "姓"
+
+#: src/app/upload/page.tsx
+msgid "File uploads are not enabled in MyReiki."
+msgstr "現在、MyReikiではファイルをアップロードできません。"
+
+#: src/app/treatments/page.tsx
+msgid "Filter by contact, notes"
+msgstr "連絡先・メモで絞り込み"
+
+#: src/app/clients/page.tsx
+msgid "Filter by name, email, phone"
+msgstr "氏名・メール・電話番号で絞り込み"
+
+#: src/app/admin/page.tsx
+msgid "Find a loaded user"
+msgstr "読み込み済みのユーザーを検索"
+
+#: src/app/clients/page.tsx
+msgid "first"
+msgstr "名"
+
+#: src/app/client/edit/[_id]/page.tsx
+msgid "First name"
+msgstr "名"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Generic"
+msgstr "その他"
+
+#: src/lib/i18n/messages.ts
+msgid "Google sign-in failed"
+msgstr "Googleでログインできませんでした。"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Hibiki (Throbbing)"
+msgstr "響き（脈打つ感覚）"
+
+#: src/app/MyAppBar.tsx
+#: src/app/page.tsx
+#: src/app/pathnames.ts
+msgid "Home"
+msgstr "ホーム"
+
+#: src/app/home.tsx
+msgid "hours"
+msgstr "時間"
+
+#: src/app/home.tsx
+msgid "Hours"
+msgstr "時間"
+
+#: src/app/treatments/import/page.tsx
+msgid "Import Reiki treatments"
+msgstr "霊気の施術記録を取り込む"
+
+#: src/lib/i18n/messages.ts
+msgid "Invalid paste"
+msgstr "貼り付けた内容を確認してください。"
+
+#: src/app/about/page.tsx
+msgid "It is a work in progress and will be updated regularly."
+msgstr "開発中のサービスです。今後も改善を続けていきます。"
+
+#: src/app/about/page.tsx
+msgid "It is designed to help practitioners manage their clients and treatments."
+msgstr "お客様の情報や施術記録の管理をサポートします。"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Itami (Pain)"
+msgstr "痛み"
+
+#: src/lib/i18n/messages.ts
+msgid "Keep my changes"
+msgstr "自分の変更を残す"
+
+#: src/components/LanguageSelect.tsx
+msgid "Language"
+msgstr "表示言語"
+
+#: src/app/clients/page.tsx
+msgid "last"
+msgstr "姓"
+
+#: src/app/clientProviders.tsx
+msgid "Later"
+msgstr "後で"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Level: "
+msgstr "レベル："
+
+#: src/app/admin/page.tsx
+msgid "Load more"
+msgstr "さらに読み込む"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Loading or not found..."
+msgstr "読み込み中、または記録が見つかりません。"
+
+#: src/app/dev-login/page.tsx
+msgid "Local development fixture"
+msgstr "ローカル開発用テストアカウント"
+
+#: src/app/MyAppBar.tsx
+msgid "LOGIN"
+msgstr "ログイン"
+
+#: src/app/MyAppBar.tsx
+msgid "Logout"
+msgstr "ログアウト"
+
+#: src/app/MyAppBar.tsx
+msgid "menu"
+msgstr "メニュー"
+
+#: src/app/treatments/import/page.tsx
+msgid "Minutes"
+msgstr "分"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move down"
+msgstr "下へ移動"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move left"
+msgstr "左へ移動"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move right"
+msgstr "右へ移動"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Move up"
+msgstr "上へ移動"
+
+#: src/app/MyAppBar.tsx
+msgid "My account"
+msgstr "マイアカウント"
+
+#: src/app/about/page.tsx
+msgid "MyReiki is a simple practice management system for Reiki practitioners."
+msgstr "MyReikiは霊気の実践者のためのシンプルな施術管理システムです。"
+
+#: src/app/admin/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Name"
+msgstr "名前"
+
+#: src/app/clients/page.tsx
+msgid "Never"
+msgstr "施術記録なし"
+
+#: src/app/home.tsx
+msgid "New Treatment"
+msgstr "施術記録を追加"
+
+#: src/lib/useClientId.tsx
+msgid "No matching clients"
+msgstr "該当するお客様がいません"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Non-Human"
+msgstr "動物・植物など"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Not logged in"
+msgstr "ログインしていません。"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/app/treatments/import/page.tsx
+msgid "Notes"
+msgstr "メモ"
+
+#: src/app/account/page.tsx
+msgid "Offline records"
+msgstr "オフラインの記録"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "On-Netsu (Warmth)"
+msgstr "温熱（温かい感覚）"
+
+#: src/lib/useClientId.tsx
+msgid "Open"
+msgstr "開く"
+
+#: src/app/treatments/import/page.tsx
+msgid "Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO date and time with timezone), full client name, whole minutes, Reiki type, notes. All rows are checked before saving."
+msgstr "見出し行を除き、タブ区切りで貼り付けてください。列の順序は、日付（YYYY-MM-DD、またはタイムゾーン付きのISO形式の日時）、お客様のフルネーム、施術時間（分・整数）、霊気の種類、メモです。霊気の種類には regular・psychological・self・distance・non-human を使います。保存前にすべての行を確認します。"
+
+#: src/lib/i18n/messages.ts
+msgid "Persistent storage was not granted. Pending work is still saved locally."
+msgstr "永続保存は許可されませんでした。未同期の変更は引き続きこの端末に保存されています。"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Phone (Intl +XX)"
+msgstr "電話番号（+国番号から）"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Piri-Piri-Kan (Tingling)"
+msgstr "ピリピリ感"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Point size"
+msgstr "ポイントの大きさ"
+
+#: src/lib/usePracticeId.tsx
+msgid "Practice"
+msgstr "施術所"
+
+#: src/app/MyAppBar.tsx
+#: src/app/pathnames.ts
+#: src/app/practices/page.tsx
+msgid "Practices"
+msgstr "施術所"
+
+#: src/app/account/page.tsx
+msgid "Practitioner mode"
+msgstr "施術者モード"
+
+#: src/app/treatments/import/page.tsx
+msgid "Preview"
+msgstr "プレビュー"
+
+#: src/app/MyAppBar.tsx
+msgid "Profile image"
+msgstr "プロフィール画像"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Psychological"
+msgstr "性癖改善"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Regular"
+msgstr "通常"
+
+#: src/app/home.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Reiki"
+msgstr "霊気"
+
+#: src/app/layout.tsx
+msgid "Reiki Practice Management"
+msgstr "霊気の施術管理"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Reiki Type"
+msgstr "霊気の種類"
+
+#: src/app/clientProviders.tsx
+msgid "Reload"
+msgstr "再読み込み"
+
+#: src/app/account/page.tsx
+msgid "Remove my data from this device"
+msgstr "この端末から自分のデータを削除"
+
+#. placeholder {0}: data.pending.length
+#: src/app/account/page.tsx
+msgid "Remove this account's saved records and {0} pending change(s) from this device? Export anything you need first."
+msgstr "このアカウントの保存済みの記録と未同期の変更{0}件を、この端末から削除しますか？必要なデータは先に書き出してください。"
+
+#: src/app/account/page.tsx
+msgid "Request persistent storage"
+msgstr "ブラウザーに永続保存を申請"
+
+#: src/client-data/Provider.tsx
+msgid "Retry"
+msgstr "再試行"
+
+#: src/client-data/Provider.tsx
+msgid "Retry synchronization"
+msgstr "同期を再試行"
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: client name and whole minutes are required."
+msgstr "{row}行目：お客様の氏名と施術時間（分・整数）を入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: expected four or five tab-separated columns."
+msgstr "{row}行目：タブ区切りの4列または5列で入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: invalid date."
+msgstr "{row}行目：日付が正しくありません。"
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: invalid duration or Reiki type."
+msgstr "{row}行目：施術時間または霊気の種類が正しくありません。"
+
+#: src/lib/i18n/messages.ts
+msgid "Row {row}: use YYYY-MM-DD or an ISO date and time with timezone."
+msgstr "{row}行目：YYYY-MM-DD、またはタイムゾーン付きのISO形式の日時を入力してください。"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Save"
+msgstr "保存"
+
+#: src/app/client/edit/[_id]/page.tsx
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Save & Back"
+msgstr "保存して戻る"
+
+#: src/app/treatments/import/page.tsx
+msgid "Save import"
+msgstr "取り込んだ記録を保存"
+
+#: src/app/account/page.tsx
+msgid "Saved records and edits remain available offline until you sign out or remove this device's data. Browsers can erase local storage, so synchronize and keep private backups."
+msgstr "ログアウトするか、この端末のデータを削除するまで、保存済みの記録や変更をオフラインで使えます。ブラウザーによってデータが消去される場合があるため、定期的に同期し、バックアップを安全な場所に保管してください。"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+#: src/lib/i18n/treatmentTypes.ts
+msgid "Self"
+msgstr "自己浄化"
+
+#: src/lib/i18n/messages.ts
+msgid "Server sign-out was unavailable"
+msgstr "サーバーでログアウトできませんでした。"
+
+#: src/app/treatments/page.tsx
+msgid "Shihankaku"
+msgstr "師範格"
+
+#: src/app/home.tsx
+msgid "Shihankaku Progress"
+msgstr "師範格に向けた進捗"
+
+#: src/lib/i18n/messages.ts
+msgid "Sign in again"
+msgstr "ログインし直してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Sign in before editing records."
+msgstr "記録を編集するにはログインしてください。"
+
+#: src/app/treatments/import/page.tsx
+msgid "Sign in to import treatments."
+msgstr "施術記録を取り込むにはログインしてください。"
+
+#: src/app/account/page.tsx
+msgid "Sign in to open your account."
+msgstr "アカウントを開くにはログインしてください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Signed out on this device. Connect before signing in again."
+msgstr "この端末でログアウトしました。再びログインするにはインターネットに接続してください。"
+
+#: src/app/treatment/edit/[_id]/bodyPoints.tsx
+msgid "Size: "
+msgstr "大きさ："
+
+#: src/app/clients/page.tsx
+msgid "Sort by"
+msgstr "並び順"
+
+#: src/app/treatments/import/page.tsx
+msgid "Spreadsheet cells"
+msgstr "表計算シートのデータ"
+
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Submit"
+msgstr "保存"
+
+#: src/lib/i18n/messages.ts
+msgid "Synchronization paused; pending work is retained."
+msgstr "同期を一時停止しました。未同期の変更は保存されています。"
+
+#: src/lib/i18n/messages.ts
+msgid "Synchronization paused. Your pending work remains on this device."
+msgstr "同期を一時停止しました。未同期の変更はこの端末に残っています。"
+
+#. placeholder {0}: duration + 2
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "T-{0}"
+msgstr "{0}分前から"
+
+#: src/lib/i18n/messages.ts
+msgid "The browser granted persistent storage."
+msgstr "ブラウザーが永続保存を許可しました。"
+
+#: src/lib/i18n/messages.ts
+msgid "The device operation failed. Your saved work is retained."
+msgstr "端末での操作に失敗しました。保存済みの変更は残っています。"
+
+#: src/lib/i18n/messages.ts
+msgid "The operation could not be completed. Your saved work is retained. Please try again."
+msgstr "操作を完了できませんでした。保存済みの変更は残っています。もう一度お試しください。"
+
+#: src/app/dev-login/page.tsx
+msgid "These fixed synthetic accounts exist only for local UI and offline testing."
+msgstr "これらの架空のアカウントは、ローカル環境での画面とオフライン機能のテスト専用です。"
+
+#: src/lib/i18n/messages.ts
+msgid "This paste was already saved on this device."
+msgstr "貼り付けた記録は、この端末にすでに保存されています。"
+
+#: src/lib/i18n/messages.ts
+msgid "This record changed on another device. Choose which version to keep below."
+msgstr "別の端末でこの記録が変更されました。下で残す内容を選んでください。"
+
+#: src/lib/i18n/messages.ts
+msgid "This record changed on another device. Choose which version to keep."
+msgstr "別の端末でこの記録が変更されました。残す内容を選んでください。"
+
+#: src/lib/i18n/messages.ts
+msgid "This record changed while you were editing. Copy your changes and reopen it before saving."
+msgstr "編集中にこの記録が変更されました。変更内容をコピーし、記録を開き直してから保存してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "This record has been deleted."
+msgstr "この記録は削除されています。"
+
+#: src/lib/i18n/messages.ts
+msgid "This record is unavailable on the server. Export the pending work before removing device data."
+msgstr "サーバーでこの記録を利用できません。端末のデータを削除する前に、未同期の変更を書き出してください。"
+
+#. placeholder {0}: clients.length
+#: src/app/clients/page.tsx
+msgid "Total clients: {0}"
+msgstr "お客様：合計{0}人"
+
+#: src/app/home.tsx
+msgid "Total Progress"
+msgstr "全体の進捗"
+
+#. placeholder {0}: treatments.length
+#: src/app/treatments/page.tsx
+msgid "Total treatments: {0} ({hours} hours)"
+msgstr "施術：合計{0}回（{hours}時間）"
+
+#: src/app/clients/page.tsx
+msgid "treatment"
+msgstr "最終施術日"
+
+#: src/app/treatment/edit/[_id]/page.tsx
+msgid "Treatment Type"
+msgstr "施術の種類"
+
+#: src/app/home.tsx
+msgid "treatments"
+msgstr "回"
+
+#: src/app/MyAppBar.tsx
+#: src/app/page.tsx
+#: src/app/pathnames.ts
+msgid "Treatments"
+msgstr "施術記録"
+
+#: src/lib/i18n/messages.ts
+msgid "Turn off"
+msgstr "オフにする"
+
+#: src/lib/i18n/messages.ts
+msgid "Turn on"
+msgstr "オンにする"
+
+#: src/app/treatments/import/page.tsx
+msgid "Type"
+msgstr "種類"
+
+#: src/lib/i18n/messages.ts
+msgid "Unexpected synchronization receipt"
+msgstr "同期結果を確認できませんでした。同期をもう一度お試しください。"
+
+#: src/app/treatments/page.tsx
+msgid "Unknown"
+msgstr "不明"
+
+#: src/app/upload/page.tsx
+msgid "Uploads"
+msgstr "アップロード"
+
+#: src/lib/i18n/messages.ts
+msgid "Use an international phone number starting with +."
+msgstr "+と国番号から始まる国際形式の電話番号を入力してください。"
+
+#: src/lib/i18n/messages.ts
+msgid "Use server version"
+msgstr "サーバーの内容を使う"
+
+#: src/app/admin/page.tsx
+msgid "Users"
+msgstr "ユーザー"
+
+#: src/app/practice/edit/[_id]/page.tsx
+msgid "Website URL"
+msgstr "ウェブサイトのURL"

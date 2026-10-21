@@ -6,7 +6,7 @@ schema retains generic treatments for future modalities.
 The working tree now uses Next.js 16, React 19, MUI 9, Better Auth, Valibot with
 React Hook Form, Neon/PostgreSQL and an owner-scoped Dexie offline store. Bun
 1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.0.4 supplies
-shared auth, database, PWA and client identity primitives.
+shared auth, database, PWA, Lingui tooling and client identity primitives.
 
 **Production still runs the legacy Mongo application.** Provider ownership and
 Singapore placement are configured, and the Mongo backup has been imported and
@@ -47,6 +47,21 @@ authorizes every replay. There is no app-imposed offline expiry. Browser storage
 can still be removed by the browser or operating system. Account settings offer
 persistent-storage requests, private device export and explicit device removal.
 Old Gongo pending work is outside the requested recovery scope.
+
+English is the source language; Japanese is available from the language selector.
+The saved device preference wins over browser language negotiation. Both catalogs
+are bundled for offline switching, which preserves open form drafts and unsynced
+work. User-entered names and notes are never translated. Dates and picker controls
+follow the selected language; stored dates and treatment type codes stay unchanged.
+
+For copy changes, use `<Trans>` from `@lingui/react/macro`, or `msg` from
+`@lingui/core/macro` and the component's `useLingui()` instance. Server Components
+that use translation macros must call `initRequestI18n()` in their own render.
+Never use the global `t` macro in client components. Run `bun run i18n:extract`,
+translate missing Japanese entries in `src/locales/ja/messages.po`, then run
+`bun run check` and `bun run build`. Generated ESM `.mjs` catalogs are ignored and
+compiled before development, validation and builds. See
+[localization decisions and evidence](plans/005-localization.md).
 
 Drizzle schemas are in `src/db/schema`; use `bun run db:generate` and
 `bun run schema:gen`. Migrations require `pg_uuidv7`. The app's pg adapter

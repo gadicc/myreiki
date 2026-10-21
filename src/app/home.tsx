@@ -1,3 +1,6 @@
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
 import {
   Box,
   Button,
@@ -45,6 +48,8 @@ function LinearProgressWithLabel(
 }
 
 export default function HomePage() {
+  const { i18n } = useLingui();
+
   const { practiceId, PracticeSelect } = usePracticeId();
   const treatments = useClientTreatments(practiceId);
 
@@ -89,10 +94,14 @@ export default function HomePage() {
       <PracticeSelect />
 
       <Box sx={{ textAlign: "center", marginTop: 1 }}>
-        <Typography variant="h6">Reiki</Typography>
+        <Typography variant="h6">
+          <Trans>Reiki</Trans>
+        </Typography>
 
         <div style={{ marginTop: 15, marginBottom: 25 }}>
-          <b>Total Progress</b>
+          <b>
+            <Trans>Total Progress</Trans>
+          </b>
           <table
             border={1}
             cellSpacing={0}
@@ -105,33 +114,41 @@ export default function HomePage() {
                   <div style={{ fontSize: "160%" }}>
                     {tallies.all.treatments}
                   </div>
-                  <div style={{ fontSize: "80%" }}>treatments</div>
+                  <div style={{ fontSize: "80%" }}>
+                    <Trans>treatments</Trans>
+                  </div>
                 </td>
                 <td width="33%">
                   <div style={{ fontSize: "160%" }}>
                     {tallies.all.uniqueClients}
                   </div>
-                  <div style={{ fontSize: "80%" }}>clients</div>
+                  <div style={{ fontSize: "80%" }}>
+                    <Trans>clients</Trans>
+                  </div>
                 </td>
                 <td width="33%">
                   <div style={{ fontSize: "160%" }}>
                     {tallies.all.totalHours}
                   </div>
-                  <div style={{ fontSize: "80%" }}>hours</div>
+                  <div style={{ fontSize: "80%" }}>
+                    <Trans>hours</Trans>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <b>Shihankaku Progress</b>
+        <b>
+          <Trans>Shihankaku Progress</Trans>
+        </b>
 
         <LinearProgressWithLabel
           value={
             (tallies.shihankaku.uniqueClients / SHIHANKAKU_REQUIRED_CLIENTS) *
             100
           }
-          preLabel="Clients"
+          preLabel={i18n._(msg`Clients`)}
           preLabelMinWidth={50}
           label={`${tallies.shihankaku.uniqueClients} / ${SHIHANKAKU_REQUIRED_CLIENTS}`}
           labelMinWidth={50}
@@ -140,7 +157,7 @@ export default function HomePage() {
           value={
             (tallies.shihankaku.totalHours / SHIHANKAKU_REQUIRED_HOURS) * 100
           }
-          preLabel="Hours"
+          preLabel={i18n._(msg`Hours`)}
           preLabelMinWidth={50}
           label={`${tallies.shihankaku.totalHours} / ${SHIHANKAKU_REQUIRED_HOURS}`}
           labelMinWidth={50}
@@ -152,7 +169,7 @@ export default function HomePage() {
           component={NextLink}
           href="/treatment/edit/new"
         >
-          New Treatment
+          <Trans>New Treatment</Trans>
         </Button>
         <br />
       </Box>

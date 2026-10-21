@@ -1,5 +1,7 @@
 "use client";
 import { activeClientDataOwner } from "@gadicc/loom/client-data";
+import { useLingui } from "@lingui/react";
+import { Plural, Trans } from "@lingui/react/macro";
 import { Alert, Button, Stack } from "@mui/material";
 import { useLiveQuery } from "dexie-react-hooks";
 import React from "react";
@@ -12,6 +14,7 @@ import type {
   Snapshot,
 } from "@/data/model";
 import { authClient, useAuthSession } from "@/lib/auth-client";
+import { displayError } from "@/lib/i18n/messages";
 import {
   practiceDatabase as database,
   type IdentityBinding,
@@ -44,6 +47,7 @@ export function PracticeDataProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const { i18n } = useLingui();
   const [error, setError] = React.useState("");
   const [fence, setFence] = React.useState(0);
   const [hidden, setHidden] = React.useState(false);
@@ -336,17 +340,20 @@ export function PracticeDataProvider({
                 await sync();
               }}
             >
-              Retry
+              <Trans>Retry</Trans>
             </Button>
           }
         >
-          {error}
+          {displayError(i18n, error)}
         </Alert>
       )}
       {context.pending.length > 0 && (
         <Alert severity="info">
-          {context.pending.length} change(s) saved on this device, waiting to
-          sync.
+          <Plural
+            value={context.pending.length}
+            one="# change saved on this device, waiting to sync."
+            other="# changes saved on this device, waiting to sync."
+          />
         </Alert>
       )}
       {context.pending
@@ -354,9 +361,12 @@ export function PracticeDataProvider({
         .slice(0, 1)
         .map((p) => (
           <Alert key={p.sequence} severity="warning">
-            {p.error === "VERSION_CONFLICT"
-              ? "This record changed on another device. Choose which version to keep."
-              : "A saved change could not be synchronized. Your work remains on this device."}
+            {displayError(
+              i18n,
+              p.error === "VERSION_CONFLICT"
+                ? "This record changed on another device. Choose which version to keep."
+                : "A saved change could not be synchronized. Your work remains on this device.",
+            )}
             <Stack direction="row" spacing={1}>
               {p.error !== "VERSION_CONFLICT" && (
                 <>
@@ -366,9 +376,11 @@ export function PracticeDataProvider({
                       await sync();
                     }}
                   >
-                    Retry synchronization
+                    <Trans>Retry synchronization</Trans>
                   </Button>
-                  <Button href="/account">Export pending work</Button>
+                  <Button href="/account">
+                    <Trans>Export pending work</Trans>
+                  </Button>
                 </>
               )}
               {p.error === "VERSION_CONFLICT" &&
@@ -396,9 +408,12 @@ export function PracticeDataProvider({
                       }
                     }}
                   >
-                    {choice === "local"
-                      ? "Keep my changes"
-                      : "Use server version"}
+                    {displayError(
+                      i18n,
+                      choice === "local"
+                        ? "Keep my changes"
+                        : "Use server version",
+                    )}
                   </Button>
                 ))}
             </Stack>

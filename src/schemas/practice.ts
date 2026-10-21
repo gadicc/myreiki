@@ -6,11 +6,22 @@ export const practiceSchema = v.object({
   userId: v.string(),
   name: v.string(),
   countryId: v.optional(
-    v.union([v.literal(""), v.pipe(v.string(), v.length(2))]),
+    v.union(
+      [
+        v.literal(""),
+        v.pipe(v.string(), v.length(2, "Enter a two-letter country code.")),
+      ],
+      "Enter a two-letter country code.",
+    ),
   ),
   phone: phoneSchema,
   email: emailSchema,
-  website: v.optional(v.union([v.literal(""), v.pipe(v.string(), v.url())])),
+  website: v.optional(
+    v.union(
+      [v.literal(""), v.pipe(v.string(), v.url("Enter a valid website URL."))],
+      "Enter a valid website URL.",
+    ),
+  ),
   notes: v.optional(v.string()),
 });
 

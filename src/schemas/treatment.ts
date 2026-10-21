@@ -20,19 +20,22 @@ export const treatmentBaseSchema = v.object({
   clientId: v.string(),
   practitionerId: v.string(),
   practiceId: v.string(),
-  date: v.union([
-    v.date(),
-    v.custom<Dayjs>(
-      (value) => dayjs.isDayjs(value) && value.isValid(),
-      "Enter a valid date",
-    ),
-  ]),
+  date: v.union(
+    [
+      v.date(),
+      v.custom<Dayjs>(
+        (value) => dayjs.isDayjs(value) && value.isValid(),
+        "Enter a valid date",
+      ),
+    ],
+    "Enter a valid date",
+  ),
   duration: v.pipe(
     v.union([v.number(), v.string()]),
     v.transform(Number),
     v.number(),
-    v.integer(),
-    v.minValue(1),
+    v.integer("Enter a whole number of minutes greater than zero."),
+    v.minValue(1, "Enter a whole number of minutes greater than zero."),
   ),
   bodyPoints: v.optional(bodyPoints),
   notes: v.optional(v.string()),

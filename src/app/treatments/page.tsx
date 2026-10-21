@@ -1,4 +1,7 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
 
 import { Add, Edit, EventRepeat } from "@mui/icons-material";
 import {
@@ -12,16 +15,12 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import dayjs from "dayjs";
-import dayJsAdvancedFormat from "dayjs/plugin/advancedFormat";
-import dayJsIsToday from "dayjs/plugin/isToday";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import Highlighter from "react-highlight-words";
-// import { t, Trans } from "@lingui/macro";
 import { Virtuoso } from "react-virtuoso";
-
+import { formatTreatmentDate } from "@/lib/i18n/dates";
 import Link from "@/lib/link";
 import { Client, Treatment } from "@/schemas";
 import usePracticeId from "../../lib/usePracticeId";
@@ -30,22 +29,19 @@ import useClientTreatments from "./useClientTreatments";
 
 type TreatmentWithClient = Treatment & { client?: Client | null };
 
-dayjs.extend(dayJsIsToday);
-dayjs.extend(dayJsAdvancedFormat);
-
-function treatmentRow(
-  _index: number,
-  treatment: TreatmentWithClient,
-  context: { filterRegExp: RegExp },
-) {
-  const client = treatment.client || { givenName: "Unknown", familyName: "" };
-  const now = dayjs();
-  const date = dayjs(treatment.date);
-  let dateStr;
-  if (date.isToday()) dateStr = date.format("HH:mm");
-  else if (now.diff(date, "days") < 7) dateStr = date.format("ddd Do");
-  else if (date.year() === now.year()) dateStr = date.format("D MMM");
-  else dateStr = (treatment.date as Date).toLocaleDateString();
+function TreatmentRow({
+  treatment,
+  context,
+}: {
+  treatment: TreatmentWithClient;
+  context: { filterRegExp: RegExp };
+}) {
+  const { i18n } = useLingui();
+  const client = treatment.client || {
+    givenName: i18n._(msg`Unknown`),
+    familyName: "",
+  };
+  const dateStr = formatTreatmentDate(treatment.date, i18n.locale);
 
   /*
   function onClick(userId: string, field: string, oldValue: number) {
@@ -112,7 +108,7 @@ function treatmentRow(
               fontSize: "70%",
             }}
           >
-            {treatment.duration}m
+            <Trans>{treatment.duration}m</Trans>
           </span>
         </div>
       </div>
@@ -163,6 +159,8 @@ function treatmentRow(
 }
 
 export default function Clients() {
+  const { i18n } = useLingui();
+
   const { practiceId, PracticeSelect } = usePracticeId();
   const _combined = useClientTreatments(practiceId, { sort: ["date", "desc"] });
 
@@ -211,7 +209,7 @@ export default function Clients() {
           <TextField
             size="small"
             value={filter}
-            placeholder="Filter by contact, notes"
+            placeholder={i18n._(msg`Filter by contact, notes`)}
             onChange={(event) => setFilter(event.target.value)}
           />
           <FormGroup>
@@ -222,13 +220,15 @@ export default function Clients() {
                   onChange={(e) => setShihanKakuFilter(e.target.checked)}
                 />
               }
-              label="Shihankaku"
+              label={i18n._(msg`Shihankaku`)}
             />
           </FormGroup>
         </Stack>
 
         <p>
-          Total treatments: {treatments.length} ({hours} hours)
+          <Trans>
+            Total treatments: {treatments.length} ({hours} hours)
+          </Trans>
         </p>
         {/* sub.isMore && <Button onClick={sub.loadMore}>Load More</Button> */}
 
@@ -236,7 +236,9 @@ export default function Clients() {
           <Virtuoso
             context={{ filterRegExp }}
             data={treatments}
-            itemContent={treatmentRow}
+            itemContent={(_index, treatment, context) => (
+              <TreatmentRow treatment={treatment} context={context} />
+            )}
             useWindowScroll
           />
         </div>

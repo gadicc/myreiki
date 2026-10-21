@@ -11,7 +11,7 @@ test("treatment form, loaded body points, cloning and repeat spreadsheet import"
     practice = `Synthetic treatment ${suffix}`,
     client = `Aki${suffix}`;
   const settled = () =>
-    expect(page.getByText(/change\(s\) saved on this device/)).toHaveCount(0);
+    expect(page.getByText(/changes? saved on this device/)).toHaveCount(0);
   const choosePractice = async () => {
     const select = page.getByRole("combobox", {
       name: "Practice",

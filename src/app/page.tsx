@@ -1,4 +1,7 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+
 import { Dry, Groups, Home } from "@mui/icons-material";
 
 import { BottomNavigation, BottomNavigationAction, Box } from "@mui/material";
@@ -9,6 +12,8 @@ import TreatmentsPage from "@/app/treatments/page";
 import HomePage from "./home";
 
 function Index() {
+  const { i18n } = useLingui();
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -50,9 +55,15 @@ function Index() {
           background: "#ccccff",
         }}
       >
-        <BottomNavigationAction label="Home" icon={<Home />} />
-        <BottomNavigationAction label="Treatments" icon={<Dry />} />
-        <BottomNavigationAction label="Clients" icon={<Groups />} />
+        <BottomNavigationAction label={i18n._(msg`Home`)} icon={<Home />} />
+        <BottomNavigationAction
+          label={i18n._(msg`Treatments`)}
+          icon={<Dry />}
+        />
+        <BottomNavigationAction
+          label={i18n._(msg`Clients`)}
+          icon={<Groups />}
+        />
       </BottomNavigation>
     </Box>
   );

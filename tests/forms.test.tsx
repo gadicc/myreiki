@@ -4,14 +4,13 @@ import {
   act,
   cleanup,
   fireEvent,
-  render,
-  renderHook,
   screen,
   waitFor,
 } from "@testing-library/react";
 import * as v from "valibot";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { useForm } from "@/lib/forms";
+import { render, renderHook } from "./i18nRender";
 
 afterEach(cleanup);
 const schema = v.object({

@@ -1,11 +1,17 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+
 import { Alert, Button, Container, Stack, Typography } from "@mui/material";
 import React from "react";
 import superjson from "superjson";
 import { practiceDatabase as database } from "@/client-data/database";
 import { usePracticeData } from "@/client-data/Provider";
+import { displayError } from "@/lib/i18n/messages";
 
 export default function Account() {
+  const { i18n } = useLingui();
   const data = usePracticeData();
   const [message, setMessage] = React.useState("");
   const mounted = React.useRef(false);
@@ -28,18 +34,28 @@ export default function Account() {
     }
   };
   if (!data.profile || !data.binding)
-    return <Container>Sign in to open your account.</Container>;
+    return (
+      <Container>
+        <Trans>Sign in to open your account.</Trans>
+      </Container>
+    );
   const binding = data.binding,
     profile = data.profile;
   return (
     <Container sx={{ my: 2 }}>
       <Stack spacing={2}>
-        <Typography variant="h5">Account</Typography>
+        <Typography variant="h5">
+          <Trans>Account</Trans>
+        </Typography>
         <Typography>
           {profile.displayName} · {profile.email}
         </Typography>
-        {message && <Alert severity="info">{message}</Alert>}
-        <Typography variant="h6">Practitioner mode</Typography>
+        {message && (
+          <Alert severity="info">{displayError(i18n, message)}</Alert>
+        )}
+        <Typography variant="h6">
+          <Trans>Practitioner mode</Trans>
+        </Typography>
         <Button
           variant="outlined"
           onClick={async () => {
@@ -66,13 +82,17 @@ export default function Account() {
             }
           }}
         >
-          {profile.practitioner ? "Turn off" : "Turn on"}
+          {displayError(i18n, profile.practitioner ? "Turn off" : "Turn on")}
         </Button>
-        <Typography variant="h6">Offline records</Typography>
+        <Typography variant="h6">
+          <Trans>Offline records</Trans>
+        </Typography>
         <Typography>
-          Saved records and edits remain available offline until you sign out or
-          remove this device's data. Browsers can erase local storage, so
-          synchronize and keep private backups.
+          <Trans>
+            Saved records and edits remain available offline until you sign out
+            or remove this device's data. Browsers can erase local storage, so
+            synchronize and keep private backups.
+          </Trans>
         </Typography>
         <Button
           onClick={() =>
@@ -87,7 +107,7 @@ export default function Account() {
             })
           }
         >
-          Request persistent storage
+          <Trans>Request persistent storage</Trans>
         </Button>
         <Button
           onClick={() =>
@@ -108,10 +128,12 @@ export default function Account() {
             })
           }
         >
-          Export my device records and pending work
+          <Trans>Export my device records and pending work</Trans>
         </Button>
         <Typography>
-          Exports include private client notes. Store them privately.
+          <Trans>
+            Exports include private client notes. Store them privately.
+          </Trans>
         </Typography>
         <Button
           color="error"
@@ -119,7 +141,9 @@ export default function Account() {
             perform(async () => {
               if (
                 !confirm(
-                  `Remove this account's saved records and ${data.pending.length} pending change(s) from this device? Export anything you need first.`,
+                  i18n._(
+                    msg`Remove this account's saved records and ${data.pending.length} pending change(s) from this device? Export anything you need first.`,
+                  ),
                 )
               )
                 return;
@@ -128,7 +152,7 @@ export default function Account() {
             })
           }
         >
-          Remove my data from this device
+          <Trans>Remove my data from this device</Trans>
         </Button>
       </Stack>
     </Container>

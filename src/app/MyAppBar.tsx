@@ -1,4 +1,8 @@
 "use client";
+import { msg } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
+import { Trans } from "@lingui/react/macro";
+
 import {
   AccountCircle,
   AdminPanelSettings,
@@ -32,17 +36,23 @@ import { usePathname, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { SITE_TITLE } from "@/api-lib/consts";
 import { usePracticeData } from "@/client-data/Provider";
-
+import LanguageSelect from "@/components/LanguageSelect";
+import { displayError } from "@/lib/i18n/messages";
 import pathnames from "./pathnames";
 
 export default function MyAppBar() {
+  const { i18n } = useLingui();
+
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   let title = SITE_TITLE;
   const pnt = pathname && pathnames[pathname];
   if (pnt)
-    title = typeof pnt === "function" ? pnt({ pathname, searchParams }) : pnt;
+    title =
+      typeof pnt === "function"
+        ? i18n._(pnt({ pathname, searchParams }))
+        : i18n._(pnt);
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -80,15 +90,15 @@ export default function MyAppBar() {
     [],
   );
 
-  const drawer = React.useMemo(
-    () => (
-      <Box
-        role="presentation"
-        onClick={toggleDrawer(false)}
-        onKeyDown={toggleDrawer(false)}
-      >
-        <Typography variant="h6" sx={{ my: 2, ml: 4 }}>
-          <div style={{ position: "relative", paddingLeft: 28 }}>
+  const drawer = (
+    <Box
+      role="presentation"
+      onClick={toggleDrawer(false)}
+      onKeyDown={toggleDrawer(false)}
+    >
+      <Typography variant="h6" sx={{ my: 2, ml: 4 }}>
+        <div style={{ position: "relative", paddingLeft: 28 }}>
+          <Trans>
             <img
               src="/favicons/android-chrome-192x192.png"
               style={{
@@ -100,80 +110,91 @@ export default function MyAppBar() {
               }}
             />
             MyReiki
-          </div>
-        </Typography>
+          </Trans>
+        </div>
+      </Typography>
 
-        <Divider />
-        <List>
-          <ListItem disablePadding>
-            <ListItemButton component={NextLink} href="/">
-              <ListItemIcon>
-                <Home />
-              </ListItemIcon>
-              <ListItemText>Home</ListItemText>
-            </ListItemButton>
-          </ListItem>
-        </List>
+      <Divider />
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton component={NextLink} href="/">
+            <ListItemIcon>
+              <Home />
+            </ListItemIcon>
+            <ListItemText>
+              <Trans>Home</Trans>
+            </ListItemText>
+          </ListItemButton>
+        </ListItem>
+      </List>
 
-        {isPractitioner ? (
-          <>
-            <Divider />
-            <List>
-              <ListItem disablePadding>
-                <ListItemButton component={NextLink} href="/treatments">
-                  <ListItemIcon>
-                    <Dry />
-                  </ListItemIcon>
-                  <ListItemText>Treatments</ListItemText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton component={NextLink} href="/clients">
-                  <ListItemIcon>
-                    <Groups />
-                  </ListItemIcon>
-                  <ListItemText>Clients</ListItemText>
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton component={NextLink} href="/practices">
-                  <ListItemIcon>
-                    <NightShelter />
-                  </ListItemIcon>
-                  <ListItemText>Practices</ListItemText>
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </>
-        ) : undefined}
-
-        <Divider />
-        <List>
-          <ListItem disablePadding>
-            <ListItemButton component={NextLink} href="/about">
-              <ListItemIcon>
-                <Info />
-              </ListItemIcon>
-              <ListItemText>About</ListItemText>
-            </ListItemButton>
-          </ListItem>
-        </List>
-
-        {isAdmin ? (
+      {isPractitioner ? (
+        <>
+          <Divider />
           <List>
             <ListItem disablePadding>
-              <ListItemButton component={NextLink} href="/admin">
+              <ListItemButton component={NextLink} href="/treatments">
                 <ListItemIcon>
-                  <AdminPanelSettings />
+                  <Dry />
                 </ListItemIcon>
-                <ListItemText>Admin</ListItemText>
+                <ListItemText>
+                  <Trans>Treatments</Trans>
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={NextLink} href="/clients">
+                <ListItemIcon>
+                  <Groups />
+                </ListItemIcon>
+                <ListItemText>
+                  <Trans>Clients</Trans>
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton component={NextLink} href="/practices">
+                <ListItemIcon>
+                  <NightShelter />
+                </ListItemIcon>
+                <ListItemText>
+                  <Trans>Practices</Trans>
+                </ListItemText>
               </ListItemButton>
             </ListItem>
           </List>
-        ) : undefined}
-      </Box>
-    ),
-    [isAdmin, toggleDrawer, isPractitioner],
+        </>
+      ) : undefined}
+
+      <Divider />
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton component={NextLink} href="/about">
+            <ListItemIcon>
+              <Info />
+            </ListItemIcon>
+            <ListItemText>
+              <Trans>About</Trans>
+            </ListItemText>
+          </ListItemButton>
+        </ListItem>
+      </List>
+
+      {isAdmin ? (
+        <List>
+          <ListItem disablePadding>
+            <ListItemButton component={NextLink} href="/admin">
+              <ListItemIcon>
+                <AdminPanelSettings />
+              </ListItemIcon>
+              <ListItemText>
+                <Trans>Admin</Trans>
+              </ListItemText>
+            </ListItemButton>
+          </ListItem>
+        </List>
+      ) : undefined}
+    </Box>
   );
 
   return (
@@ -184,7 +205,7 @@ export default function MyAppBar() {
             size="large"
             edge="start"
             color="inherit"
-            aria-label="menu"
+            aria-label={i18n._(msg`menu`)}
             sx={{ mr: 2 }}
             onClick={toggleDrawer(true)}
           >
@@ -193,11 +214,12 @@ export default function MyAppBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {title}
           </Typography>
+          <LanguageSelect />
           {userId ? (
             <div>
               <IconButton
                 size="large"
-                aria-label="account of current user"
+                aria-label={i18n._(msg`account of current user`)}
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleUserMenu}
@@ -208,7 +230,7 @@ export default function MyAppBar() {
                     alt={
                       typeof user?.displayName === "string"
                         ? user.displayName
-                        : "avatar"
+                        : i18n._(msg`Profile image`)
                     }
                     src={user?.image as string}
                     slotProps={{ img: { referrerPolicy: "no-referrer" } }}
@@ -237,7 +259,7 @@ export default function MyAppBar() {
                   component={NextLink}
                   href="/account"
                 >
-                  My account
+                  <Trans>My account</Trans>
                 </MenuItem>
                 <MenuItem
                   onClick={async () => {
@@ -245,7 +267,7 @@ export default function MyAppBar() {
                     handleUserClose();
                   }}
                 >
-                  Logout
+                  <Trans>Logout</Trans>
                 </MenuItem>
               </Menu>
             </div>
@@ -253,9 +275,11 @@ export default function MyAppBar() {
             <Button
               variant="text"
               sx={{ color: "white" }}
-              onClick={() => signIn().catch((error) => alert(error.message))}
+              onClick={() =>
+                signIn().catch((error) => alert(displayError(i18n, error)))
+              }
             >
-              LOGIN
+              <Trans>LOGIN</Trans>
             </Button>
           )}
         </Toolbar>

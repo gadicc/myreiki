@@ -102,6 +102,24 @@
         },
         "requestSessionReaders": "app-owned"
       }
+    },
+    "lingui": {
+      "status": "active",
+      "activatedOn": "2026-10-21",
+      "config": {
+        "catalogMode": "precompile",
+        "configFile": "lingui.config.ts",
+        "generatedCatalogs": ["src/locales/*/messages.mjs"],
+        "tasks": {
+          "build": "build",
+          "compile": "i18n:compile",
+          "extract": "i18n:extract"
+        }
+      },
+      "managedTasks": {
+        "i18n:compile": "c1:d99dd505c0d7ac6429aa55718e41cc68d8dad5967465180fe7fcdf7955238863",
+        "i18n:extract": "c1:f00cbcb5e936b8246c090ed7fdcabed240dfac8845ba66df05d912181146628b"
+      }
     }
   }
 }
