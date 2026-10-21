@@ -83,6 +83,7 @@ export async function inspectLiveSource(client: MongoClient, source: Source) {
           "find",
           "killCursors",
           "listCollections",
+          "listDatabases",
           "listIndexes",
           "listSearchIndexes",
           "planCacheRead",

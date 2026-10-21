@@ -65,6 +65,10 @@ it("recognizes only the dedicated built-in read role with bounded read actions",
     exactMatch: true,
     readOnly: true,
   });
+  const readAny = fixture("readAnyDatabase", ["find", "listDatabases"]);
+  expect(
+    (await inspectLiveSource(readAny.client, readAny.source)).readOnly,
+  ).toBe(true);
   for (const [role, actions] of [
     ["atlasAdmin", ["find"]],
     ["read", ["find", "update"]],
