@@ -3,8 +3,9 @@
 ## Current state — 21 October 2026
 
 The implementation in the working tree uses SQL and Dexie. The existing public
-application still uses Mongo. No commit, push, deployment or production SQL
-import has been performed as part of this modernization.
+application still uses Mongo. Implementation checkpoint `1050ab6` is saved locally on
+`codex/modernize-myreiki`. No push, deployment or Production SQL import has been
+performed as part of this modernization.
 
 | Boundary | Evidence / state |
 | --- | --- |

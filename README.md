@@ -11,7 +11,8 @@ shared auth, database, PWA and client identity primitives.
 **Production still runs the legacy Mongo application.** Provider ownership and
 Singapore placement are configured, and the Mongo backup has been imported and
 compared on a protected rehearsal branch. The Production SQL branch has not
-been populated or activated. See [current evidence](plans/001-modernization.md),
+been populated or activated. The implementation is saved on the local `codex/modernize-myreiki` review branch.
+See [current evidence](plans/001-modernization.md),
 [dependency decisions](plans/002-upgrade-ledger.md) and the
 [cutover gates](plans/003-release-and-recovery.md).
 
