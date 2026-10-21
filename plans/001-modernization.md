@@ -2,6 +2,14 @@
 
 ## Current state — 21 October 2026
 
+Production is live on the SQL stack at https://www.myreiki.app. The operator
+confirmed existing Google sign-in and migrated records. The dedicated Mongo
+user is deleted and fresh authentication denial is verified. See
+[final production acceptance](008-production-acceptance.md) for release,
+retirement and recovery details.
+
+## Historical implementation checkpoint — before cutover
+
 The implementation in the working tree uses SQL and Dexie. The existing public
 application still uses Mongo. Implementation checkpoint `1050ab6` is saved locally on
 `codex/modernize-myreiki`. No push, deployment or Production SQL import has been
@@ -76,7 +84,7 @@ seven imported tables and four required-empty tables. It refuses a changed plan,
 source or newer application writes. The latest replay passed with no old auth
 sessions. Development and Preview cannot inherit this private rehearsal data.
 
-## Verification and remaining gates
+## Verification and gates at the implementation checkpoint
 
 Tests cover schemas, actual form controls, date clearing, SQL constraints,
 provider-linked OAuth identity, ownership, revocation, receipts, conflicts,
@@ -84,7 +92,7 @@ Dexie transactions, account fencing, imports and retired protocols. Browser
 checks use synthetic accounts on a production-mode local server; the real
 Google sign-in check is separate. See the compatibility ledger for final results.
 
-The remaining external boundary is [the reviewed production cutover](003-release-and-recovery.md):
+At that checkpoint the remaining external boundary was [the production cutover](003-release-and-recovery.md):
 final legacy-writer fencing and snapshot consistency, production signing and
 release credential smoke, strict transport, protected
 runtime acceptance and promotion. No rollback to Mongo is safe after new SQL
@@ -92,7 +100,8 @@ writes without reconciling those writes.
 
 The operator supplied live Production Mongo access and confirmed its account is
 dedicated to MyReiki. A read-only primary snapshot matched the backup byte for
-byte across all seven collections. The final writer fence remains pending.
+byte across all seven collections. The final writer fence was still pending at that checkpoint; the completed
+cutover and credential retirement are recorded in the acceptance report.
 
 Independent Neon roots initially inherited their parent's role password. The
 synthetic and rehearsal passwords have now been rotated independently; cross-branch

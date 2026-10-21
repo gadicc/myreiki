@@ -8,13 +8,15 @@ React Hook Form, Neon/PostgreSQL and an owner-scoped Dexie offline store. Bun
 1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.0.4 supplies
 shared auth, database, PWA, Lingui tooling and client identity primitives.
 
-**Production still runs the legacy Mongo application.** Provider ownership and
-Singapore placement are configured, and the Mongo backup has been imported and
-compared on a protected rehearsal branch. The Production SQL branch has not
-been populated or activated. The implementation is saved on the local `codex/modernize-myreiki` review branch.
-See [current evidence](plans/001-modernization.md),
-[dependency decisions](plans/002-upgrade-ledger.md) and the
-[cutover gates](plans/003-release-and-recovery.md).
+Production is live at [www.myreiki.app](https://www.myreiki.app) on the modern
+SQL stack. The production import, release workflow, deployed browser checks and
+operator's existing-account Google sign-in/record check passed. The dedicated
+Mongo user is deleted and its old credential is verified unusable. Both the
+apex and old Vercel hostname redirect to the canonical domain.
+See [production acceptance](plans/008-production-acceptance.md),
+[implementation evidence](plans/001-modernization.md),
+[dependency decisions](plans/002-upgrade-ledger.md) and
+[release/recovery boundaries](plans/003-release-and-recovery.md).
 
 ```sh
 bun install --frozen-lockfile --ignore-scripts
@@ -39,7 +41,7 @@ PLAYWRIGHT_CHROMIUM_EXECUTABLE=/usr/bin/chromium bun run test:browser
 The browser harness refuses every database except the approved synthetic root.
 Its test-only Better Auth instance creates session cookies without adding
 production HTTP bypasses. `/dev-login` is separately opt-in, development-only
-and loopback-only. Real Google sign-in was also confirmed locally by the operator.
+and loopback-only. The operator confirmed real Google sign-in locally and on the production domain.
 
 The offline store preserves edits across reloads and account switches. Sign-out
 locks access and retains pending work for the same account; reconnecting freshly
@@ -66,11 +68,12 @@ compiled before development, validation and builds. See
 Drizzle schemas are in `src/db/schema`; use `bun run db:generate` and
 `bun run schema:gen`. Migrations require `pg_uuidv7`. The app's pg adapter
 verifies Neon TLS and required SCRAM channel binding. The app-owned `db:migrate` uses this same transport; its intentional Loom task
-override is advisory. Protected migration credentials are configured; a full
-staged release still needs its runtime acceptance checks.
+override is advisory. Protected migration credentials and the complete staged
+production release path are verified.
 
-The release workflow is disabled until the explicit repository release switch
-is enabled after cutover review. Automatic Vercel deployments from `main` are
+Production releases remain explicitly gated. The one-time release enablement
+was removed after successful cutover; future approved releases must enable it
+for their run and remove it afterward. Automatic Vercel deployments from `main` are
 fenced by `vercel.json`. Production auth/data routes also require the exact
 completed import receipt. Passing local checks alone does not activate production.
 

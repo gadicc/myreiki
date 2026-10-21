@@ -1,6 +1,15 @@
 # Production release and recovery
 
-## Prepared boundary
+## Current acceptance
+
+Production cutover, deployed runtime checks and the operator's existing-account
+Google/record check passed. The dedicated Mongo credential is now revoked and
+obsolete Production secrets are removed. See
+[production acceptance](008-production-acceptance.md). The sections below retain
+the initial bootstrap procedure and evidence boundaries; do not repeat the
+pristine import against an active database accepting new work.
+
+## Release boundary
 
 The approved Vercel team is `wastelands-jp`, project `myreiki`; functions and Neon
 are colocated in Singapore. `vercel.json` disables automatic `main` deployments.
@@ -10,8 +19,9 @@ with `--skip-domain`, migration validation, migrations, staged readiness, exact
 promotion and public alias/readiness verification. Actions are pinned by SHA.
 
 The workflow requires `MYREIKI_PRODUCTION_RELEASE_ENABLED=true` and is currently
-**disabled**. A separately gated `credential-smoke` dispatch may stage and check
-the migration fence without migrations or promotion; both enablement variables
+**disabled**. The historical pre-import
+`credential-smoke` dispatch checked the migration fence without migrations or
+promotion; both enablement variables
 remain unset. Loom configured a main-only GitHub `Production` environment and a
 project-scoped Vercel credential expiring 19 January 2027; its project access and
 denial of team-level access were verified. The direct migration secret and role
@@ -32,7 +42,8 @@ an owner-only recovery file; it was not printed. A HEAD request to a static icon
 on the existing protected deployment returned 302 anonymously and 200 with the
 credential. The public deployment was unchanged. This verifies the protection
 gate. The actual GitHub credential-smoke and subsequent staged runtime
-acceptance also passed; these do not establish production Google sign-in.
+acceptance also passed. Production Google sign-in and record visibility were
+subsequently confirmed by the operator.
 
 A read-only Loom OIDC Trusted Sources proposal is prepared but unapplied.
 See [OIDC follow-up](006-oidc-trusted-sources.md). Keep the current credential
@@ -106,8 +117,8 @@ contain client notes; browsers can still erase local storage.
 
 Local Google success, synthetic browser tests, live synthetic SQL races and a
 protected exact import replay each prove their own boundary. Production import,
-the legacy writer fence and staged deployed runtime acceptance are now verified. The GitHub credential-smoke passed; the full promotion path
-and production Google sign-in remain pending. The primary domain update and
+the legacy writer fence and staged deployed runtime acceptance are verified.
+The full GitHub promotion path and production Google sign-in also passed. The primary domain update and
 its release boundary are recorded in [the domain plan](007-production-domain.md).
 
 Local Vercel prebuilds must use an isolated copy of nonignored source. The
