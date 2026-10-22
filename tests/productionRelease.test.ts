@@ -1,3 +1,7 @@
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import { expect, it } from "vitest";
 import {
   checkOidcReadiness,
@@ -6,6 +10,49 @@ import {
   verifyProtectionDenial,
   verifyReadiness,
 } from "../scripts/production-release.mjs";
+
+it("reports an acquisition failure phase without disclosing transport details", () => {
+  const dir = mkdtempSync(join(tmpdir(), "myreiki-oidc-redaction-"));
+  const hook = join(dir, "fetch.mjs");
+  try {
+    writeFileSync(
+      hook,
+      'globalThis.fetch = async () => { throw new Error("synthetic-private-transport-detail"); };',
+      { mode: 0o600 },
+    );
+    const result = spawnSync(
+      process.execPath,
+      [
+        "--import",
+        hook,
+        resolve("scripts/production-release.mjs"),
+        "oidc-deny-no-environment",
+      ],
+      {
+        encoding: "utf8",
+        timeout: 10_000,
+        env: {
+          NODE_ENV: "test",
+          GITHUB_ACTIONS: "true",
+          ACTIONS_ID_TOKEN_REQUEST_URL:
+            "https://run.actions.githubusercontent.com/idtoken?api-version=2.0",
+          ACTIONS_ID_TOKEN_REQUEST_TOKEN: "synthetic-request-credential",
+          DEPLOYMENT_URL: "https://myreiki-synthetic.vercel.app",
+        },
+      },
+    );
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(
+      "GitHub OIDC token acquisition failed (transport)",
+    );
+    expect(result.stderr).not.toContain("synthetic-request-credential");
+    expect(`${result.stdout}${result.stderr}`).not.toContain(
+      "synthetic-private-transport-detail",
+    );
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
 
 it("binds the staged and promoted artifact to the exact org, project, source and immutable URL", () => {
   const sha = "a".repeat(40);
