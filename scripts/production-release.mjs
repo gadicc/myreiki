@@ -107,8 +107,13 @@ function oidcFetch(origin, audience = "https://github.com/gadicc") {
 
 /** Deployment protection access does not grant an application session. */
 export async function checkOidcReadiness(origin, check = oidcFetch(origin)) {
-  await verifyReadiness(await check("/api/ready"));
+  const readiness = await check("/api/ready");
+  console.log(
+    `OIDC readiness: HTTP ${readiness.status}, JSON=${readiness.headers.get("content-type")?.includes("application/json") === true}, no-store=${readiness.headers.get("cache-control")?.includes("no-store") === true}`,
+  );
+  await verifyReadiness(readiness);
   const session = await check("/api/auth/get-session");
+  console.log(`OIDC anonymous session: HTTP ${session.status}`);
   if (
     session.status !== 200 ||
     !session.headers.get("content-type")?.includes("application/json") ||
@@ -219,7 +224,13 @@ async function main() {
         }),
         origin,
       );
+      console.log(
+        "Anonymous protection denial verified; checking GitHub identity.",
+      );
       await checkOidcReadiness(origin);
+      console.log(
+        "Valid OIDC readiness and anonymous application session verified.",
+      );
       const wrongAudience = oidcFetch(
         origin,
         "https://github.com/gadicc/myreiki-denied-audience",
@@ -309,11 +320,19 @@ if (
   process.argv[1] &&
   import.meta.url === pathToFileURL(process.argv[1]).href
 ) {
-  main().catch(() => {
+  main().catch((error) => {
     // Fetch/CLI errors can carry headers or credentials. Keep CI output bounded.
     console.error(
       "Production release guard failed. Inspect the step and provider state before retrying.",
     );
+    // Only known library messages are safe to disclose; never print arbitrary causes.
+    const safeMessages = new Set([
+      "GitHub OIDC token acquisition failed",
+      "GitHub OIDC requires a verified HTTPS origin, audience and Actions identity endpoint",
+      "OIDC deployment HTTP check failed",
+    ]);
+    if (error instanceof Error && safeMessages.has(error.message))
+      console.error(error.message);
     process.exitCode = 1;
   });
 }
