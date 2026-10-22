@@ -1,6 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "git": { "deploymentEnabled": { "main": false } },
+  "git": {
+    "deploymentEnabled": {
+      "main": false,
+      "codex/oidc-trusted-sources": false
+    }
+  },
   "regions": ["sin1"],
   "headers": [
     {

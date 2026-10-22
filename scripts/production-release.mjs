@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
+import { createGithubActionsOidcFetch } from "@gadicc/loom/release";
 
 export const target = Object.freeze({
   orgId: "team_csZisOffvMIGjgEuwRLc2eAX",
@@ -60,27 +61,60 @@ async function providerDeployment(host) {
   return await response.json();
 }
 
-async function readiness(origin, bypass, expectedReady = true) {
-  const headers = { Accept: "application/json" };
-  if (bypass) headers["x-vercel-protection-bypass"] = bypass;
+async function readiness(origin) {
   const response = await fetch(`${origin}/api/ready`, {
-    headers,
+    headers: { Accept: "application/json" },
     redirect: "error",
     cache: "no-store",
     signal: AbortSignal.timeout(30_000),
   });
-  await verifyReadiness(response, expectedReady);
+  await verifyReadiness(response);
 }
 
 /** Distinguish a reachable migration fence from an activated database or protection HTML. */
-export async function verifyReadiness(response, expectedReady) {
+export async function verifyReadiness(response) {
   if (
-    response.status !== (expectedReady ? 200 : 503) ||
+    response.status !== 200 ||
     !response.headers.get("content-type")?.includes("application/json") ||
     !response.headers.get("cache-control")?.includes("no-store") ||
-    (await response.json()).ready !== expectedReady
+    (await response.json()).ready !== true
   )
     throw new Error("The exact release origin did not pass database readiness");
+}
+
+/** Vercel protection redirects must identify its login gate and our exact request. */
+export async function verifyProtectionDenial(response, origin) {
+  if (response.status !== 302 && response.status !== 307)
+    throw new Error("Expected Vercel protection login redirect");
+  const location = new URL(response.headers.get("location") ?? "", origin);
+  if (
+    location.origin !== "https://vercel.com" ||
+    location.pathname !== "/sso-api" ||
+    location.searchParams.get("url") !== `${origin}/api/ready`
+  )
+    throw new Error("Unexpected protection denial destination");
+  await response.body?.cancel();
+}
+
+function oidcFetch(origin, audience = "https://github.com/gadicc") {
+  return createGithubActionsOidcFetch({
+    origin,
+    audience,
+    env: process.env,
+    writeWorkflowCommand: (command) => console.log(command),
+  });
+}
+
+/** Deployment protection access does not grant an application session. */
+export async function checkOidcReadiness(origin, check = oidcFetch(origin)) {
+  await verifyReadiness(await check("/api/ready"));
+  const session = await check("/api/auth/get-session");
+  if (
+    session.status !== 200 ||
+    !session.headers.get("content-type")?.includes("application/json") ||
+    (await session.json()) !== null
+  )
+    throw new Error("OIDC must leave the application session anonymous");
 }
 
 async function main() {
@@ -135,45 +169,83 @@ async function main() {
       return;
     }
     case "smoke": {
-      const url = new URL(process.env.DEPLOYMENT_URL);
-      if (
-        url.protocol !== "https:" ||
-        !/^[a-z\d-]+\.vercel\.app$/.test(url.host) ||
-        url.username ||
-        url.password ||
-        url.pathname !== "/" ||
-        url.search ||
-        url.hash
-      )
-        throw new Error("Invalid smoke origin");
-      if (!process.env.VERCEL_AUTOMATION_BYPASS_SECRET)
-        throw new Error(
-          "Configure the reviewed staged-deployment protection credential before releasing",
-        );
-      const credentialSmoke = process.env.MYREIKI_CREDENTIAL_SMOKE === "true";
-      await readiness(
-        url.origin,
-        process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-        !credentialSmoke,
+      const origin = process.env.DEPLOYMENT_URL?.trim();
+      const value = await providerDeployment(new URL(origin).hostname);
+      verifyDeployment(value, origin, process.env.GITHUB_SHA);
+      await checkOidcReadiness(origin);
+      return;
+    }
+    case "oidc-target": {
+      // Read-only acceptance deliberately tests the current live artifact, not a
+      // new deployment of the workflow commit. Never migrate or promote here.
+      const value = await providerDeployment(
+        new URL(target.publicOrigin).hostname,
       );
-      if (credentialSmoke) {
-        const response = await fetch(`${url.origin}/api/auth/get-session`, {
-          headers: {
-            "x-vercel-protection-bypass":
-              process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
-          },
-          redirect: "error",
+      const origin = `https://${value.url}`;
+      verifyDeployment(value, origin, value.meta?.myreikiSourceSha);
+      verifyDeployment(
+        value,
+        target.publicOrigin,
+        value.meta?.myreikiSourceSha,
+        value.id,
+      );
+      if (
+        verifyDeployment(
+          await providerDeployment(new URL(origin).hostname),
+          origin,
+          value.meta.myreikiSourceSha,
+        ) !== value.id
+      )
+        throw new Error("Immutable artifact changed");
+      console.log(`deployment_url=${origin}\ndeployment_id=${value.id}`);
+      return;
+    }
+    case "oidc-accept": {
+      const origin = process.env.DEPLOYMENT_URL;
+      const value = await providerDeployment(new URL(origin).hostname);
+      verifyDeployment(value, origin, value.meta?.myreikiSourceSha);
+      if (value.id !== process.env.DEPLOYMENT_ID)
+        throw new Error("Acceptance artifact changed");
+      verifyDeployment(
+        await providerDeployment(new URL(target.publicOrigin).hostname),
+        target.publicOrigin,
+        value.meta.myreikiSourceSha,
+        value.id,
+      );
+      await verifyProtectionDenial(
+        await fetch(`${origin}/api/ready`, {
+          redirect: "manual",
           signal: AbortSignal.timeout(30_000),
-        });
-        if (
-          response.status !== 503 ||
-          !response.headers.get("content-type")?.includes("application/json") ||
-          (await response.json()).error !== "MIGRATION_PENDING"
-        )
-          throw new Error(
-            "Auth initialization did not reach the migration fence",
-          );
-      }
+        }),
+        origin,
+      );
+      await checkOidcReadiness(origin);
+      const wrongAudience = oidcFetch(
+        origin,
+        "https://github.com/gadicc/myreiki-denied-audience",
+      );
+      await verifyProtectionDenial(await wrongAudience("/api/ready"), origin);
+      verifyDeployment(
+        await providerDeployment(new URL(target.publicOrigin).hostname),
+        target.publicOrigin,
+        value.meta.myreikiSourceSha,
+        value.id,
+      );
+      console.log(
+        "OIDC accepted; anonymous and wrong-audience requests denied; application session remains anonymous; public artifact unchanged.",
+      );
+      return;
+    }
+    case "oidc-deny-no-environment": {
+      // This job has no Production environment or provider/application secrets.
+      const origin = process.env.DEPLOYMENT_URL;
+      if (!/^https:\/\/[a-z\d-]+\.vercel\.app$/.test(origin ?? ""))
+        throw new Error("Invalid denial-check origin");
+      await verifyProtectionDenial(
+        await oidcFetch(origin)("/api/ready"),
+        origin,
+      );
+      console.log("GitHub identity without the Production environment denied.");
       return;
     }
     case "snapshot": {
@@ -229,7 +301,7 @@ async function main() {
     }
     default:
       throw new Error(
-        "Use source|project|staged|smoke|snapshot|unchanged|live",
+        "Use source|project|staged|smoke|snapshot|unchanged|live|oidc-target|oidc-accept|oidc-deny-no-environment",
       );
   }
 }

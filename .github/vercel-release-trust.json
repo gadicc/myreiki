@@ -1,0 +1,39 @@
+{
+  "profile": "loom-github-release-trust-v1",
+  "target": {
+    "projectId": "prj_4lUymF9XOiQJx1H6etvUmQ3Bk0Lg",
+    "teamId": "team_csZisOffvMIGjgEuwRLc2eAX",
+    "repository": "gadicc/myreiki",
+    "repositoryId": "791451279",
+    "productionBranch": "main",
+    "githubEnvironment": "Production",
+    "workflowPath": ".github/workflows/release.yml"
+  },
+  "expectedTrustedSourcesSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+  "patch": {
+    "trustedSources": {
+      "oidcProviders": {
+        "https://token.actions.githubusercontent.com": [
+          {
+            "claims": {
+              "aud": ["https://github.com/gadicc"],
+              "environment": ["Production"],
+              "ref": ["refs/heads/main"],
+              "repository": ["gadicc/myreiki"],
+              "repository_id": ["791451279"],
+              "workflow_ref": [
+                "gadicc/myreiki/.github/workflows/release.yml@refs/heads/main"
+              ]
+            },
+            "label": "GitHub Production release (gadicc/myreiki)",
+            "to": {
+              "slugs": ["production"]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "changed": true,
+  "approvalSha256": "57e7e3f2cd2c6f51754c3c2e50b6c898dac67275094ccc1523550dc1afaf4565"
+}

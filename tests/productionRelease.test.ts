@@ -1,7 +1,9 @@
 import { expect, it } from "vitest";
 import {
+  checkOidcReadiness,
   target,
   verifyDeployment,
+  verifyProtectionDenial,
   verifyReadiness,
 } from "../scripts/production-release.mjs";
 
@@ -58,7 +60,7 @@ it("binds the staged and promoted artifact to the exact org, project, source and
     expect(() => verifyDeployment(deployment, url, sha)).toThrow();
 });
 
-it("accepts pending bootstrap only for credential smoke and requires activation for release", async () => {
+it("requires the activated database and rejects bootstrap fences or protection HTML", async () => {
   const response = (ready: boolean) =>
     Response.json(
       { ready },
@@ -67,13 +69,60 @@ it("accepts pending bootstrap only for credential smoke and requires activation 
         headers: { "Cache-Control": "private,no-store" },
       },
     );
+  await expect(verifyReadiness(response(true))).resolves.toBeUndefined();
+  await expect(verifyReadiness(response(false))).rejects.toThrow();
   await expect(
-    verifyReadiness(response(false), false),
-  ).resolves.toBeUndefined();
-  await expect(verifyReadiness(response(true), true)).resolves.toBeUndefined();
-  await expect(verifyReadiness(response(false), true)).rejects.toThrow();
-  await expect(verifyReadiness(response(true), false)).rejects.toThrow();
-  await expect(
-    verifyReadiness(new Response("Sign in to Vercel", { status: 200 }), false),
+    verifyReadiness(new Response("Sign in to Vercel", { status: 200 })),
   ).rejects.toThrow();
+});
+
+it("recognizes the exact Vercel login gate rather than accepting an arbitrary failure", async () => {
+  const origin = "https://myreiki-synthetic.vercel.app";
+  const denied = (
+    status: number,
+    destination = `https://vercel.com/sso-api?url=${encodeURIComponent(`${origin}/api/ready`)}&nonce=synthetic`,
+  ) => new Response(null, { status, headers: { location: destination } });
+  await expect(
+    verifyProtectionDenial(denied(302), origin),
+  ).resolves.toBeUndefined();
+  for (const response of [
+    denied(200),
+    denied(500),
+    denied(302, "https://evil.test/sso-api"),
+    denied(
+      302,
+      "https://vercel.com/sso-api?url=https%3A%2F%2Fother.vercel.app%2Fapi%2Fready",
+    ),
+  ])
+    await expect(verifyProtectionDenial(response, origin)).rejects.toThrow();
+});
+
+it("requires an active database and an anonymous application session after OIDC access", async () => {
+  const origin = "https://myreiki-synthetic.vercel.app";
+  const paths: string[] = [];
+  const response = (path: string, session: unknown = null) =>
+    path === "/api/ready"
+      ? Response.json(
+          { ready: true },
+          { headers: { "Cache-Control": "private,no-store" } },
+        )
+      : Response.json(session);
+  await checkOidcReadiness(origin, async (path: string | URL) => {
+    paths.push(String(path));
+    return response(String(path));
+  });
+  expect(paths).toEqual(["/api/ready", "/api/auth/get-session"]);
+  await expect(
+    checkOidcReadiness(origin, async (path: string | URL) =>
+      response(String(path), { user: { id: "synthetic" } }),
+    ),
+  ).rejects.toThrow("anonymous");
+  await expect(
+    checkOidcReadiness(origin, async () =>
+      Response.json(
+        { ready: false },
+        { status: 503, headers: { "Cache-Control": "private,no-store" } },
+      ),
+    ),
+  ).rejects.toThrow("readiness");
 });

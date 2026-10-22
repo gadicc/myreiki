@@ -5,7 +5,7 @@ schema retains generic treatments for future modalities.
 
 The working tree now uses Next.js 16, React 19, MUI 9, Better Auth, Valibot with
 React Hook Form, Neon/PostgreSQL and an owner-scoped Dexie offline store. Bun
-1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.0.4 supplies
+1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.1.0 supplies
 shared auth, database, PWA, Lingui tooling and client identity primitives.
 
 Production is live at [www.myreiki.app](https://www.myreiki.app) on the modern
@@ -17,6 +17,11 @@ See [production acceptance](plans/008-production-acceptance.md),
 [implementation evidence](plans/001-modernization.md),
 [dependency decisions](plans/002-upgrade-ledger.md) and
 [release/recovery boundaries](plans/003-release-and-recovery.md).
+
+The prepared release workflow uses GitHub OIDC Trusted Sources for protected
+HTTP checks, with a read-only `oidc-smoke` operation separate from deployment.
+Live identity acceptance and old bypass retirement are tracked in
+[OIDC implementation and acceptance](plans/009-oidc-implementation.md).
 
 ```sh
 bun install --frozen-lockfile --ignore-scripts
