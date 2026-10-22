@@ -62,3 +62,15 @@ Never print raw tokens, provider env snapshots or unredacted CI logs.
 
 Sources: [Vercel Trusted Sources](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/trusted-sources)
 and [GitHub OIDC claims](https://docs.github.com/en/actions/reference/security/oidc).
+
+
+The first live checks confirmed valid OIDC readiness and a null app session, but
+failed while acquiring the deliberately different audience. Loom 2.1.1 adds
+fixed, credential-free acquisition failure phases instead of exposing provider
+bodies or causes. Its full local gate passed (1,561 runtime tests, 33 DOM tests,
+167 Deno groups / 1,610 steps), and its
+[publication run](https://github.com/gadicc/loom/actions/runs/39849546333) passed
+on retry after an unchanged compiler test exceeded Bun's five-second timeout.
+MyReiki's published-package production gate now passes all 84 tests, including a
+child-process regression for private transport-detail suppression. Live
+acceptance remains pending; the persistent bypass is still active.

@@ -5,7 +5,7 @@ schema retains generic treatments for future modalities.
 
 The working tree now uses Next.js 16, React 19, MUI 9, Better Auth, Valibot with
 React Hook Form, Neon/PostgreSQL and an owner-scoped Dexie offline store. Bun
-1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.1.0 supplies
+1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.1.1 supplies
 shared auth, database, PWA, Lingui tooling and client identity primitives.
 
 Production is live at [www.myreiki.app](https://www.myreiki.app) on the modern

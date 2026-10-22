@@ -331,7 +331,13 @@ if (
       "GitHub OIDC requires a verified HTTPS origin, audience and Actions identity endpoint",
       "OIDC deployment HTTP check failed",
     ]);
-    if (error instanceof Error && safeMessages.has(error.message))
+    const acquisitionFailure =
+      /^GitHub OIDC token acquisition failed \((transport|http-\d{1,3}|response|token|masking|issuer|audience|expiry)\)$/;
+    if (
+      error instanceof Error &&
+      (safeMessages.has(error.message) ||
+        acquisitionFailure.test(error.message))
+    )
       console.error(error.message);
     process.exitCode = 1;
   });
