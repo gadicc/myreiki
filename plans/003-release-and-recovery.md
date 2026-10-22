@@ -18,15 +18,14 @@ Vercel preparation, metadata-backed placeholders, artifact scanning, staging
 with `--skip-domain`, migration validation, migrations, staged readiness, exact
 promotion and public alias/readiness verification. Actions are pinned by SHA.
 
-The workflow requires `MYREIKI_PRODUCTION_RELEASE_ENABLED=true` and is currently
-**disabled**. The historical pre-import
-`credential-smoke` dispatch checked the migration fence without migrations or
-promotion; both enablement variables
-remain unset. Loom configured a main-only GitHub `Production` environment and a
-project-scoped Vercel credential expiring 19 January 2027; its project access and
-denial of team-level access were verified. The direct migration secret and role
-metadata are installed there too. The merged workflow passed credential-smoke
-run `39600941271`; it staged production without migrations or promotion. Both enablement flags remain unset.
+The deployment path requires `MYREIKI_PRODUCTION_RELEASE_ENABLED=true` and is
+currently **disabled**. The main-only `oidc-smoke` dispatch independently checks
+the current immutable live artifact without deploying, migrating or promoting.
+The historical pre-import `credential-smoke` mode was removed after database
+activation; its bootstrap run `39600941271` remains part of the cutover evidence.
+Loom configured a main-only GitHub `Production` environment and a project-scoped
+Vercel credential expiring 19 January 2027; project access and denial of team-level
+access were verified. The direct migration secret and role metadata remain there.
 
 Separate Production/Preview auth signing keys, the Production origin and import
 fingerprint are configured in Vercel. Recovery keys are owner-only under
@@ -35,20 +34,15 @@ wallet. Existing Google credentials are retained. Preview now derives its own
 callback origin; actual Preview Google callback registration is still separate
 from database isolation.
 
-The operator approved the MyReiki-only persistent automation-bypass credential.
-It is installed as `VERCEL_AUTOMATION_BYPASS_SECRET` in the main-only GitHub
-`Production` environment. The value was transferred over stdin and retained in
-an owner-only recovery file; it was not printed. A HEAD request to a static icon
-on the existing protected deployment returned 302 anonymously and 200 with the
-credential. The public deployment was unchanged. This verifies the protection
-gate. The actual GitHub credential-smoke and subsequent staged runtime
-acceptance also passed. Production Google sign-in and record visibility were
-subsequently confirmed by the operator.
-
-A read-only Loom OIDC Trusted Sources proposal is prepared but unapplied.
-See [OIDC follow-up](006-oidc-trusted-sources.md). Keep the current credential
-path until an OIDC replacement passes its own runtime checks. Do not silently
-fall back to public staging or broaden the Vercel deployment token.
+The initial MyReiki-only persistent automation bypass passed the bootstrap
+staging checks and was retired on 22 October 2026 after real GitHub OIDC
+acceptance. Its GitHub secret and Vercel bypass are removed, and the revoked
+credential is verified denied. Protected HTTP checks now use the published Loom
+OIDC client with the reviewed production-only Trusted Sources rule. Valid
+identity, wrong audience and missing-environment tests passed again after
+retirement. See [OIDC implementation and acceptance](009-oidc-implementation.md).
+The deployment API and migration credentials remain separate; there is no bypass
+fallback or public staging fallback.
 
 Production auth and domain routes independently require
 `MYREIKI_IMPORT_PLAN_SHA256` to match a completed SQL `legacy_import` receipt.

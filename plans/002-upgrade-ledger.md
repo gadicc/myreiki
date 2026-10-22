@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | Tasks/dependencies | Yarn, no manager pin | Bun 1.4.3, native isolated text lock |
 | Server | Node 20 project setting | Node 24.x, provider verified; historical live deployment unchanged |
-| Loom | 1.15.2, no manifest | Published 2.0.4; manifest-owned auth, DB, PWA wiring |
+| Loom | 1.15.2, no manifest | Published 2.1.1; manifest-owned auth, DB, PWA and OIDC release checks |
 | Framework | Next 15.0.7, React 18.2 | Next 16.4.2, React/DOM 19.3.1 |
 | UI | MUI 7, date pickers 8 | MUI 9.5.0, date pickers 9.16.0 |
 | Forms | Zod 3, old resolver/RHF | Valibot 1.5.0, resolver 6, RHF 7.90 |

@@ -64,8 +64,8 @@ Do not run the pristine bootstrap comparison against new legitimate records or
 sessions. Preserve import receipts and source mappings.
 
 Bun remains the developer/CI tool; Node 24 remains the production runtime.
-Potential Bun runtime trials, narrower SQL roles, production Google credential
-rotation with password-wallet custody, and the reviewed
-[OIDC Trusted Sources rollout](006-oidc-trusted-sources.md) are follow-ups.
-Loom already supplies trust planning/apply/check primitives; adopting OIDC here
-remains deliberate and separate from Vercel deployment and Neon credentials.
+Potential Bun runtime trials, narrower SQL roles and production Google credential
+rotation with password-wallet custody remain follow-ups.
+The [OIDC Trusted Sources rollout](009-oidc-implementation.md) subsequently
+completed on 22 October: shared Loom 2.1.1 client, live positive/negative checks
+and persistent bypass retirement. Deployment and Neon credentials remain separate.

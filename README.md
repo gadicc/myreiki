@@ -18,9 +18,9 @@ See [production acceptance](plans/008-production-acceptance.md),
 [dependency decisions](plans/002-upgrade-ledger.md) and
 [release/recovery boundaries](plans/003-release-and-recovery.md).
 
-The prepared release workflow uses GitHub OIDC Trusted Sources for protected
+The release workflow uses GitHub OIDC Trusted Sources for protected
 HTTP checks, with a read-only `oidc-smoke` operation separate from deployment.
-Live identity acceptance and old bypass retirement are tracked in
+Live identity acceptance passed and the old persistent bypass is retired. See
 [OIDC implementation and acceptance](plans/009-oidc-implementation.md).
 
 ```sh

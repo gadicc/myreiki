@@ -1,6 +1,6 @@
 # OIDC Trusted Sources follow-up
 
-Implementation started 22 October 2026; see [current implementation and acceptance](009-oidc-implementation.md). The assessment below records the pre-adoption state.
+Completed 22 October 2026; see [implementation and acceptance](009-oidc-implementation.md). The assessment below records the pre-adoption state.
 
 21 October 2026. The operator approved creating the existing MyReiki automation
 credential and requested an assessment of OIDC and shared Loom reuse. OIDC
