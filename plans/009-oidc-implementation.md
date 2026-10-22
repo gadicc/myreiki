@@ -74,3 +74,9 @@ on retry after an unchanged compiler test exceeded Bun's five-second timeout.
 MyReiki's published-package production gate now passes all 84 tests, including a
 child-process regression for private transport-detail suppression. Live
 acceptance remains pending; the persistent bypass is still active.
+
+The phase-aware run isolated the negative probe's failure to GitHub HTTP 400,
+before token issuance. The wrong-audience probe now requests the standard
+`sts.amazonaws.com` audience instead. Vercel must still deny the resulting
+GitHub-signed token because the reviewed rule requires
+`https://github.com/gadicc`; no trust or readiness condition changed.
