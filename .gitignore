@@ -50,3 +50,14 @@ public/sw.js
 /test-results/
 src/locales/*/messages.js
 src/locales/*/messages.mjs
+/.loom/generated/
+/.loom-write-*.tmp
+/.loom/.loom-write-*.tmp
+/.loom/generated-installs/
+/.loom/generated-install.json
+/.loom/generated-install-corrupt-*.json
+/.loom/generated-activation*.json
+/.loom/generated-activation-*.tmp
+.loom/dev-state.json
+.loom/dev-sync.lock*
+.loom/local-store-backup/

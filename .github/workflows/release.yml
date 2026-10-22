@@ -7,8 +7,8 @@ on:
       mode:
         description: Bounded Production operation
         type: choice
-        default: credential-smoke
-        options: [credential-smoke, cutover-release]
+        default: oidc-smoke
+        options: [oidc-smoke, cutover-release]
 concurrency:
   group: myreiki-production
   cancel-in-progress: false
@@ -16,9 +16,11 @@ permissions:
   contents: read
 jobs:
   release:
-    # Enable only after bootstrap import, the legacy writer fence, and credential
-    # smoke have been reviewed. Merely pushing this workflow cannot cut over.
-    if: ${{ github.ref == 'refs/heads/main' && ((github.event_name == 'workflow_dispatch' && inputs.mode == 'credential-smoke' && vars.MYREIKI_PRODUCTION_SMOKE_ENABLED == 'true') || ((github.event_name != 'workflow_dispatch' || inputs.mode == 'cutover-release') && vars.MYREIKI_PRODUCTION_RELEASE_ENABLED == 'true')) }}
+    # Automatic release remains disabled until deliberately enabled by an operator.
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name != 'workflow_dispatch' || inputs.mode == 'cutover-release') && vars.MYREIKI_PRODUCTION_RELEASE_ENABLED == 'true' }}
+    permissions:
+      contents: read
+      id-token: write
     environment: Production
     runs-on: ubuntu-latest
     env:
@@ -83,7 +85,6 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: node scripts/production-release.mjs unchanged "$RUNNER_TEMP/public-before-stage.json"
       - name: Run Drizzle migrations with the preserved production environment
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode != 'credential-smoke' }}
         env:
           LOOM_MIGRATION_DATABASE_ROLE: ${{ vars.LOOM_MIGRATION_DATABASE_ROLE }}
           MIGRATION_DATABASE_URL_UNPOOLED: ${{ secrets.MIGRATION_DATABASE_URL_UNPOOLED }}
@@ -93,22 +94,74 @@ jobs:
       - name: Smoke staged readiness before promotion
         env:
           DEPLOYMENT_URL: ${{ steps.stage.outputs.deployment_url }}
-          MYREIKI_CREDENTIAL_SMOKE: ${{ inputs.mode == 'credential-smoke' && 'true' || 'false' }}
-          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: node scripts/production-release.mjs smoke
       - name: Verify smoke left the public deployment unchanged
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: node scripts/production-release.mjs unchanged "$RUNNER_TEMP/public-before-stage.json"
       - name: Promote the verified deployment
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode != 'credential-smoke' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           DEPLOYMENT_ID: ${{ steps.stage.outputs.deployment_id }}
         run: bun run loom db release promote-vercel "$DEPLOYMENT_ID"
       - name: Verify live readiness and alias identity
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.mode != 'credential-smoke' }}
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           DEPLOYMENT_ID: ${{ steps.stage.outputs.deployment_id }}
         run: node scripts/production-release.mjs live
+
+  oidc-check:
+    # This path reads the already-live artifact; it cannot deploy, migrate or promote.
+    if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch' && inputs.mode == 'oidc-smoke' }}
+    environment: Production
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_url: ${{ steps.target.outputs.deployment_url }}
+    env:
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24.21.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.3
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Resolve and verify the protected immutable live artifact
+        id: target
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: node scripts/production-release.mjs oidc-target >> "$GITHUB_OUTPUT"
+      - name: Verify accepted identity, denial and application-auth boundaries
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          DEPLOYMENT_URL: ${{ steps.target.outputs.deployment_url }}
+          DEPLOYMENT_ID: ${{ steps.target.outputs.deployment_id }}
+        run: node scripts/production-release.mjs oidc-accept
+
+  oidc-denied:
+    needs: oidc-check
+    # Deliberately no GitHub environment and no Vercel, DB or app secrets.
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: 24.21.0
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.4.3
+      - run: bun install --frozen-lockfile --ignore-scripts
+      - name: Reject an identity without the required GitHub environment
+        env:
+          DEPLOYMENT_URL: ${{ needs.oidc-check.outputs.deployment_url }}
+        run: node scripts/production-release.mjs oidc-deny-no-environment
