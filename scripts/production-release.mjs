@@ -231,10 +231,7 @@ async function main() {
       console.log(
         "Valid OIDC readiness and anonymous application session verified.",
       );
-      const wrongAudience = oidcFetch(
-        origin,
-        "https://github.com/gadicc/myreiki-denied-audience",
-      );
+      const wrongAudience = oidcFetch(origin, "sts.amazonaws.com");
       await verifyProtectionDenial(await wrongAudience("/api/ready"), origin);
       verifyDeployment(
         await providerDeployment(new URL(target.publicOrigin).hostname),
