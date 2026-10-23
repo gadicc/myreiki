@@ -1,6 +1,6 @@
 export const languages = [
-  { code: "en", name: "English" },
-  { code: "ja", name: "日本語" },
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "ja", name: "日本語", flag: "🇯🇵" },
 ] as const;
 export type Locale = (typeof languages)[number]["code"];
 export const localeCookie = "NEXT_LOCALE";
