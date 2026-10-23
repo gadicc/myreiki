@@ -28,6 +28,7 @@ test("language changes retain drafts, validation, offline edits and cold reloads
   await login();
   const name = `Synthetic locale ${Date.now()}`;
   const switchTo = async (locale: "en" | "ja") => {
+    await page.getByRole("button", { name: /^(menu|メニュー)$/ }).click();
     await page.getByRole("combobox", { name: /^(Language|表示言語)$/ }).click();
     await page
       .getByRole("option", {
@@ -36,6 +37,8 @@ test("language changes retain drafts, validation, offline edits and cold reloads
       })
       .click();
     await expect(page.locator("html")).toHaveAttribute("lang", locale);
+    await expect(page.getByRole("combobox")).toBeVisible();
+    await page.keyboard.press("Escape");
   };
   await page.goto("/practice/edit/new");
   await page.getByRole("textbox", { name: "Name", exact: true }).fill(name);

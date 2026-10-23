@@ -1,4 +1,5 @@
 "use client";
+import { useLoomPwaInstall } from "@gadicc/loom/next/pwa";
 import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
@@ -10,14 +11,20 @@ import {
   Groups,
   Home,
   Info,
+  InstallMobile,
   Menu as MenuIcon,
   NightShelter,
+  Public,
 } from "@mui/icons-material";
 import {
   AppBar,
   Avatar,
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   IconButton,
   List,
@@ -56,6 +63,18 @@ export default function MyAppBar() {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [installDialogOpen, setInstallDialogOpen] = React.useState(false);
+  const { canInstall, isInstalled, isIOS, promptInstall } = useLoomPwaInstall();
+
+  const handleInstall = async () => {
+    setMobileOpen(false);
+    try {
+      const outcome = await promptInstall();
+      if (outcome === "unavailable") setInstallDialogOpen(true);
+    } catch {
+      setInstallDialogOpen(true);
+    }
+  };
 
   const { profile: user, signIn, signOut } = usePracticeData();
   const userId = user?._id;
@@ -94,7 +113,7 @@ export default function MyAppBar() {
     <Box
       role="presentation"
       onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
+      sx={{ display: "flex", flexDirection: "column", minHeight: "100%" }}
     >
       <Typography variant="h6" sx={{ my: 2, ml: 4 }}>
         <div style={{ position: "relative", paddingLeft: 28 }}>
@@ -166,20 +185,6 @@ export default function MyAppBar() {
         </>
       ) : undefined}
 
-      <Divider />
-      <List>
-        <ListItem disablePadding>
-          <ListItemButton component={NextLink} href="/about">
-            <ListItemIcon>
-              <Info />
-            </ListItemIcon>
-            <ListItemText>
-              <Trans>About</Trans>
-            </ListItemText>
-          </ListItemButton>
-        </ListItem>
-      </List>
-
       {isAdmin ? (
         <List>
           <ListItem disablePadding>
@@ -194,6 +199,39 @@ export default function MyAppBar() {
           </ListItem>
         </List>
       ) : undefined}
+      <Box sx={{ mt: "auto", pt: 2 }}>
+        <Divider />
+        <List>
+          {canInstall ? (
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleInstall}>
+                <ListItemIcon>
+                  <InstallMobile />
+                </ListItemIcon>
+                <ListItemText>
+                  <Trans>Install this app</Trans>
+                </ListItemText>
+              </ListItemButton>
+            </ListItem>
+          ) : null}
+          <ListItem disablePadding>
+            <ListItemButton component={NextLink} href="/about">
+              <ListItemIcon>
+                <Info />
+              </ListItemIcon>
+              <ListItemText>
+                <Trans>About</Trans>
+              </ListItemText>
+            </ListItemButton>
+          </ListItem>
+          <ListItem onClick={(event) => event.stopPropagation()}>
+            <ListItemIcon>
+              <Public />
+            </ListItemIcon>
+            <LanguageSelect />
+          </ListItem>
+        </List>
+      </Box>
     </Box>
   );
 
@@ -214,7 +252,6 @@ export default function MyAppBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {title}
           </Typography>
-          <LanguageSelect />
           {userId ? (
             <div>
               <IconButton
@@ -307,6 +344,39 @@ export default function MyAppBar() {
           {drawer}
         </SwipeableDrawer>
       </Box>
+      <Dialog
+        open={installDialogOpen && !isInstalled}
+        onClose={() => setInstallDialogOpen(false)}
+        aria-labelledby="install-dialog-title"
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle id="install-dialog-title">
+          <Trans>Install this app</Trans>
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography component="p" sx={{ mb: 2 }}>
+            {isIOS ? (
+              <Trans>Tap Share, then Add to Home Screen, then Add.</Trans>
+            ) : (
+              <Trans>
+                Open your browser menu and choose Install app or Add to Home
+                Screen.
+              </Trans>
+            )}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            <Trans>
+              After installing, open MyReiki from your home screen or apps.
+            </Trans>
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setInstallDialogOpen(false)}>
+            <Trans>Close</Trans>
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

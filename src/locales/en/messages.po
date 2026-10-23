@@ -81,6 +81,10 @@ msgstr "Admin"
 msgid "Administrator access is required online."
 msgstr "Administrator access is required online."
 
+#: src/app/MyAppBar.tsx
+msgid "After installing, open MyReiki from your home screen or apps."
+msgstr "After installing, open MyReiki from your home screen or apps."
+
 #: src/app/treatment/edit/[_id]/bodyPoints.tsx
 msgid "Atsui-On-Netsu (Intense Heat)"
 msgstr "Atsui-On-Netsu (Intense Heat)"
@@ -117,6 +121,7 @@ msgstr "clients"
 msgid "Clients"
 msgstr "Clients"
 
+#: src/app/MyAppBar.tsx
 #: src/app/treatment/edit/[_id]/bodyPoints.tsx
 #: src/lib/useClientId.tsx
 msgid "Close"
@@ -284,6 +289,10 @@ msgstr "Hours"
 msgid "Import Reiki treatments"
 msgstr "Import Reiki treatments"
 
+#: src/app/MyAppBar.tsx
+msgid "Install this app"
+msgstr "Install this app"
+
 #: src/lib/i18n/messages.ts
 msgid "Invalid paste"
 msgstr "Invalid paste"
@@ -420,6 +429,10 @@ msgstr "On-Netsu (Warmth)"
 #: src/lib/useClientId.tsx
 msgid "Open"
 msgstr "Open"
+
+#: src/app/MyAppBar.tsx
+msgid "Open your browser menu and choose Install app or Add to Home Screen."
+msgstr "Open your browser menu and choose Install app or Add to Home Screen."
 
 #: src/app/treatments/import/page.tsx
 msgid "Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO date and time with timezone), full client name, whole minutes, Reiki type, notes. All rows are checked before saving."
@@ -615,6 +628,10 @@ msgstr "Synchronization paused. Your pending work remains on this device."
 #: src/app/treatment/edit/[_id]/page.tsx
 msgid "T-{0}"
 msgstr "T-{0}"
+
+#: src/app/MyAppBar.tsx
+msgid "Tap Share, then Add to Home Screen, then Add."
+msgstr "Tap Share, then Add to Home Screen, then Add."
 
 #: src/lib/i18n/messages.ts
 msgid "The browser granted persistent storage."

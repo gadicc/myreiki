@@ -81,6 +81,10 @@ msgstr "管理"
 msgid "Administrator access is required online."
 msgstr "インターネット接続と管理者権限が必要です。"
 
+#: src/app/MyAppBar.tsx
+msgid "After installing, open MyReiki from your home screen or apps."
+msgstr "インストール後は、ホーム画面またはアプリ一覧からMyReikiを開いてください。"
+
 #: src/app/treatment/edit/[_id]/bodyPoints.tsx
 msgid "Atsui-On-Netsu (Intense Heat)"
 msgstr "強い温熱（熱い感覚）"
@@ -117,6 +121,7 @@ msgstr "人"
 msgid "Clients"
 msgstr "お客様"
 
+#: src/app/MyAppBar.tsx
 #: src/app/treatment/edit/[_id]/bodyPoints.tsx
 #: src/lib/useClientId.tsx
 msgid "Close"
@@ -284,6 +289,10 @@ msgstr "時間"
 msgid "Import Reiki treatments"
 msgstr "霊気の施術記録を取り込む"
 
+#: src/app/MyAppBar.tsx
+msgid "Install this app"
+msgstr "このアプリをインストール"
+
 #: src/lib/i18n/messages.ts
 msgid "Invalid paste"
 msgstr "貼り付けた内容を確認してください。"
@@ -420,6 +429,10 @@ msgstr "温熱（温かい感覚）"
 #: src/lib/useClientId.tsx
 msgid "Open"
 msgstr "開く"
+
+#: src/app/MyAppBar.tsx
+msgid "Open your browser menu and choose Install app or Add to Home Screen."
+msgstr "ブラウザのメニューから「アプリをインストール」または「ホーム画面に追加」を選んでください。"
 
 #: src/app/treatments/import/page.tsx
 msgid "Paste tab-separated cells, without a header: date (YYYY-MM-DD, or ISO date and time with timezone), full client name, whole minutes, Reiki type, notes. All rows are checked before saving."
@@ -615,6 +628,10 @@ msgstr "同期を一時停止しました。未同期の変更はこの端末に
 #: src/app/treatment/edit/[_id]/page.tsx
 msgid "T-{0}"
 msgstr "{0}分前から"
+
+#: src/app/MyAppBar.tsx
+msgid "Tap Share, then Add to Home Screen, then Add."
+msgstr "「共有」から「ホーム画面に追加」を選び、「追加」をタップしてください。"
 
 #: src/lib/i18n/messages.ts
 msgid "The browser granted persistent storage."

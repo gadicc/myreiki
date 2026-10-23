@@ -11,8 +11,8 @@ export default function LanguageSelect() {
   return (
     <Select
       size="small"
+      fullWidth
       value={i18n.locale}
-      sx={{ color: "inherit", "& .MuiSelect-icon": { color: "inherit" } }}
       inputProps={{ "aria-label": i18n._(msg`Language`) }}
       onChange={(event) => {
         if (isLocale(event.target.value)) setLocale(event.target.value);
