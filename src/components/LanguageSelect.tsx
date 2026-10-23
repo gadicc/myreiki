@@ -15,6 +15,9 @@ export default function LanguageSelect() {
       variant="standard"
       disableUnderline
       value={i18n.locale}
+      renderValue={(selected) =>
+        languages.find(({ code }) => code === selected)?.name ?? selected
+      }
       sx={{
         "& .MuiSelect-select": {
           display: "flex",
