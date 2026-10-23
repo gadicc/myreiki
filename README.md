@@ -5,7 +5,7 @@ schema retains generic treatments for future modalities.
 
 The working tree now uses Next.js 16, React 19, MUI 9, Better Auth, Valibot with
 React Hook Form, Neon/PostgreSQL and an owner-scoped Dexie offline store. Bun
-1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.1.1 supplies
+1.4.3 manages dependencies and tasks; Node 24 runs the server. Loom 2.2.0 supplies
 shared auth, database, PWA, Lingui tooling and client identity primitives.
 
 Production is live at [www.myreiki.app](https://www.myreiki.app) on the modern
@@ -55,7 +55,8 @@ can still be removed by the browser or operating system. Account settings offer
 persistent-storage requests, private device export and explicit device removal.
 Old Gongo pending work is outside the requested recovery scope.
 
-English is the source language; Japanese is available from the language selector.
+English is the source language; Japanese is available from the language selector
+below About in the menu drawer.
 The saved device preference wins over browser language negotiation. Both catalogs
 are bundled for offline switching, which preserves open form drafts and unsynced
 work. User-entered names and notes are never translated. Dates and picker controls
